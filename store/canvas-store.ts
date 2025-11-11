@@ -414,12 +414,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     const nodes = get().nodes;
     const edges = get().edges;
 
-    // Calculate offset for pasted nodes
-    // If position is provided, use it; otherwise offset by 50px
-    const offsetX = position ? position.x : 50;
-    const offsetY = position ? position.y : 50;
-
-    // Calculate the center of copied nodes
+    // Calculate the bounds of copied nodes
     const copiedBounds = copiedNodes.nodes.reduce(
       (bounds, node) => {
         const nodeWidth = (node.width as number) || 400;
@@ -442,13 +437,27 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     const copiedCenterX = (copiedBounds.minX + copiedBounds.maxX) / 2;
     const copiedCenterY = (copiedBounds.minY + copiedBounds.maxY) / 2;
 
+    // If position is provided, use it; otherwise place next to original with offset
+    let targetCenterX: number;
+    let targetCenterY: number;
+
+    if (position) {
+      // Use provided position as the center
+      targetCenterX = position.x;
+      targetCenterY = position.y;
+    } else {
+      // Place next to original with a slight offset (100px right and down)
+      targetCenterX = copiedCenterX + 100;
+      targetCenterY = copiedCenterY + 100;
+    }
+
     // Create new nodes with new IDs
     const idMap = new Map<string, string>();
     const newNodes: CanvasNode[] = copiedNodes.nodes.map((node) => {
       const newNodeId = getNodeId();
       idMap.set(node.id, newNodeId);
 
-      // Calculate new position relative to the paste position
+      // Calculate new position relative to the target center
       const nodeWidth = (node.width as number) || 400;
       const nodeHeight = (node.height as number) || 400;
       const nodeCenterX = node.position.x + nodeWidth / 2;
@@ -457,15 +466,27 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
       const offsetFromCenterX = nodeCenterX - copiedCenterX;
       const offsetFromCenterY = nodeCenterY - copiedCenterY;
 
-      return {
-        ...node,
+      // Create new node with only necessary properties (exclude React Flow internal properties)
+      const newNode: CanvasNode = {
         id: newNodeId,
+        type: node.type,
         position: {
-          x: offsetX + offsetFromCenterX - nodeWidth / 2,
-          y: offsetY + offsetFromCenterY - nodeHeight / 2,
+          x: targetCenterX + offsetFromCenterX - nodeWidth / 2,
+          y: targetCenterY + offsetFromCenterY - nodeHeight / 2,
         },
+        data: JSON.parse(JSON.stringify(node.data)), // Deep copy data
         selected: false, // Deselect pasted nodes
       };
+
+      // Only include width/height if they exist
+      if (node.width !== undefined) {
+        newNode.width = node.width;
+      }
+      if (node.height !== undefined) {
+        newNode.height = node.height;
+      }
+
+      return newNode;
     });
 
     // Create new edges with new IDs

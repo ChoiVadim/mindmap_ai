@@ -15,6 +15,7 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { useCanvasStore } from '@/store/canvas-store';
+import { useBoardStore } from '@/store/board-store';
 import NoteNode from './nodes/NoteNode';
 import PromptNode from './nodes/PromptNode';
 import GroupNode from './nodes/GroupNode';
@@ -51,21 +52,24 @@ export default function Canvas() {
     redo,
   } = useCanvasStore();
 
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const { screenToFlowPosition } = useReactFlow();
+  const { currentBoardId, updateBoardData } = useBoardStore();
 
-  // Load canvas from localStorage on mount
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const reactFlowInstance = useReactFlow();
+
+  // Save canvas to current board whenever nodes or edges change
   useEffect(() => {
-    const savedCanvas = localStorage.getItem('mindcanvas-state');
-    if (savedCanvas) {
-      try {
-        const { nodes: savedNodes, edges: savedEdges } = JSON.parse(savedCanvas);
-        loadCanvas(savedNodes, savedEdges);
-      } catch (error) {
-        console.error('Failed to load canvas:', error);
-      }
+    if (currentBoardId) {
+      // Debounce saves to avoid too many API calls
+      const timeoutId = setTimeout(() => {
+        updateBoardData(currentBoardId, nodes, edges).catch((error) => {
+          console.error('Error saving board data:', error);
+        });
+      }, 1000); // Save 1 second after last change
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [loadCanvas]);
+  }, [nodes, edges, currentBoardId, updateBoardData]);
 
   // Track the last drop timestamp to prevent duplicates
   const lastDropTimestamp = useRef(0);
@@ -83,7 +87,7 @@ export default function Canvas() {
       
       if (nodeId && groupId) {
         // This is a node being dragged from a group
-        const position = screenToFlowPosition({
+        const position = reactFlowInstance.screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
         });
@@ -135,15 +139,38 @@ export default function Canvas() {
 
       const dimensions = nodeDimensions[type] || { width: 400, height: 400 };
 
-      // Calculate position so node center is at cursor
-      const position = screenToFlowPosition({
-        x: event.clientX - dimensions.width / 2,
-        y: event.clientY - dimensions.height / 2,
+      // Get ReactFlow viewport to ensure we calculate coordinates correctly
+      const reactFlowViewport = reactFlowWrapper.current?.querySelector('.react-flow__viewport') as HTMLElement;
+      
+      if (!reactFlowViewport) {
+        console.error('ReactFlow viewport not found');
+        return;
+      }
+
+      // Get viewport bounds
+      const viewportRect = reactFlowViewport.getBoundingClientRect();
+      
+      // Calculate position relative to viewport (this is more accurate)
+      const viewportX = event.clientX - viewportRect.left;
+      const viewportY = event.clientY - viewportRect.top;
+
+      // Convert to flow coordinates using the ReactFlow instance
+      // screenToFlowPosition automatically accounts for zoom, pan, and viewport position
+      // We use clientX/clientY which screenToFlowPosition will convert correctly
+      const cursorFlowPosition = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
       });
+
+      // Then calculate position so node center is at cursor
+      const position = {
+        x: cursorFlowPosition.x - dimensions.width / 2,
+        y: cursorFlowPosition.y - dimensions.height / 2,
+      };
 
       addNode(type as any, position);
     },
-    [screenToFlowPosition, addNode, removeNoteFromGroup, nodes, onNodesChange]
+    [reactFlowInstance, addNode, removeNoteFromGroup, nodes, onNodesChange]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -167,23 +194,40 @@ export default function Canvas() {
     return true;
   }, []);
 
-  // Save canvas to localStorage
-  const handleSave = useCallback(() => {
-    const canvasState = { nodes, edges };
-    localStorage.setItem('mindcanvas-state', JSON.stringify(canvasState));
-    
-    // Show success notification (you can replace this with a proper toast)
-    console.log('Canvas saved!');
-    alert('Canvas saved successfully!');
-  }, [nodes, edges]);
+  // Save canvas to current board
+  const handleSave = useCallback(async () => {
+    if (!currentBoardId) {
+      alert('No board selected');
+      return;
+    }
+
+    try {
+      await updateBoardData(currentBoardId, nodes, edges);
+      console.log('Canvas saved!');
+      alert('Canvas saved successfully!');
+    } catch (error) {
+      console.error('Error saving canvas:', error);
+      alert('Failed to save canvas');
+    }
+  }, [nodes, edges, currentBoardId, updateBoardData]);
 
   // Clear canvas with confirmation
-  const handleClear = useCallback(() => {
+  const handleClear = useCallback(async () => {
+    if (!currentBoardId) {
+      alert('No board selected');
+      return;
+    }
+
     if (confirm('Are you sure you want to clear the entire canvas? This cannot be undone.')) {
       clearCanvas();
-      localStorage.removeItem('mindcanvas-state');
+      // Update board with empty canvas
+      try {
+        await updateBoardData(currentBoardId, [], []);
+      } catch (error) {
+        console.error('Error clearing board:', error);
+      }
     }
-  }, [clearCanvas]);
+  }, [clearCanvas, currentBoardId, updateBoardData]);
 
   // Handle selection changes for multi-selection
   // React Flow automatically handles multi-selection and group dragging
@@ -289,12 +333,8 @@ export default function Canvas() {
       // Ctrl+V or Cmd+V - Paste nodes
       if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
         event.preventDefault();
-        // Paste at viewport center
-        const viewportCenter = screenToFlowPosition({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-        });
-        pasteNodes(viewportCenter);
+        // Paste next to original with offset (pass undefined to use default offset logic)
+        pasteNodes(undefined);
         return;
       }
 
@@ -320,7 +360,7 @@ export default function Canvas() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [nodes, copySelectedNodes, pasteNodes, undo, redo, screenToFlowPosition]);
+  }, [nodes, copySelectedNodes, pasteNodes, undo, redo]);
 
   return (
     <div 
