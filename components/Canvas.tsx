@@ -10,6 +10,7 @@ import {
   ConnectionMode,
   OnNodeDrag,
   useReactFlow,
+  OnSelectionChangeParams,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -42,6 +43,7 @@ export default function Canvas() {
     loadCanvas,
     clearCanvas,
     addNoteToGroup,
+    removeNoteFromGroup,
     addNode,
   } = useCanvasStore();
 
@@ -65,12 +67,42 @@ export default function Canvas() {
   const lastDropTimestamp = useRef(0);
   const lastDropType = useRef('');
   
-  // Handle drop from toolbar
+  // Handle drop from toolbar or from group
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
       event.stopPropagation();
 
+      // Check if this is a node being dragged from a group
+      const nodeId = event.dataTransfer.getData('application/reactflow-node');
+      const groupId = event.dataTransfer.getData('application/reactflow-group');
+      
+      if (nodeId && groupId) {
+        // This is a node being dragged from a group
+        const position = screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+        
+        // Remove from group (this will make the node visible)
+        removeNoteFromGroup(nodeId, groupId);
+        
+        // Update node position to drop location
+        // Use requestAnimationFrame to ensure the node is visible first
+        requestAnimationFrame(() => {
+          onNodesChange([
+            {
+              id: nodeId,
+              type: 'position',
+              position,
+            } as any,
+          ]);
+        });
+        
+        return;
+      }
+
+      // Otherwise, this is a new node from toolbar
       const type = event.dataTransfer.getData('application/reactflow');
       if (!type) return;
 
@@ -93,7 +125,7 @@ export default function Canvas() {
         note: { width: 400, height: 400 },
         prompt: { width: 400, height: 300 },
         group: { width: 560, height: 300 },
-        textLabel: { width: 300, height: 120 },
+        textLabel: { width: 300, height: 50 },
         agent: { width: 400, height: 400 },
       };
 
@@ -107,7 +139,7 @@ export default function Canvas() {
 
       addNode(type as any, position);
     },
-    [screenToFlowPosition, addNode]
+    [screenToFlowPosition, addNode, removeNoteFromGroup, nodes, onNodesChange]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -149,17 +181,25 @@ export default function Canvas() {
     }
   }, [clearCanvas]);
 
-  // Handle dragging notes into groups
+  // Handle selection changes for multi-selection
+  // React Flow automatically handles multi-selection and group dragging
+  const onSelectionChange = useCallback((params: OnSelectionChangeParams) => {
+    // React Flow automatically handles multi-selection and group dragging
+    // When multiple nodes are selected and you drag one, all selected nodes move together
+  }, []);
+
+  // Handle dragging nodes into groups
   const onNodeDragStop: OnNodeDrag = useCallback(
     (event, node) => {
-      // Only process note nodes
-      if (node.type !== 'note') return;
+      // Skip if node is hidden (already in a group)
+      if (node.hidden) return;
 
-      // Find if the note was dropped on a group
+      // Process any node type (note, prompt, agent, etc.)
+      // Find if the node was dropped on a group
       const droppedOnGroup = nodes.find((n) => {
-        if (n.type !== 'group' || n.id === node.id) return false;
+        if (n.type !== 'group' || n.id === node.id || n.hidden) return false;
 
-        // Check if the note's center is within the group bounds
+        // Check if the node's center is within the group bounds
         const groupBounds = {
           x: n.position.x,
           y: n.position.y,
@@ -167,14 +207,23 @@ export default function Canvas() {
           height: 300, // Approximate group height
         };
 
-        const noteCenterX = node.position.x + 200; // Note width / 2
-        const noteCenterY = node.position.y + 200; // Note height / 2
+        // Get node dimensions based on type
+        const nodeDimensions: Record<string, { width: number; height: number }> = {
+          note: { width: 400, height: 400 },
+          prompt: { width: 400, height: 300 },
+          agent: { width: 400, height: 400 },
+          textLabel: { width: 300, height: 120 },
+        };
+
+        const dimensions = nodeDimensions[node.type || 'note'] || { width: 400, height: 400 };
+        const nodeCenterX = node.position.x + dimensions.width / 2;
+        const nodeCenterY = node.position.y + dimensions.height / 2;
 
         return (
-          noteCenterX >= groupBounds.x &&
-          noteCenterX <= groupBounds.x + groupBounds.width &&
-          noteCenterY >= groupBounds.y &&
-          noteCenterY <= groupBounds.y + groupBounds.height
+          nodeCenterX >= groupBounds.x &&
+          nodeCenterX <= groupBounds.x + groupBounds.width &&
+          nodeCenterY >= groupBounds.y &&
+          nodeCenterY <= groupBounds.y + groupBounds.height
         );
       });
 
@@ -218,6 +267,7 @@ export default function Canvas() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
+        onSelectionChange={onSelectionChange}
         onBeforeDelete={onBeforeDelete}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
@@ -225,9 +275,16 @@ export default function Canvas() {
         minZoom={0.1}
         maxZoom={4}
         deleteKeyCode={["Delete", "Backspace"]}
+        // Multi-selection: Meta (Cmd on Mac, Ctrl on Windows/Linux) + Click to add to selection
+        // React Flow automatically handles group dragging when multiple nodes are selected
         multiSelectionKeyCode="Meta"
-        // Miro-like UX: instant dragging on click
+        // Enable selection box (lasso selection) when dragging on empty canvas
+        // This allows selecting multiple nodes by dragging a selection box (like Miro/Figma)
+        selectionOnDrag={true}
+        // Miro-like UX: instant dragging on click (don't select on drag start)
         selectNodesOnDrag={false}
+        // Make all nodes draggable (default is true, but explicit for clarity)
+        nodesDraggable={true}
         // Большая канва (в 3 раза больше)
         translateExtent={[[-15000, -15000], [15000, 15000]]}
         // Touchpad panning with two fingers (ускоренное передвижение)

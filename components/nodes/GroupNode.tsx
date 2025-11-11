@@ -17,9 +17,11 @@ function GroupNode({ id, data, selected }: NodeProps) {
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const deleteNode = useCanvasStore((state) => state.deleteNode);
   const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
+  const removeNoteFromGroup = useCanvasStore((state) => state.removeNoteFromGroup);
   const nodes = useCanvasStore((state) => state.nodes);
 
   const childNodes = nodes.filter((node) => typedData.childNodes.includes(node.id));
+  const isCollapsed = typedData.collapsed ?? false;
 
   const handleLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setLabel(e.target.value);
@@ -40,44 +42,46 @@ function GroupNode({ id, data, selected }: NodeProps) {
     toggleNodeCollapse(id);
   }, [id, toggleNodeCollapse]);
 
-  const isCollapsed = typedData.collapsed ?? false;
-
   return (
     <div
       className={`
         relative bg-white rounded-xl shadow-lg border-2
         ${selected ? 'border-gray-400 shadow-xl' : 'border-gray-200'}
         transition-all duration-200 hover:shadow-xl
-        w-full h-full
+        w-full
       `}
       style={{
-        minWidth: '560px',
-        minHeight: '300px'
+        width: '560px',
+        height: isCollapsed ? '80px' : '300px',
+        minHeight: isCollapsed ? '80px' : '300px',
+        outline: 'none',
+        borderColor: selected ? 'rgb(156 163 175)' : 'rgb(229 231 235)'
       }}
     >
       {/* Node Resizer */}
       <NodeResizer
         isVisible={selected}
         minWidth={560}
-        minHeight={300}
+        minHeight={isCollapsed ? 80 : 300}
         handleClassName="!w-3 !h-3 !bg-gray-500 !border-2 !border-white !rounded-full"
+        lineStyle={{ display: 'none' }}
       />
       
-      {/* Handles for connections - Only visible when selected */}
+      {/* Handles for connections - Always rendered but only visible when selected */}
       {/* Left side - both source and target */}
       <Handle
         type="target"
         position={Position.Left}
         id="left"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ left: '-20px' }}
+        style={{ left: '-5px' }}
       />
       <Handle
         type="source"
         position={Position.Left}
         id="left-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ left: '-20px' }}
+        style={{ left: '-5px' }}
       />
       
       {/* Right side - both source and target */}
@@ -86,14 +90,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         position={Position.Right}
         id="right"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ right: '-20px' }}
+        style={{ right: '-5px' }}
       />
       <Handle
         type="source"
         position={Position.Right}
         id="right-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ right: '-20px' }}
+        style={{ right: '-5px' }}
       />
       
       {/* Top side - both source and target */}
@@ -102,14 +106,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         position={Position.Top}
         id="top"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ top: '-20px' }}
+        style={{ top: '-5px' }}
       />
       <Handle
         type="source"
         position={Position.Top}
         id="top-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ top: '-20px' }}
+        style={{ top: '-5px' }}
       />
       
       {/* Bottom side - both source and target */}
@@ -118,14 +122,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         position={Position.Bottom}
         id="bottom"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ bottom: '-20px' }}
+        style={{ bottom: '-5px' }}
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ bottom: '-20px' }}
+        style={{ bottom: '-5px' }}
       />
 
       {/* Header */}
@@ -186,18 +190,36 @@ function GroupNode({ id, data, selected }: NodeProps) {
 
       {/* Content - only show when not collapsed */}
       {!isCollapsed && childNodes.length > 0 && (
-        <div className="px-4 pb-4 space-y-2">
-          {childNodes.map((node) => (
+        <div className="nodrag nopan px-4 pb-4 space-y-2">
+          {childNodes.map((node) => {
+            const handleDragStart = (e: React.DragEvent) => {
+              // Stop propagation to prevent React Flow from dragging the group node
+              e.stopPropagation();
+              e.dataTransfer.setData('application/reactflow-node', node.id);
+              e.dataTransfer.setData('application/reactflow-group', id);
+              e.dataTransfer.effectAllowed = 'move';
+            };
+
+            const handleMouseDown = (e: React.MouseEvent) => {
+              // Stop propagation to prevent React Flow from selecting/dragging the group
+              e.stopPropagation();
+            };
+
+            return (
             <div
               key={node.id}
-              className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg text-sm"
+                draggable
+                onDragStart={handleDragStart}
+                onMouseDown={handleMouseDown}
+                className="nodrag nopan flex items-center gap-2 p-2 bg-gray-50 rounded-lg text-sm cursor-move hover:bg-gray-100 transition-colors"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
               <span className="text-gray-700 truncate">
                 {node.data.label || 'Untitled'}
               </span>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

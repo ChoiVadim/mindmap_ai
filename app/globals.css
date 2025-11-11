@@ -130,6 +130,19 @@ body {
   background: #f9fafb !important;
 }
 
+/* Remove outline from React Flow nodes */
+.react-flow__node {
+  outline: none !important;
+}
+
+.react-flow__node:focus {
+  outline: none !important;
+}
+
+.react-flow__node:focus-visible {
+  outline: none !important;
+}
+
 .react-flow__background {
   background: #f9fafb !important;
 }
@@ -183,4 +196,14 @@ body {
 .dark .bn-block-content blockquote {
   border-left-color: #3b82f6;
   color: #9ca3af;
+}
+
+.react-flow__node-group {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border-color: transparent !important;
 }

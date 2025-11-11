@@ -1,12 +1,12 @@
 'use client';
 
 import { memo, useState, useCallback } from 'react';
-import { NodeProps } from '@xyflow/react';
+import { NodeProps, NodeResizer } from '@xyflow/react';
 import { Type, Trash2 } from 'lucide-react';
 import { TextLabelData } from '@/types/canvas';
 import { useCanvasStore } from '@/store/canvas-store';
 
-function TextLabelNode({ id, data, selected }: NodeProps) {
+function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
   const typedData = data as TextLabelData;
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(typedData.label || '');
@@ -33,11 +33,24 @@ function TextLabelNode({ id, data, selected }: NodeProps) {
         relative bg-transparent rounded-lg border-2 border-dashed
         ${selected ? 'border-gray-400' : 'border-gray-300'}
         transition-all duration-200
-        min-w-[300px] min-h-[120px] group
+        w-full h-full group
       `}
+      style={{
+        minWidth: 300,
+        minHeight: 50,
+      }}
     >
+      {/* Node Resizer */}
+      <NodeResizer
+        isVisible={selected}
+        minWidth={300}
+        minHeight={50}
+        handleClassName="!w-3 !h-3 !bg-gray-400 !border-2 !border-white !rounded-full"
+        lineStyle={{ display: 'none' }}
+      />
+
       <div className="flex items-center gap-2 p-2">
-        <Type className="w-4 h-4 text-gray-400" />
+        <Type className="w-4 h-4 text-gray-400 flex-shrink-0" />
         {isEditing ? (
           <input
             autoFocus
@@ -59,7 +72,7 @@ function TextLabelNode({ id, data, selected }: NodeProps) {
         )}
         <button
           onClick={handleDelete}
-          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded transition-all"
+          className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded transition-all flex-shrink-0"
         >
           <Trash2 className="w-3 h-3 text-red-500" />
         </button>

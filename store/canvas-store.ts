@@ -7,7 +7,7 @@ import {
   NodeChange,
   EdgeChange,
 } from '@xyflow/react';
-import { CanvasNode, CanvasEdge, NodeData, NodeType } from '@/types/canvas';
+import { CanvasNode, CanvasEdge, NodeData, NodeType, GroupNodeData } from '@/types/canvas';
 
 interface CanvasStore {
   nodes: CanvasNode[];
@@ -86,11 +86,20 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
   addNode: (type, position) => {
     console.log('📝 addNode called with type:', type, 'position:', position);
+    
+    // Set default dimensions for nodes that support resizing
+    const defaultDimensions: Record<string, { width: number; height: number }> = {
+      textLabel: { width: 300, height: 50 },
+    };
+    
+    const dimensions = defaultDimensions[type];
+    
     const newNode: CanvasNode = {
       id: getNodeId(),
       type,
       position,
       data: createNodeData(type),
+      ...(dimensions && { width: dimensions.width, height: dimensions.height }),
     };
     
     console.log('✅ Creating node:', newNode.id);
@@ -136,24 +145,47 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
   addNoteToGroup: (noteId, groupId) => {
     const nodes = get().nodes;
+    const edges = get().edges;
     const groupNode = nodes.find((n) => n.id === groupId);
+    const noteNode = nodes.find((n) => n.id === noteId);
     
-    if (groupNode && groupNode.data.type === 'group') {
-      const updatedChildNodes = [...groupNode.data.childNodes, noteId];
+    if (groupNode && groupNode.data.type === 'group' && noteNode) {
+      const groupData = groupNode.data as GroupNodeData;
+      
+      // Don't add if already in group
+      if (groupData.childNodes.includes(noteId)) {
+        return;
+      }
+      
+      const updatedChildNodes = [...groupData.childNodes, noteId];
+      
+      // Remove all edges connected to this note (both incoming and outgoing)
+      const updatedEdges = edges.filter(
+        (edge) => edge.source !== noteId && edge.target !== noteId
+      );
       
       set({
-        nodes: nodes.map((node) =>
-          node.id === groupId
-            ? {
+        nodes: nodes.map((node) => {
+          if (node.id === groupId) {
+            return {
                 ...node,
                 data: {
                   ...node.data,
                   childNodes: updatedChildNodes,
                   itemCount: updatedChildNodes.length,
                 } as NodeData,
-              }
-            : node
-        ),
+            };
+          }
+          // Hide the node that's being added to the group
+          if (node.id === noteId) {
+            return {
+              ...node,
+              hidden: true,
+            };
+          }
+          return node;
+        }),
+        edges: updatedEdges,
       });
     }
   },
@@ -161,23 +193,41 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   removeNoteFromGroup: (noteId, groupId) => {
     const nodes = get().nodes;
     const groupNode = nodes.find((n) => n.id === groupId);
+    const noteNode = nodes.find((n) => n.id === noteId);
     
-    if (groupNode && groupNode.data.type === 'group') {
-      const updatedChildNodes = groupNode.data.childNodes.filter((id) => id !== noteId);
+    if (groupNode && groupNode.data.type === 'group' && noteNode) {
+      const groupData = groupNode.data as GroupNodeData;
+      const updatedChildNodes = groupData.childNodes.filter((id) => id !== noteId);
+      
+      // Calculate position relative to group center for the dropped node
+      const groupCenterX = groupNode.position.x + 280; // group width / 2
+      const groupCenterY = groupNode.position.y + 150; // group height / 2
       
       set({
-        nodes: nodes.map((node) =>
-          node.id === groupId
-            ? {
+        nodes: nodes.map((node) => {
+          if (node.id === groupId) {
+            return {
                 ...node,
                 data: {
                   ...node.data,
                   childNodes: updatedChildNodes,
                   itemCount: updatedChildNodes.length,
                 } as NodeData,
-              }
-            : node
-        ),
+            };
+          }
+          // Show the node and position it near the group
+          if (node.id === noteId) {
+            return {
+              ...node,
+              hidden: false,
+              position: {
+                x: groupCenterX - 200, // Offset to the left of group center
+                y: groupCenterY - 200, // Offset above group center
+              },
+            };
+          }
+          return node;
+        }),
       });
     }
   },
