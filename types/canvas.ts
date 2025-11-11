@@ -1,13 +1,17 @@
 import { Node, Edge } from '@xyflow/react';
 
 // Node types for the canvas
-export type NodeType = 'note' | 'prompt' | 'group' | 'textLabel';
+export type NodeType = 'note' | 'prompt' | 'group' | 'textLabel' | 'agent';
+
+// AI Provider types
+export type AIProvider = 'openai' | 'gemini' | 'claude';
 
 // Base node data interface
 export interface BaseNodeData {
   label: string;
   content: string;
   color?: string;
+  collapsed?: boolean; // Whether the node is collapsed (showing only header)
   [key: string]: any; // Allow additional properties
 }
 
@@ -35,12 +39,21 @@ export interface TextLabelData extends BaseNodeData {
   fontSize?: number;
 }
 
+// Agent node - defines AI provider, model, and system prompt
+export interface AgentNodeData extends BaseNodeData {
+  type: 'agent';
+  provider: AIProvider;
+  model?: string;
+  systemPrompt: string;
+}
+
 // Union type for all node data
 export type NodeData = 
   | NoteNodeData 
   | PromptNodeData 
   | GroupNodeData 
-  | TextLabelData;
+  | TextLabelData
+  | AgentNodeData;
 
 // Custom node type extending React Flow's Node
 export type CanvasNode = Node<NodeData>;
@@ -59,5 +72,6 @@ export interface AIContext {
   promptNodeId: string;
   contextNodes: CanvasNode[];
   promptContent: string;
+  agentNode?: CanvasNode; // Connected agent node (if any)
 }
 

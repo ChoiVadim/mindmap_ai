@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
-import { Sparkles, Play, Trash2, Loader2 } from 'lucide-react';
+import { Sparkles, Play, Trash2, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -13,6 +13,9 @@ function PromptNode({ id, data, selected }: NodeProps) {
   const typedData = data as PromptNodeData;
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const deleteNode = useCanvasStore((state) => state.deleteNode);
+  const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
+  const [isEditingLabel, setIsEditingLabel] = useState(false);
+  const [label, setLabel] = useState(typedData.label || 'Prompt');
 
   // Create editor instance with markdown support
   const editor = useCreateBlockNote({
@@ -41,6 +44,13 @@ function PromptNode({ id, data, selected }: NodeProps) {
       },
     },
   });
+
+  // Update label when data changes
+  useEffect(() => {
+    if (typedData.label !== undefined) {
+      setLabel(typedData.label || 'Prompt');
+    }
+  }, [typedData.label]);
 
   // Load initial markdown content and update when content changes
   useEffect(() => {
@@ -101,6 +111,22 @@ function PromptNode({ id, data, selected }: NodeProps) {
     deleteNode(id);
   }, [id, deleteNode]);
 
+  const handleLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLabel(e.target.value);
+  }, []);
+
+  const handleLabelBlur = useCallback(() => {
+    setIsEditingLabel(false);
+    updateNodeData(id, { label: label || 'Prompt' });
+  }, [id, label, updateNodeData]);
+
+  const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleNodeCollapse(id);
+  }, [id, toggleNodeCollapse]);
+
+  const isCollapsed = typedData.collapsed ?? false;
+
   const nodes = useCanvasStore((state) => state.nodes);
   const edges = useCanvasStore((state) => state.edges);
   const setNodeRunning = useCanvasStore((state) => state.setNodeRunning);
@@ -128,7 +154,7 @@ function PromptNode({ id, data, selected }: NodeProps) {
       const aiContext = gatherAIContext(id, nodes, edges);
       
       // Generate AI response
-      const result = await generateAIResponse(currentContent, aiContext.contextNodes);
+      const result = await generateAIResponse(currentContent, aiContext.contextNodes, aiContext.agentNode);
       
       // Check if there's a note connected as output (target from this prompt)
       const outgoingEdges = edges.filter((edge) => edge.source === id);
@@ -172,14 +198,14 @@ function PromptNode({ id, data, selected }: NodeProps) {
       `}
       style={{
         minWidth: '400px',
-        minHeight: '300px'
+        minHeight: isCollapsed ? 'auto' : '200px'
       }}
     >
       {/* Node Resizer */}
       <NodeResizer
         isVisible={selected}
         minWidth={400}
-        minHeight={300}
+        minHeight={200}
         handleClassName="!w-3 !h-3 !bg-purple-500 !border-2 !border-white !rounded-full"
       />
       
@@ -201,11 +227,32 @@ function PromptNode({ id, data, selected }: NodeProps) {
 
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-purple-100">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-purple-500" />
-          <span className="text-sm font-semibold text-purple-700">Prompt</span>
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Sparkles className="w-4 h-4 text-purple-500 flex-shrink-0" />
+          {isEditingLabel ? (
+            <input
+              autoFocus
+              value={label}
+              onChange={handleLabelChange}
+              onBlur={handleLabelBlur}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleLabelBlur();
+                }
+              }}
+              className="nodrag nopan text-sm font-semibold text-purple-700 bg-transparent border border-purple-300 rounded px-1 focus:outline-none focus:ring-1 focus:ring-purple-500 flex-1 min-w-0"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <span
+              onClick={() => setIsEditingLabel(true)}
+              className="text-sm font-semibold text-purple-700 cursor-text hover:text-purple-900 truncate"
+            >
+              {label || 'Prompt'}
+            </span>
+          )}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={handleRun}
             disabled={typedData.isRunning}
@@ -218,6 +265,17 @@ function PromptNode({ id, data, selected }: NodeProps) {
             )}
           </button>
           <button
+            onClick={handleToggleCollapse}
+            className="p-1 hover:bg-purple-100 rounded transition-colors"
+            title={isCollapsed ? 'Развернуть' : 'Свернуть'}
+          >
+            {isCollapsed ? (
+              <ChevronDown className="w-3 h-3 text-purple-600" />
+            ) : (
+              <ChevronUp className="w-3 h-3 text-purple-600" />
+            )}
+          </button>
+          <button
             onClick={handleDelete}
             className="p-1 hover:bg-red-50 rounded transition-colors"
           >
@@ -226,17 +284,19 @@ function PromptNode({ id, data, selected }: NodeProps) {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-3 flex-1 overflow-auto">
-        <div className="h-full nodrag nopan">
-          <BlockNoteView
-            editor={editor}
-            onChange={handleChange}
-            theme="light"
-            data-color-mode="light"
-          />
+      {/* Content - only show when not collapsed */}
+      {!isCollapsed && (
+        <div className="p-3 flex-1 overflow-auto">
+          <div className="h-full nodrag nopan">
+            <BlockNoteView
+              editor={editor}
+              onChange={handleChange}
+              theme="light"
+              data-color-mode="light"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

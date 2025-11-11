@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { StickyNote, Sparkles, Hash, Type, Save, Trash2 } from 'lucide-react';
+import { StickyNote, Sparkles, Hash, Type, Save, Trash2, Bot } from 'lucide-react';
 import { NodeType } from '@/types/canvas';
 
 interface ToolbarProps {
@@ -63,6 +63,13 @@ export default function Toolbar({ onSave, onClear }: ToolbarProps) {
       label: 'Text',
       description: 'Add label',
       color: 'gray',
+    },
+    {
+      type: 'agent' as NodeType,
+      icon: Bot,
+      label: 'Agent',
+      description: 'Add AI agent',
+      color: 'blue',
     },
   ];
 

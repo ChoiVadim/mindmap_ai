@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
-import { StickyNote, Trash2 } from 'lucide-react';
+import { StickyNote, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
@@ -13,6 +13,9 @@ function NoteNode({ id, data, selected }: NodeProps) {
   const typedData = data as NoteNodeData;
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const deleteNode = useCanvasStore((state) => state.deleteNode);
+  const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
+  const [isEditingLabel, setIsEditingLabel] = useState(false);
+  const [label, setLabel] = useState(typedData.label || 'Note');
 
   // Create editor instance with markdown support
   const editor = useCreateBlockNote({
@@ -41,6 +44,13 @@ function NoteNode({ id, data, selected }: NodeProps) {
       },
     },
   });
+
+  // Update label when data changes
+  useEffect(() => {
+    if (typedData.label !== undefined) {
+      setLabel(typedData.label || 'Note');
+    }
+  }, [typedData.label]);
 
   // Load initial markdown content and update when content changes
   useEffect(() => {
@@ -101,6 +111,22 @@ function NoteNode({ id, data, selected }: NodeProps) {
     deleteNode(id);
   }, [id, deleteNode]);
 
+  const handleLabelChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLabel(e.target.value);
+  }, []);
+
+  const handleLabelBlur = useCallback(() => {
+    setIsEditingLabel(false);
+    updateNodeData(id, { label: label || 'Note' });
+  }, [id, label, updateNodeData]);
+
+  const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleNodeCollapse(id);
+  }, [id, toggleNodeCollapse]);
+
+  const isCollapsed = typedData.collapsed ?? false;
+
   return (
     <div
       className={`
@@ -112,7 +138,7 @@ function NoteNode({ id, data, selected }: NodeProps) {
       style={{ 
         backgroundColor: typedData.color || '#ffffff',
         minWidth: '400px',
-        minHeight: '400px'
+        minHeight: isCollapsed ? 'auto' : '400px'
       }}
     >
       {/* Node Resizer */}
@@ -190,29 +216,65 @@ function NoteNode({ id, data, selected }: NodeProps) {
 
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-100 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <StickyNote className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-semibold text-gray-700">Note</span>
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <StickyNote className="w-4 h-4 text-blue-500 flex-shrink-0" />
+          {isEditingLabel ? (
+            <input
+              autoFocus
+              value={label}
+              onChange={handleLabelChange}
+              onBlur={handleLabelBlur}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleLabelBlur();
+                }
+              }}
+              className="nodrag nopan text-sm font-semibold text-gray-700 bg-transparent border border-blue-300 rounded px-1 focus:outline-none focus:ring-1 focus:ring-blue-500 flex-1 min-w-0"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <span
+              onClick={() => setIsEditingLabel(true)}
+              className="text-sm font-semibold text-gray-700 cursor-text hover:text-gray-900 truncate"
+            >
+              {label || 'Note'}
+            </span>
+          )}
         </div>
-        <button
-          onClick={handleDelete}
-          className="p-1 hover:bg-red-50 rounded transition-colors"
-        >
-          <Trash2 className="w-3 h-3 text-red-500" />
-        </button>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={handleToggleCollapse}
+            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            title={isCollapsed ? 'Развернуть' : 'Свернуть'}
+          >
+            {isCollapsed ? (
+              <ChevronDown className="w-3 h-3 text-gray-600" />
+            ) : (
+              <ChevronUp className="w-3 h-3 text-gray-600" />
+            )}
+          </button>
+          <button
+            onClick={handleDelete}
+            className="p-1 hover:bg-red-50 rounded transition-colors"
+          >
+            <Trash2 className="w-3 h-3 text-red-500" />
+          </button>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 p-3 min-h-[200px] overflow-auto">
-        <div className="h-full nodrag nopan">
-          <BlockNoteView
-            editor={editor}
-            onChange={handleChange}
-            theme="light"
-            data-color-mode="light"
-          />
+      {/* Content - only show when not collapsed */}
+      {!isCollapsed && (
+        <div className="flex-1 p-3 min-h-[200px] overflow-auto">
+          <div className="h-full nodrag nopan">
+            <BlockNoteView
+              editor={editor}
+              onChange={handleChange}
+              theme="light"
+              data-color-mode="light"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

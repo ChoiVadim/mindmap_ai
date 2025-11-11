@@ -34,6 +34,9 @@ interface CanvasStore {
   // AI operations
   setNodeRunning: (nodeId: string, isRunning: boolean) => void;
   createNoteNode: (promptNodeId: string, content: string) => string;
+  
+  // Collapse operations
+  toggleNodeCollapse: (nodeId: string) => void;
 }
 
 const createNodeData = (type: NodeType): NodeData => {
@@ -51,6 +54,8 @@ const createNodeData = (type: NodeType): NodeData => {
       return { ...baseData, type: 'group', label: 'New Group', childNodes: [], itemCount: 0 };
     case 'textLabel':
       return { ...baseData, type: 'textLabel', label: 'Label', fontSize: 16 };
+    case 'agent':
+      return { ...baseData, type: 'agent', label: 'AI Agent', provider: 'openai' as const, model: 'gpt-4o', systemPrompt: '' };
     default:
       return { ...baseData, type: 'note', label: 'New Note' };
   }
@@ -216,15 +221,16 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       },
     };
 
-    // Create edge from prompt to note
-    const newEdge = {
+    // Create edge from prompt to note with default options
+    const newEdge: CanvasEdge = {
       id: `${promptNodeId}-${noteNodeId}`,
       source: promptNodeId,
       target: noteNodeId,
-      type: 'smoothstep',
-      animated: true,
+      type: 'default',
+      animated: false,
+      style: { strokeWidth: 2, stroke: '#94a3b8' },
       markerEnd: {
-        type: 'arrowclosed',
+        type: 'arrow' as const,
         width: 20,
         height: 20,
         color: '#94a3b8',
@@ -237,6 +243,16 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     });
 
     return noteNodeId;
+  },
+
+  toggleNodeCollapse: (nodeId) => {
+    set({
+      nodes: get().nodes.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, collapsed: !node.data.collapsed } as NodeData }
+          : node
+      ),
+    });
   },
 }));
 

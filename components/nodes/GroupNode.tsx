@@ -12,11 +12,11 @@ function GroupNode({ id, data, selected }: NodeProps) {
   const typedData = data as GroupNodeData;
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(typedData.label || '');
-  const [isExpanded, setIsExpanded] = useState(true);
   const [color] = useState(typedData.color || COLORS[Math.floor(Math.random() * COLORS.length)]);
   
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const deleteNode = useCanvasStore((state) => state.deleteNode);
+  const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
   const nodes = useCanvasStore((state) => state.nodes);
 
   const childNodes = nodes.filter((node) => typedData.childNodes.includes(node.id));
@@ -34,6 +34,13 @@ function GroupNode({ id, data, selected }: NodeProps) {
     e.stopPropagation();
     deleteNode(id);
   }, [id, deleteNode]);
+
+  const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleNodeCollapse(id);
+  }, [id, toggleNodeCollapse]);
+
+  const isCollapsed = typedData.collapsed ?? false;
 
   return (
     <div
@@ -158,13 +165,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         {/* Actions */}
         <div className="flex items-center gap-1">
           <button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={handleToggleCollapse}
             className="p-1 hover:bg-gray-100 rounded transition-colors"
+            title={isCollapsed ? 'Развернуть' : 'Свернуть'}
           >
-            {isExpanded ? (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
-            ) : (
+            {isCollapsed ? (
               <ChevronDown className="w-4 h-4 text-gray-600" />
+            ) : (
+              <ChevronUp className="w-4 h-4 text-gray-600" />
             )}
           </button>
           <button
@@ -176,8 +184,8 @@ function GroupNode({ id, data, selected }: NodeProps) {
         </div>
       </div>
 
-      {/* Expanded content - show child notes */}
-      {isExpanded && childNodes.length > 0 && (
+      {/* Content - only show when not collapsed */}
+      {!isCollapsed && childNodes.length > 0 && (
         <div className="px-4 pb-4 space-y-2">
           {childNodes.map((node) => (
             <div

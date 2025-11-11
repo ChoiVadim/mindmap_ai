@@ -18,6 +18,7 @@ import NoteNode from './nodes/NoteNode';
 import PromptNode from './nodes/PromptNode';
 import GroupNode from './nodes/GroupNode';
 import TextLabelNode from './nodes/TextLabelNode';
+import AgentNode from './nodes/AgentNode';
 import Toolbar from './Toolbar';
 import TopLeftBar from './TopLeftBar';
 import TopRightBar from './TopRightBar';
@@ -28,6 +29,7 @@ const nodeTypes: any = {
   prompt: PromptNode,
   group: GroupNode,
   textLabel: TextLabelNode,
+  agent: AgentNode,
 };
 
 export default function Canvas() {
@@ -92,6 +94,7 @@ export default function Canvas() {
         prompt: { width: 400, height: 300 },
         group: { width: 560, height: 300 },
         textLabel: { width: 300, height: 120 },
+        agent: { width: 400, height: 400 },
       };
 
       const dimensions = nodeDimensions[type] || { width: 400, height: 400 };
@@ -191,6 +194,8 @@ export default function Canvas() {
         return '#A855F7'; // purple
       case 'group':
         return '#6B7280'; // gray
+      case 'agent':
+        return '#0EA5E9'; // cyan/blue
       default:
         return '#9CA3AF'; // gray
     }
