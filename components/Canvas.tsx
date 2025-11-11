@@ -45,6 +45,10 @@ export default function Canvas() {
     addNoteToGroup,
     removeNoteFromGroup,
     addNode,
+    copySelectedNodes,
+    pasteNodes,
+    undo,
+    redo,
   } = useCanvasStore();
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -249,6 +253,74 @@ export default function Canvas() {
         return '#9CA3AF'; // gray
     }
   }, []);
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Don't handle shortcuts when typing in input fields
+      const activeElement = document.activeElement as HTMLElement;
+      const isEditingText = activeElement?.getAttribute('contenteditable') === 'true' ||
+                           activeElement?.tagName === 'INPUT' ||
+                           activeElement?.tagName === 'TEXTAREA';
+      
+      if (isEditingText) {
+        // Allow default behavior for text inputs (but still handle Ctrl+Z for undo in inputs)
+        if (event.key === 'z' && (event.metaKey || event.ctrlKey) && !event.shiftKey) {
+          return; // Let browser handle undo in text inputs
+        }
+        if (event.key === 'y' && (event.metaKey || event.ctrlKey)) {
+          return; // Let browser handle redo in text inputs
+        }
+        if ((event.key === 'c' || event.key === 'v') && (event.metaKey || event.ctrlKey)) {
+          return; // Let browser handle copy/paste in text inputs
+        }
+      }
+
+      // Ctrl+C or Cmd+C - Copy selected nodes
+      if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+        event.preventDefault();
+        const selectedNodes = nodes.filter((node) => node.selected && !node.hidden);
+        if (selectedNodes.length > 0) {
+          copySelectedNodes(selectedNodes.map((node) => node.id));
+        }
+        return;
+      }
+
+      // Ctrl+V or Cmd+V - Paste nodes
+      if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
+        event.preventDefault();
+        // Paste at viewport center
+        const viewportCenter = screenToFlowPosition({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+        });
+        pasteNodes(viewportCenter);
+        return;
+      }
+
+      // Ctrl+Z or Cmd+Z - Undo
+      if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+        event.preventDefault();
+        undo();
+        return;
+      }
+
+      // Ctrl+Shift+Z or Cmd+Shift+Z or Ctrl+Y or Cmd+Y - Redo
+      if (
+        ((event.ctrlKey || event.metaKey) && event.key === 'z' && event.shiftKey) ||
+        ((event.ctrlKey || event.metaKey) && event.key === 'y')
+      ) {
+        event.preventDefault();
+        redo();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [nodes, copySelectedNodes, pasteNodes, undo, redo, screenToFlowPosition]);
 
   return (
     <div 

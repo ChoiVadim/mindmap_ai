@@ -37,6 +37,17 @@ interface CanvasStore {
   
   // Collapse operations
   toggleNodeCollapse: (nodeId: string) => void;
+  
+  // Copy/Paste operations
+  copySelectedNodes: (selectedNodeIds: string[]) => void;
+  pasteNodes: (position?: { x: number; y: number }) => void;
+  
+  // Undo/Redo operations
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+  saveHistory: () => void;
 }
 
 const createNodeData = (type: NodeType): NodeData => {
@@ -80,9 +91,45 @@ const updateNodeIdCounter = (nodes: CanvasNode[]) => {
   nodeId = maxId + 1;
 };
 
-export const useCanvasStore = create<CanvasStore>((set, get) => ({
-  nodes: [],
-  edges: [],
+// History management for undo/redo
+interface HistoryState {
+  nodes: CanvasNode[];
+  edges: CanvasEdge[];
+}
+
+const MAX_HISTORY_SIZE = 50;
+
+export const useCanvasStore = create<CanvasStore>((set, get) => {
+  // History state (not in Zustand store to avoid circular dependencies)
+  let history: HistoryState[] = [];
+  let historyIndex = -1;
+  let copiedNodes: { nodes: CanvasNode[]; edges: CanvasEdge[] } | null = null;
+
+  const saveHistory = () => {
+    const currentState: HistoryState = {
+      nodes: JSON.parse(JSON.stringify(get().nodes)),
+      edges: JSON.parse(JSON.stringify(get().edges)),
+    };
+
+    // Remove any future history if we're not at the end
+    if (historyIndex < history.length - 1) {
+      history = history.slice(0, historyIndex + 1);
+    }
+
+    // Add new state to history
+    history.push(currentState);
+
+    // Limit history size
+    if (history.length > MAX_HISTORY_SIZE) {
+      history.shift();
+    } else {
+      historyIndex++;
+    }
+  };
+
+  return {
+    nodes: [],
+    edges: [],
 
   addNode: (type, position) => {
     console.log('📝 addNode called with type:', type, 'position:', position);
@@ -104,6 +151,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
     
     console.log('✅ Creating node:', newNode.id);
     set({ nodes: [...get().nodes, newNode] });
+    saveHistory();
   },
 
   updateNodeData: (nodeId, data) => {
@@ -123,24 +171,42 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
         (edge) => edge.source !== nodeId && edge.target !== nodeId
       ),
     });
+    saveHistory();
   },
 
   onNodesChange: (changes) => {
+    // Check if any nodes are being removed
+    const hasRemovals = changes.some((change) => change.type === 'remove');
+    
     set({
       nodes: applyNodeChanges(changes, get().nodes),
     });
+    
+    // Save history only when nodes are removed (not on every position change)
+    if (hasRemovals) {
+      saveHistory();
+    }
   },
 
   onEdgesChange: (changes) => {
+    // Check if any edges are being removed
+    const hasRemovals = changes.some((change) => change.type === 'remove');
+    
     set({
       edges: applyEdgeChanges(changes, get().edges),
     });
+    
+    // Save history when edges are removed
+    if (hasRemovals) {
+      saveHistory();
+    }
   },
 
   onConnect: (connection) => {
     set({
       edges: addEdge(connection, get().edges),
     });
+    saveHistory();
   },
 
   addNoteToGroup: (noteId, groupId) => {
@@ -235,10 +301,22 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   loadCanvas: (nodes, edges) => {
     updateNodeIdCounter(nodes);
     set({ nodes, edges });
+    // Initialize history with loaded state
+    history = [{
+      nodes: JSON.parse(JSON.stringify(nodes)),
+      edges: JSON.parse(JSON.stringify(edges)),
+    }];
+    historyIndex = 0;
   },
 
   clearCanvas: () => {
     set({ nodes: [], edges: [] });
+    // Reset history after clearing
+    history = [{
+      nodes: [],
+      edges: [],
+    }];
+    historyIndex = 0;
   },
 
   setNodeRunning: (nodeId, isRunning) => {
@@ -304,5 +382,149 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       ),
     });
   },
-}));
+
+  copySelectedNodes: (selectedNodeIds) => {
+    if (selectedNodeIds.length === 0) return;
+
+    const nodes = get().nodes;
+    const edges = get().edges;
+
+    // Get selected nodes
+    const selectedNodes = nodes.filter((node) => 
+      selectedNodeIds.includes(node.id) && !node.hidden
+    );
+
+    if (selectedNodes.length === 0) return;
+
+    // Get edges that connect selected nodes (only edges between selected nodes)
+    const selectedEdges = edges.filter((edge) =>
+      selectedNodeIds.includes(edge.source) && selectedNodeIds.includes(edge.target)
+    );
+
+    // Store copied nodes and edges
+    copiedNodes = {
+      nodes: JSON.parse(JSON.stringify(selectedNodes)),
+      edges: JSON.parse(JSON.stringify(selectedEdges)),
+    };
+  },
+
+  pasteNodes: (position) => {
+    if (!copiedNodes || copiedNodes.nodes.length === 0) return;
+
+    const nodes = get().nodes;
+    const edges = get().edges;
+
+    // Calculate offset for pasted nodes
+    // If position is provided, use it; otherwise offset by 50px
+    const offsetX = position ? position.x : 50;
+    const offsetY = position ? position.y : 50;
+
+    // Calculate the center of copied nodes
+    const copiedBounds = copiedNodes.nodes.reduce(
+      (bounds, node) => {
+        const nodeWidth = (node.width as number) || 400;
+        const nodeHeight = (node.height as number) || 400;
+        return {
+          minX: Math.min(bounds.minX, node.position.x),
+          minY: Math.min(bounds.minY, node.position.y),
+          maxX: Math.max(bounds.maxX, node.position.x + nodeWidth),
+          maxY: Math.max(bounds.maxY, node.position.y + nodeHeight),
+        };
+      },
+      {
+        minX: Infinity,
+        minY: Infinity,
+        maxX: -Infinity,
+        maxY: -Infinity,
+      }
+    );
+
+    const copiedCenterX = (copiedBounds.minX + copiedBounds.maxX) / 2;
+    const copiedCenterY = (copiedBounds.minY + copiedBounds.maxY) / 2;
+
+    // Create new nodes with new IDs
+    const idMap = new Map<string, string>();
+    const newNodes: CanvasNode[] = copiedNodes.nodes.map((node) => {
+      const newNodeId = getNodeId();
+      idMap.set(node.id, newNodeId);
+
+      // Calculate new position relative to the paste position
+      const nodeWidth = (node.width as number) || 400;
+      const nodeHeight = (node.height as number) || 400;
+      const nodeCenterX = node.position.x + nodeWidth / 2;
+      const nodeCenterY = node.position.y + nodeHeight / 2;
+      
+      const offsetFromCenterX = nodeCenterX - copiedCenterX;
+      const offsetFromCenterY = nodeCenterY - copiedCenterY;
+
+      return {
+        ...node,
+        id: newNodeId,
+        position: {
+          x: offsetX + offsetFromCenterX - nodeWidth / 2,
+          y: offsetY + offsetFromCenterY - nodeHeight / 2,
+        },
+        selected: false, // Deselect pasted nodes
+      };
+    });
+
+    // Create new edges with new IDs
+    const newEdges: CanvasEdge[] = copiedNodes.edges.map((edge) => ({
+      ...edge,
+      id: `${idMap.get(edge.source)}-${idMap.get(edge.target)}`,
+      source: idMap.get(edge.source)!,
+      target: idMap.get(edge.target)!,
+    }));
+
+    // Add new nodes and edges
+    set({
+      nodes: [...nodes, ...newNodes],
+      edges: [...edges, ...newEdges],
+    });
+    saveHistory();
+  },
+
+  undo: () => {
+    if (historyIndex <= 0) return; // Can't undo if no history or at first state
+
+    historyIndex--;
+    const previousState = history[historyIndex];
+    
+    if (previousState) {
+      updateNodeIdCounter(previousState.nodes);
+      set({
+        nodes: JSON.parse(JSON.stringify(previousState.nodes)),
+        edges: JSON.parse(JSON.stringify(previousState.edges)),
+      });
+    }
+  },
+
+  redo: () => {
+    if (historyIndex >= history.length - 1) return; // Can't redo if at latest state
+
+    historyIndex++;
+    const nextState = history[historyIndex];
+    
+    if (nextState) {
+      updateNodeIdCounter(nextState.nodes);
+      set({
+        nodes: JSON.parse(JSON.stringify(nextState.nodes)),
+        edges: JSON.parse(JSON.stringify(nextState.edges)),
+      });
+    }
+  },
+
+  canUndo: () => {
+    return historyIndex > 0;
+  },
+
+  canRedo: () => {
+    return historyIndex < history.length - 1;
+  },
+
+  saveHistory: () => {
+    saveHistory();
+  },
+  };
+});
 
