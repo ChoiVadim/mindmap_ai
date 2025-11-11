@@ -37,7 +37,9 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
   isLoading: false,
 
   setBoards: (boards) => {
-    set({ boards });
+    // Ensure boards is always an array
+    const boardsArray = Array.isArray(boards) ? boards : [];
+    set({ boards: boardsArray });
   },
 
   setCurrentBoard: (boardId) => {

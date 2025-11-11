@@ -20,7 +20,23 @@ async function readBoards(): Promise<Board[]> {
   try {
     await ensureDataDirectory();
     const fileContent = await fs.readFile(BOARDS_FILE_PATH, 'utf-8');
-    return JSON.parse(fileContent);
+    const parsed = JSON.parse(fileContent);
+    
+    // Handle case where file contains object with "boards" property
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      if (Array.isArray(parsed.boards)) {
+        return parsed.boards;
+      }
+      return [];
+    }
+    
+    // If it's already an array, return it
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    
+    // Fallback to empty array
+    return [];
   } catch (error: any) {
     // If file doesn't exist, return empty array
     if (error.code === 'ENOENT') {

@@ -41,19 +41,22 @@ export default function TopLeftBar() {
         const response = await fetch('/api/boards');
         if (response.ok) {
           const loadedBoards = await response.json();
-          setBoards(loadedBoards);
+          
+          // Ensure loadedBoards is an array
+          const boardsArray = Array.isArray(loadedBoards) ? loadedBoards : [];
+          setBoards(boardsArray);
 
           // Restore current board from localStorage or use first board
           const savedBoardId = localStorage.getItem('mindcanvas-current-board-id');
-          if (savedBoardId && loadedBoards.some((b: any) => b.id === savedBoardId)) {
+          if (savedBoardId && boardsArray.some((b: any) => b.id === savedBoardId)) {
             setCurrentBoard(savedBoardId);
-            const board = loadedBoards.find((b: any) => b.id === savedBoardId);
+            const board = boardsArray.find((b: any) => b.id === savedBoardId);
             if (board) {
               loadCanvas(board.nodes || [], board.edges || []);
             }
-          } else if (loadedBoards.length > 0) {
-            setCurrentBoard(loadedBoards[0].id);
-            loadCanvas(loadedBoards[0].nodes || [], loadedBoards[0].edges || []);
+          } else if (boardsArray.length > 0) {
+            setCurrentBoard(boardsArray[0].id);
+            loadCanvas(boardsArray[0].nodes || [], boardsArray[0].edges || []);
           } else {
             // Create default board if none exist
             const defaultBoard = await createBoard('Main Board');
@@ -62,6 +65,8 @@ export default function TopLeftBar() {
         }
       } catch (error) {
         console.error('Error loading boards:', error);
+        // Set empty array on error to prevent crashes
+        setBoards([]);
       } finally {
         setLoading(false);
       }
@@ -219,7 +224,7 @@ export default function TopLeftBar() {
                 className="absolute top-full left-0 mt-2 w-72 rounded-lg shadow-xl py-1 z-20 bg-popover border border-border"
               >
                 {/* Board list */}
-                {boards.map((board) => (
+                {Array.isArray(boards) && boards.map((board) => (
                   <div
                     key={board.id}
                     className="group"

@@ -56,20 +56,71 @@ export default function Canvas() {
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useReactFlow();
+  
+  // Track if we're currently loading to prevent saves during load
+  const isLoadingRef = useRef(false);
+  const previousNodesRef = useRef<string>('');
+  const previousEdgesRef = useRef<string>('');
 
   // Save canvas to current board whenever nodes or edges change
   useEffect(() => {
-    if (currentBoardId) {
-      // Debounce saves to avoid too many API calls
-      const timeoutId = setTimeout(() => {
-        updateBoardData(currentBoardId, nodes, edges).catch((error) => {
-          console.error('Error saving board data:', error);
-        });
-      }, 1000); // Save 1 second after last change
-
-      return () => clearTimeout(timeoutId);
+    if (!currentBoardId || isLoadingRef.current) {
+      return;
     }
+
+    // Serialize nodes and edges to compare
+    const nodesString = JSON.stringify(nodes);
+    const edgesString = JSON.stringify(edges);
+
+    // Only save if nodes or edges actually changed
+    if (nodesString === previousNodesRef.current && edgesString === previousEdgesRef.current) {
+      return;
+    }
+
+    // Update refs
+    previousNodesRef.current = nodesString;
+    previousEdgesRef.current = edgesString;
+
+    // Debounce saves to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      updateBoardData(currentBoardId, nodes, edges).catch((error) => {
+        console.error('Error saving board data:', error);
+      });
+    }, 1000); // Save 1 second after last change
+
+    return () => clearTimeout(timeoutId);
   }, [nodes, edges, currentBoardId, updateBoardData]);
+
+  // Track loading state from board store
+  const { isLoading } = useBoardStore();
+  const prevLoadingRef = useRef(isLoading);
+  const nodesEdgesRef = useRef({ nodes, edges });
+  
+  // Keep refs in sync with current nodes/edges
+  useEffect(() => {
+    nodesEdgesRef.current = { nodes, edges };
+  }, [nodes, edges]);
+  
+  useEffect(() => {
+    const wasLoading = prevLoadingRef.current;
+    isLoadingRef.current = isLoading;
+    
+    if (isLoading) {
+      // Reset previous refs when loading starts
+      previousNodesRef.current = '';
+      previousEdgesRef.current = '';
+    } else if (wasLoading && !isLoading) {
+      // When loading finishes (transition from true to false), update refs to current state
+      // This prevents immediate save after loading
+      // Use a small timeout to ensure nodes/edges are fully updated
+      setTimeout(() => {
+        previousNodesRef.current = JSON.stringify(nodesEdgesRef.current.nodes);
+        previousEdgesRef.current = JSON.stringify(nodesEdgesRef.current.edges);
+      }, 100);
+    }
+    
+    prevLoadingRef.current = isLoading;
+  }, [isLoading]);
 
   // Track the last drop timestamp to prevent duplicates
   const lastDropTimestamp = useRef(0);
