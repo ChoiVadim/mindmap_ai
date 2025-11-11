@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
+import { Dock } from '@/components/ui/dock-two';
 
 export default function TopRightBar() {
   const [isDark, setIsDark] = useState(false);
@@ -31,38 +32,21 @@ export default function TopRightBar() {
     }
   };
 
-  const borderColor = isDark ? '#374151' : '#e5e7eb';
+  const dockItems = [
+    {
+      icon: isDark ? Sun : Moon,
+      label: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+      onClick: toggleTheme,
+    },
+  ];
 
   return (
     <div className="fixed top-6 right-6 z-10">
-      <div 
-        className="rounded-lg shadow-lg p-2"
-        style={{ 
-          backgroundColor: isDark ? '#1f2937' : '#f9fafb',
-          border: `1px solid ${borderColor}`
-        }}
-      >
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-lg transition-all duration-200 group"
-          style={{
-            backgroundColor: 'transparent',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = isDark ? '#374151' : '#f3f4f6';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-          }}
-          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {isDark ? (
-            <Sun className="w-5 h-5 text-yellow-500 group-hover:rotate-12 transition-transform" />
-          ) : (
-            <Moon className="w-5 h-5 text-gray-600 group-hover:-rotate-12 transition-transform" />
-          )}
-        </button>
-      </div>
+      <Dock 
+        items={dockItems}
+        variant="compact"
+        tooltipPosition="left"
+      />
     </div>
   );
 }

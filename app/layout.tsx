@@ -7,6 +7,9 @@ const lexend = Lexend({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "MindCanvas AI - Visual AI Knowledge Tool",
   description: "A Miro-like canvas for structuring and connecting AI knowledge",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
