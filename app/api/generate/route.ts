@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       
       messages.push({
         role: 'user',
-        content: `Here is some context:\n\n${contextText}`,
+        content: `Info:\n\n${contextText}`,
       });
     }
 
@@ -45,6 +45,15 @@ export async function POST(request: NextRequest) {
       role: 'user',
       content: prompt,
     });
+
+    // Log the final prompt for debugging
+    console.log('\n========== FINAL PROMPT TO AI ==========');
+    console.log('Messages array:');
+    messages.forEach((msg, idx) => {
+      console.log(`\n[${idx}] Role: ${msg.role}`);
+      console.log(`Content:\n${msg.content}`);
+    });
+    console.log('\n========================================\n');
 
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -71,7 +80,8 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     const generatedText = data.choices[0]?.message?.content || '';
-
+    console.log('Generated text:', generatedText);
+    
     return NextResponse.json({
       content: generatedText,
     });

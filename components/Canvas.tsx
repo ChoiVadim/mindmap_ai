@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   ReactFlow,
   Background,
@@ -19,6 +19,8 @@ import PromptNode from './nodes/PromptNode';
 import GroupNode from './nodes/GroupNode';
 import TextLabelNode from './nodes/TextLabelNode';
 import Toolbar from './Toolbar';
+import TopLeftBar from './TopLeftBar';
+import TopRightBar from './TopRightBar';
 
 // Define custom node types
 const nodeTypes: any = {
@@ -57,17 +59,47 @@ export default function Canvas() {
     }
   }, [loadCanvas]);
 
+  // Track the last drop timestamp to prevent duplicates
+  const lastDropTimestamp = useRef(0);
+  const lastDropType = useRef('');
+  
   // Handle drop from toolbar
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
+      event.stopPropagation();
 
       const type = event.dataTransfer.getData('application/reactflow');
       if (!type) return;
 
+      const now = Date.now();
+      
+      // Prevent duplicate drops within 200ms with the same type
+      if (now - lastDropTimestamp.current < 200 && lastDropType.current === type) {
+        console.log('⚠️ Prevented duplicate drop event - too fast!', type);
+        return;
+      }
+
+      // Update tracking
+      lastDropTimestamp.current = now;
+      lastDropType.current = type;
+      
+      console.log('🎯 Processing drop event for type:', type, 'at', now);
+
+      // Get default node dimensions to center it on cursor
+      const nodeDimensions: Record<string, { width: number; height: number }> = {
+        note: { width: 400, height: 400 },
+        prompt: { width: 400, height: 300 },
+        group: { width: 560, height: 300 },
+        textLabel: { width: 300, height: 120 },
+      };
+
+      const dimensions = nodeDimensions[type] || { width: 400, height: 400 };
+
+      // Calculate position so node center is at cursor
       const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
+        x: event.clientX - dimensions.width / 2,
+        y: event.clientY - dimensions.height / 2,
       });
 
       addNode(type as any, position);
@@ -128,12 +160,12 @@ export default function Canvas() {
         const groupBounds = {
           x: n.position.x,
           y: n.position.y,
-          width: 280, // Approximate group width
-          height: 150, // Approximate group height
+          width: 560, // Approximate group width
+          height: 300, // Approximate group height
         };
 
-        const noteCenterX = node.position.x + 100; // Note width / 2
-        const noteCenterY = node.position.y + 75; // Note height / 2
+        const noteCenterX = node.position.x + 200; // Note width / 2
+        const noteCenterY = node.position.y + 200; // Note height / 2
 
         return (
           noteCenterX >= groupBounds.x &&
@@ -167,10 +199,13 @@ export default function Canvas() {
   return (
     <div 
       ref={reactFlowWrapper}
-      className="w-full h-screen bg-gray-50"
+      className="w-full h-screen dark:bg-gray-900 transition-colors duration-300"
+      style={{ backgroundColor: '#f9fafb' }}
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
+      <TopLeftBar />
+      <TopRightBar />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -182,31 +217,43 @@ export default function Canvas() {
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
         fitView
-        minZoom={0.2}
+        minZoom={0.1}
         maxZoom={4}
-        deleteKeyCode="Delete"
+        deleteKeyCode={["Delete", "Backspace"]}
         multiSelectionKeyCode="Meta"
+        // Miro-like UX: instant dragging on click
+        selectNodesOnDrag={false}
+        // Большая канва (в 3 раза больше)
+        translateExtent={[[-15000, -15000], [15000, 15000]]}
+        // Touchpad panning with two fingers (ускоренное передвижение)
+        panOnScroll={true}
+        panOnScrollSpeed={1.5}
+        // Allow panning with middle mouse button or when not clicking on nodes
+        panOnDrag={[1, 2]}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={false}
+        // Hide React Flow attribution
+        proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={{
           type: 'default',
-          animated: true,
+          animated: false,
           style: { strokeWidth: 2, stroke: '#94a3b8' },
+          markerEnd: {
+            type: 'arrow',  
+            width: 20,
+            height: 20,
+            color: '#94a3b8',
+          },
         }}
       >
         <Background
-          variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-          color="#e2e8f0"
+          variant={BackgroundVariant.Lines}
+          gap={200}
+          color="#e5e7ef"
+          bgColor="#ffffff"
         />
-        <Controls
-          showInteractive={false}
-          className="!shadow-lg !border-gray-200"
-        />
-        <MiniMap
-          nodeColor={nodeColor}
-          className="!bg-white !border-gray-200"
-          maskColor="rgba(0, 0, 0, 0.05)"
-        />
+  
         
         <Toolbar onSave={handleSave} onClear={handleClear} />
       </ReactFlow>

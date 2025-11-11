@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useState, useCallback } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
 import { Hash, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { GroupNodeData } from '@/types/canvas';
 import { useCanvasStore } from '@/store/canvas-store';
@@ -41,19 +41,84 @@ function GroupNode({ id, data, selected }: NodeProps) {
         relative bg-white rounded-xl shadow-lg border-2
         ${selected ? 'border-gray-400 shadow-xl' : 'border-gray-200'}
         transition-all duration-200 hover:shadow-xl
-        min-w-[280px] max-w-[400px]
+        w-full h-full
       `}
+      style={{
+        minWidth: '560px',
+        minHeight: '300px'
+      }}
     >
-      {/* Handles for connections */}
+      {/* Node Resizer */}
+      <NodeResizer
+        isVisible={selected}
+        minWidth={560}
+        minHeight={300}
+        handleClassName="!w-3 !h-3 !bg-gray-500 !border-2 !border-white !rounded-full"
+      />
+      
+      {/* Handles for connections - Only visible when selected */}
+      {/* Left side - both source and target */}
       <Handle
         type="target"
         position={Position.Left}
-        className="w-10 h-10 !bg-gray-500 hover:w-5 hover:h-5 transition-all"
+        id="left"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ left: '-20px' }}
+      />
+      <Handle
+        type="source"
+        position={Position.Left}
+        id="left-source"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ left: '-20px' }}
+      />
+      
+      {/* Right side - both source and target */}
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="right"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ right: '-20px' }}
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="w-10 h-10 !bg-gray-500 hover:w-5 hover:h-5 transition-all"
+        id="right-source"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ right: '-20px' }}
+      />
+      
+      {/* Top side - both source and target */}
+      <Handle
+        type="target"
+        position={Position.Top}
+        id="top"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ top: '-20px' }}
+      />
+      <Handle
+        type="source"
+        position={Position.Top}
+        id="top-source"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ top: '-20px' }}
+      />
+      
+      {/* Bottom side - both source and target */}
+      <Handle
+        type="target"
+        position={Position.Bottom}
+        id="bottom"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ bottom: '-20px' }}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom-source"
+        className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ bottom: '-20px' }}
       />
 
       {/* Header */}
@@ -74,7 +139,7 @@ function GroupNode({ id, data, selected }: NodeProps) {
               value={label}
               onChange={handleLabelChange}
               onBlur={handleBlur}
-              className="w-full px-2 py-1 text-base font-semibold border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="nodrag nopan w-full px-2 py-1 text-base font-semibold border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Group name"
             />
           ) : (

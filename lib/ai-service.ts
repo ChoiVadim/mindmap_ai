@@ -18,6 +18,15 @@ export function gatherAIContext(
   // Find all edges that connect TO this prompt node
   const incomingEdges = edges.filter((edge) => edge.target === promptNodeId);
   
+  console.log('=== AI Context Gathering ===');
+  console.log('Total incoming edges:', incomingEdges.length);
+  console.log('Incoming edges details:', incomingEdges.map(e => ({
+    source: e.source,
+    target: e.target,
+    targetHandle: e.targetHandle,
+    sourceHandle: e.sourceHandle
+  })));
+  
   // Get all source nodes from incoming edges
   const sourceNodeIds = incomingEdges.map((edge) => edge.source);
   
@@ -33,11 +42,21 @@ export function gatherAIContext(
       const childNodes = nodes.filter((n) =>
         node.data.childNodes?.includes(n.id)
       );
+      console.log(`Group node ${nodeId} expanded to ${childNodes.length} child notes`);
       contextNodes.push(...childNodes);
     } else if (node.data.type === 'note') {
+      console.log(`Added note node ${nodeId}: "${node.data.label}"`);
       contextNodes.push(node);
     }
   }
+
+  console.log('Total context nodes collected:', contextNodes.length);
+  console.log('Context nodes:', contextNodes.map(n => ({
+    id: n.id,
+    label: n.data.label,
+    contentLength: n.data.content?.length || 0
+  })));
+  console.log('=========================');
 
   return {
     promptNodeId,

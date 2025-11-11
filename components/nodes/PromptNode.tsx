@@ -1,28 +1,100 @@
 'use client';
 
-import { memo, useCallback, useRef, useEffect } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import { useCallback, useEffect } from 'react';
+import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
 import { Sparkles, Play, Trash2, Loader2 } from 'lucide-react';
+import { useCreateBlockNote } from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/mantine/style.css';
 import { PromptNodeData } from '@/types/canvas';
 import { useCanvasStore } from '@/store/canvas-store';
 
 function PromptNode({ id, data, selected }: NodeProps) {
   const typedData = data as PromptNodeData;
-  const contentRef = useRef<HTMLDivElement>(null);
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const deleteNode = useCanvasStore((state) => state.deleteNode);
 
-  const handleInput = useCallback((e: React.FormEvent<HTMLDivElement>) => {
-    const newContent = e.currentTarget.textContent || '';
-    updateNodeData(id, { content: newContent });
-  }, [id, updateNodeData]);
+  // Create editor instance with markdown support
+  const editor = useCreateBlockNote({
+    initialContent: typedData.content && typedData.content.trim() !== '' 
+      ? undefined  // Will be loaded in useEffect
+      : undefined,
+    // Fix for numbered lists without start attribute
+    _tiptapOptions: {
+      editorProps: {
+        transformPastedHTML(html) {
+          // Fix ordered lists that don't have start attribute
+          // Handle both <ol> and <ol with attributes>
+          return html.replace(/<ol(\s|>)/g, (match, after) => {
+            // If there's already a start attribute, leave it
+            if (match.includes('start=')) {
+              return match;
+            }
+            // Otherwise add start="1"
+            return `<ol start="1"${after}`;
+          });
+        },
+        transformPastedText(text) {
+          // Also handle plain text paste - ensure no issues with special characters
+          return text;
+        },
+      },
+    },
+  });
 
-  // Set initial content
+  // Load initial markdown content and update when content changes
   useEffect(() => {
-    if (contentRef.current && !contentRef.current.textContent) {
-      contentRef.current.textContent = typedData.content || '';
+    if (!editor || !typedData.content || typedData.content.trim() === '') {
+      return;
     }
-  }, [typedData.content]);
+
+    const loadContent = async () => {
+      try {
+        // Preprocess markdown to fix common issues
+        let processedContent = typedData.content;
+        
+        // Fix numbered lists: ensure they start with 1. 2. 3. etc
+        processedContent = processedContent.replace(/^\s*\d+\.\s/gm, (match) => {
+          const num = match.trim().split('.')[0];
+          return `${num}. `;
+        });
+        
+        const blocks = await editor.tryParseMarkdownToBlocks(processedContent);
+        // Only update if blocks are different
+        const currentMarkdown = await editor.blocksToMarkdownLossy(editor.document);
+        if (currentMarkdown.trim() !== processedContent.trim()) {
+          editor.replaceBlocks(editor.document, blocks);
+        }
+      } catch (error) {
+        console.error('Failed to parse markdown:', error);
+        // If parsing fails, try to insert as plain text
+        try {
+          editor.replaceBlocks(editor.document, [
+            {
+              type: "paragraph",
+              content: typedData.content,
+            },
+          ] as any);
+        } catch (e) {
+          console.error('Failed to insert as plain text:', e);
+        }
+      }
+    };
+    
+    loadContent();
+  }, [editor, typedData.content]); // Update when content changes
+
+  // Handle content changes
+  const handleChange = useCallback(async () => {
+    if (!editor) return;
+    
+    try {
+      const markdown = await editor.blocksToMarkdownLossy(editor.document);
+      updateNodeData(id, { content: markdown });
+    } catch (error) {
+      console.error('Failed to convert to markdown:', error);
+    }
+  }, [editor, id, updateNodeData]);
 
   const handleDelete = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -37,7 +109,10 @@ function PromptNode({ id, data, selected }: NodeProps) {
   const handleRun = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    const currentContent = contentRef.current?.textContent || '';
+    if (!editor) return;
+    
+    // Get content from BlockNote editor
+    const currentContent = await editor.blocksToMarkdownLossy(editor.document);
     if (!currentContent.trim()) {
       alert('Please enter a prompt first');
       return;
@@ -69,11 +144,13 @@ function PromptNode({ id, data, selected }: NodeProps) {
       
       if (targetNoteId) {
         // Update existing connected note
+        console.log('Updating note node:', targetNoteId, 'with content length:', result.content.length);
         updateNodeData(targetNoteId, {
           content: result.content,
         });
       } else {
         // Create new note node with AI result
+        console.log('Creating new note node with content length:', result.content.length);
         createNoteNode(id, result.content);
       }
       
@@ -83,7 +160,7 @@ function PromptNode({ id, data, selected }: NodeProps) {
     } finally {
       setNodeRunning(id, false);
     }
-  }, [id, nodes, edges, updateNodeData, setNodeRunning, createNoteNode]);
+  }, [id, nodes, edges, updateNodeData, setNodeRunning, createNoteNode, editor]);
 
   return (
     <div
@@ -91,19 +168,35 @@ function PromptNode({ id, data, selected }: NodeProps) {
         relative bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg shadow-md border-2
         ${selected ? 'border-purple-500 shadow-lg' : 'border-purple-200'}
         transition-all duration-200 hover:shadow-lg
-        min-w-[200px] max-w-[300px]
+        w-full h-full
       `}
+      style={{
+        minWidth: '400px',
+        minHeight: '300px'
+      }}
     >
-      {/* Handles for connections */}
+      {/* Node Resizer */}
+      <NodeResizer
+        isVisible={selected}
+        minWidth={400}
+        minHeight={300}
+        handleClassName="!w-3 !h-3 !bg-purple-500 !border-2 !border-white !rounded-full"
+      />
+      
+      {/* Handles for connections - Only visible when selected */}
       <Handle
         type="target"
         position={Position.Left}
-        className="w-4 h-4 !bg-purple-500 hover:w-5 hover:h-5 transition-all"
+        id="left"
+        className={`!w-4 !h-4 !bg-purple-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ left: '-5px' }}
       />
       <Handle
         type="source"
         position={Position.Right}
-        className="w-4 h-4 !bg-purple-500 hover:w-5 hover:h-5 transition-all"
+        id="right"
+        className={`!w-4 !h-4 !bg-purple-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
+        style={{ right: '-5px' }}
       />
 
       {/* Header */}
@@ -134,23 +227,19 @@ function PromptNode({ id, data, selected }: NodeProps) {
       </div>
 
       {/* Content */}
-      <div className="p-3">
-        <div
-          ref={contentRef}
-          contentEditable
-          suppressContentEditableWarning
-          onInput={handleInput}
-          data-placeholder="Enter your AI prompt..."
-          className="nodrag nopan nowheel min-h-[80px] p-2 text-sm text-gray-700 cursor-text rounded outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 transition-all bg-white/30 empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400"
-          style={{
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-          }}
-        />
+      <div className="p-3 flex-1 overflow-auto">
+        <div className="h-full nodrag nopan">
+          <BlockNoteView
+            editor={editor}
+            onChange={handleChange}
+            theme="light"
+            data-color-mode="light"
+          />
+        </div>
       </div>
     </div>
   );
 }
 
-export default memo(PromptNode);
+export default PromptNode;
 

@@ -33,7 +33,7 @@ function TextLabelNode({ id, data, selected }: NodeProps) {
         relative bg-transparent rounded-lg border-2 border-dashed
         ${selected ? 'border-gray-400' : 'border-gray-300'}
         transition-all duration-200
-        min-w-[150px] group
+        min-w-[300px] min-h-[120px] group
       `}
     >
       <div className="flex items-center gap-2 p-2">
@@ -44,7 +44,7 @@ function TextLabelNode({ id, data, selected }: NodeProps) {
             value={label}
             onChange={handleLabelChange}
             onBlur={handleBlur}
-            className="flex-1 px-2 py-1 text-base bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="nodrag nopan flex-1 px-2 py-1 text-base bg-white border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             style={{ fontSize: `${typedData.fontSize || 16}px` }}
             placeholder="Label text"
           />

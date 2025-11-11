@@ -80,6 +80,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   edges: [],
 
   addNode: (type, position) => {
+    console.log('📝 addNode called with type:', type, 'position:', position);
     const newNode: CanvasNode = {
       id: getNodeId(),
       type,
@@ -87,6 +88,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       data: createNodeData(type),
     };
     
+    console.log('✅ Creating node:', newNode.id);
     set({ nodes: [...get().nodes, newNode] });
   },
 
@@ -204,7 +206,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       id: noteNodeId,
       type: 'note',
       position: {
-        x: promptNode.position.x + 350,
+        x: promptNode.position.x + 500,
         y: promptNode.position.y,
       },
       data: {
@@ -221,6 +223,12 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       target: noteNodeId,
       type: 'smoothstep',
       animated: true,
+      markerEnd: {
+        type: 'arrowclosed',
+        width: 20,
+        height: 20,
+        color: '#94a3b8',
+      },
     };
 
     set({

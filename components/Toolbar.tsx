@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { StickyNote, Sparkles, Hash, Type, Save, Trash2 } from 'lucide-react';
 import { NodeType } from '@/types/canvas';
 
@@ -9,6 +10,26 @@ interface ToolbarProps {
 }
 
 export default function Toolbar({ onSave, onClear }: ToolbarProps) {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    // Проверяем текущую тему
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+    
+    checkTheme();
+    
+    // Слушаем изменения темы
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -45,8 +66,16 @@ export default function Toolbar({ onSave, onClear }: ToolbarProps) {
     },
   ];
 
+  const borderColor = isDark ? '#374151' : '#e5e7eb';
+  
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-white rounded-full shadow-lg border border-gray-200 px-3 py-2">
+    <div 
+      className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-10 rounded-lg shadow-lg px-3 py-2"
+      style={{ 
+        backgroundColor: isDark ? '#1f2937' : '#f9fafb',
+        border: `1px solid ${borderColor}`
+      }}
+    >
       <div className="flex items-center gap-2">
         {/* Node creation tools */}
         {tools.map((tool) => {
@@ -68,7 +97,7 @@ export default function Toolbar({ onSave, onClear }: ToolbarProps) {
         })}
 
         {/* Divider */}
-        <div className="w-px h-6 bg-gray-200 mx-1" />
+        <div className="w-px h-6 bg-gray-200 dark:bg-gray-600 mx-1" />
 
         {/* Canvas actions */}
         <button
