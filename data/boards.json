@@ -1,0 +1,77 @@
+[
+  {
+    "id": "board_1762864654040_feluuqqa0",
+    "name": "Main Board",
+    "nodes": [
+      {
+        "id": "node_0",
+        "type": "note",
+        "position": {
+          "x": 266.5007027476133,
+          "y": 403.52834415374014
+        },
+        "data": {
+          "label": "New Note",
+          "content": "",
+          "type": "note"
+        },
+        "measured": {
+          "width": 400,
+          "height": 400
+        },
+        "selected": false
+      },
+      {
+        "id": "node_1",
+        "type": "note",
+        "position": {
+          "x": 792.6083881861541,
+          "y": 417.06871164432
+        },
+        "data": {
+          "label": "New Note",
+          "content": "",
+          "type": "note"
+        },
+        "measured": {
+          "width": 400,
+          "height": 400
+        },
+        "selected": false,
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_0",
+        "sourceHandle": "right-source",
+        "target": "node_1",
+        "targetHandle": "left",
+        "id": "xy-edge__node_0right-source-node_1left",
+        "selected": false
+      }
+    ],
+    "createdAt": "2025-11-11T12:37:34.040Z",
+    "updatedAt": "2025-11-11T13:12:07.758Z"
+  },
+  {
+    "id": "board_1762864724742_55mgdo0hm",
+    "name": "Вадим",
+    "nodes": [],
+    "edges": [],
+    "createdAt": "2025-11-11T12:38:44.742Z",
+    "updatedAt": "2025-11-11T12:38:45.802Z"
+  }
+]
