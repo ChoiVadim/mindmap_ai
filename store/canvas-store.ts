@@ -137,6 +137,8 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     // Set default dimensions for nodes that support resizing
     const defaultDimensions: Record<string, { width: number; height: number }> = {
       note: { width: 400, height: 400 },
+      prompt: { width: 400, height: 200 },
+      agent: { width: 400, height: 300 },
       textLabel: { width: 300, height: 50 },
     };
     

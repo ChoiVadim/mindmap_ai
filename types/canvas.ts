@@ -25,6 +25,7 @@ export interface NoteNodeData extends BaseNodeData {
 export interface PromptNodeData extends BaseNodeData {
   type: 'prompt';
   isRunning?: boolean;
+  manuallyResized?: boolean; // Whether the user has manually resized the node
 }
 
 // Group node - container for other notes
@@ -46,6 +47,7 @@ export interface AgentNodeData extends BaseNodeData {
   provider: AIProvider;
   model?: string;
   systemPrompt: string;
+  manuallyResized?: boolean; // Whether the user has manually resized the node
 }
 
 // Union type for all node data

@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
+import { useCallback, useEffect, useState, useRef } from 'react';
+import { Handle, Position, NodeProps, NodeResizer, useReactFlow } from '@xyflow/react';
 import { Sparkles, Play, Trash2, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
@@ -9,13 +9,25 @@ import '@blocknote/mantine/style.css';
 import { PromptNodeData } from '@/types/canvas';
 import { useCanvasStore } from '@/store/canvas-store';
 
-function PromptNode({ id, data, selected }: NodeProps) {
+function PromptNode({ id, data, selected, width, height }: NodeProps) {
   const typedData = data as PromptNodeData;
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const deleteNode = useCanvasStore((state) => state.deleteNode);
   const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
+  const { updateNode } = useReactFlow();
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [label, setLabel] = useState(typedData.label || 'Prompt');
+  const contentRef = useRef<HTMLDivElement>(null);
+  const isManuallyResized = typedData.manuallyResized ?? false;
+  const isProgrammaticResizeRef = useRef(false);
+  const lastHeightRef = useRef<number | null>(null);
+  const isUpdatingSizeRef = useRef(false);
+  const hasSetDefaultWidthRef = useRef(false);
+  const lastWidthRef = useRef<number | null>(null);
+  const currentWidthRef = useRef<number | null>(null);
+  const currentHeightRef = useRef<number | null>(null);
+  const DEFAULT_WIDTH = 400;
+  const DEFAULT_MIN_HEIGHT = 200;
 
   // Create editor instance with markdown support
   const editor = useCreateBlockNote({
@@ -94,6 +106,54 @@ function PromptNode({ id, data, selected }: NodeProps) {
     loadContent();
   }, [editor, typedData.content]); // Update when content changes
 
+  const isCollapsed = typedData.collapsed ?? false;
+
+  // Update refs when width/height change
+  useEffect(() => {
+    currentWidthRef.current = width || DEFAULT_WIDTH;
+    currentHeightRef.current = height || DEFAULT_MIN_HEIGHT;
+  }, [width, height]);
+
+  // Update height when content changes
+  const updateHeightFromContent = useCallback(() => {
+    if (isCollapsed || isManuallyResized || isUpdatingSizeRef.current || !contentRef.current) {
+      return;
+    }
+
+    // Find the actual editor content element
+    const editorElement = contentRef.current.querySelector('[data-id="editor-container"]') as HTMLElement;
+    const contentElement = editorElement || contentRef.current.querySelector('.bn-container') as HTMLElement;
+    
+    if (!contentElement) return;
+
+    // Use scrollHeight to get the actual content height
+    const contentHeight = contentElement.scrollHeight || contentElement.offsetHeight;
+    const headerHeight = 60; // Approximate header height
+    const padding = 24; // 12px top + 12px bottom
+    const newHeight = Math.max(DEFAULT_MIN_HEIGHT, contentHeight + headerHeight + padding);
+
+    const currentWidth = currentWidthRef.current || DEFAULT_WIDTH;
+    const currentHeight = currentHeightRef.current || DEFAULT_MIN_HEIGHT;
+
+    // Only update if height actually changed significantly
+    if (Math.abs(newHeight - currentHeight) > 5) {
+      lastHeightRef.current = newHeight;
+      currentHeightRef.current = newHeight;
+      isProgrammaticResizeRef.current = true;
+      isUpdatingSizeRef.current = true;
+      
+      updateNode(id, {
+        width: currentWidth,
+        height: newHeight,
+      });
+
+      // Reset the flag after a short delay
+      setTimeout(() => {
+        isUpdatingSizeRef.current = false;
+      }, 200);
+    }
+  }, [id, isCollapsed, isManuallyResized, updateNode]);
+
   // Handle content changes
   const handleChange = useCallback(async () => {
     if (!editor) return;
@@ -101,10 +161,13 @@ function PromptNode({ id, data, selected }: NodeProps) {
     try {
       const markdown = await editor.blocksToMarkdownLossy(editor.document);
       updateNodeData(id, { content: markdown });
+      
+      // Update height after content change
+      setTimeout(updateHeightFromContent, 50);
     } catch (error) {
       console.error('Failed to convert to markdown:', error);
     }
-  }, [editor, id, updateNodeData]);
+  }, [editor, id, updateNodeData, updateHeightFromContent]);
 
   const handleDelete = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -125,7 +188,116 @@ function PromptNode({ id, data, selected }: NodeProps) {
     toggleNodeCollapse(id);
   }, [id, toggleNodeCollapse]);
 
-  const isCollapsed = typedData.collapsed ?? false;
+  // Track if user manually resized by detecting width changes
+  useEffect(() => {
+    if (isManuallyResized) {
+      return;
+    }
+
+    // Skip if this is a programmatic resize
+    if (isProgrammaticResizeRef.current) {
+      isProgrammaticResizeRef.current = false;
+      lastWidthRef.current = width || DEFAULT_WIDTH;
+      return;
+    }
+
+    const currentWidth = width || DEFAULT_WIDTH;
+    
+    // If width changed and it's different from default, and it's not the same as last width we set
+    if (currentWidth !== DEFAULT_WIDTH && currentWidth !== lastWidthRef.current) {
+      // This is a manual resize by user
+      updateNodeData(id, { manuallyResized: true });
+    }
+    
+    lastWidthRef.current = currentWidth;
+  }, [id, width, isManuallyResized, updateNodeData]);
+
+  // Initial height update when content is loaded
+  useEffect(() => {
+    if (isCollapsed || isManuallyResized || !contentRef.current) {
+      return;
+    }
+
+    // Wait for editor to render
+    const timeoutId = setTimeout(() => {
+      // Check flags again in case they changed
+      if (isManuallyResized || isUpdatingSizeRef.current || !contentRef.current) {
+        return;
+      }
+
+      // Find the actual editor content element
+      const editorElement = contentRef.current.querySelector('[data-id="editor-container"]') as HTMLElement;
+      const contentElement = editorElement || contentRef.current.querySelector('.bn-container') as HTMLElement;
+      
+      if (!contentElement) return;
+
+      // Use scrollHeight to get the actual content height
+      const contentHeight = contentElement.scrollHeight || contentElement.offsetHeight;
+      const headerHeight = 60;
+      const padding = 24;
+      const newHeight = Math.max(DEFAULT_MIN_HEIGHT, contentHeight + headerHeight + padding);
+
+      const currentWidth = currentWidthRef.current || DEFAULT_WIDTH;
+      const currentHeight = currentHeightRef.current || DEFAULT_MIN_HEIGHT;
+
+      // Only update if height actually changed significantly
+      if (Math.abs(newHeight - currentHeight) > 5) {
+        lastHeightRef.current = newHeight;
+        currentHeightRef.current = newHeight;
+        isProgrammaticResizeRef.current = true;
+        isUpdatingSizeRef.current = true;
+        
+        updateNode(id, {
+          width: currentWidth,
+          height: newHeight,
+        });
+
+        setTimeout(() => {
+          isUpdatingSizeRef.current = false;
+        }, 200);
+      }
+    }, 200);
+
+    return () => clearTimeout(timeoutId);
+  }, [id, isCollapsed, isManuallyResized, updateNode]);
+
+  // Set default width if not set and not manually resized (only once on mount)
+  useEffect(() => {
+    // Only run once when component mounts
+    if (hasSetDefaultWidthRef.current) {
+      return;
+    }
+
+    // Use current values from props
+    const currentWidth = width || DEFAULT_WIDTH;
+    const currentHeight = height || DEFAULT_MIN_HEIGHT;
+    
+    // Initialize refs
+    currentWidthRef.current = currentWidth;
+    currentHeightRef.current = currentHeight;
+    lastWidthRef.current = currentWidth;
+    lastHeightRef.current = currentHeight;
+
+    if (isManuallyResized) {
+      hasSetDefaultWidthRef.current = true;
+      return;
+    }
+
+    // Only set default width if width is different from default
+    if (currentWidth !== DEFAULT_WIDTH) {
+      hasSetDefaultWidthRef.current = true;
+      isProgrammaticResizeRef.current = true;
+      currentWidthRef.current = DEFAULT_WIDTH;
+      lastWidthRef.current = DEFAULT_WIDTH;
+      
+      updateNode(id, {
+        width: DEFAULT_WIDTH,
+        height: currentHeight,
+      });
+    } else {
+      hasSetDefaultWidthRef.current = true;
+    }
+  }, []); // Run only once on mount - eslint-disable-line react-hooks/exhaustive-deps
 
   const nodes = useCanvasStore((state) => state.nodes);
   const edges = useCanvasStore((state) => state.edges);
@@ -286,8 +458,16 @@ function PromptNode({ id, data, selected }: NodeProps) {
 
       {/* Content - only show when not collapsed */}
       {!isCollapsed && (
-        <div className="p-3 flex-1 overflow-auto">
-          <div className="h-full nodrag nopan">
+        <div 
+          ref={contentRef}
+          className="p-3 flex-1 overflow-auto"
+          style={{
+            width: '100%',
+            overflowY: isManuallyResized ? 'auto' : 'visible',
+            overflowX: 'hidden',
+          }}
+        >
+          <div className="nodrag nopan" style={{ width: '100%' }}>
             <BlockNoteView
               editor={editor}
               onChange={handleChange}
