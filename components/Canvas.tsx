@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -24,6 +24,7 @@ import AgentNode from './nodes/AgentNode';
 import Toolbar from './Toolbar';
 import TopLeftBar from './TopLeftBar';
 import TopRightBar from './TopRightBar';
+import AlignmentGuides, { calculateSnappedPosition } from './AlignmentGuides';
 
 // Define custom node types
 const nodeTypes: any = {
@@ -56,6 +57,9 @@ export default function Canvas() {
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useReactFlow();
+  
+  // Track dragging node for alignment guides
+  const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
   
   // Track if we're currently loading to prevent saves during load
   const isLoadingRef = useRef(false);
@@ -287,9 +291,76 @@ export default function Canvas() {
     // When multiple nodes are selected and you drag one, all selected nodes move together
   }, []);
 
+  // Get node dimensions helper
+  const getNodeDimensions = useCallback((node: any) => {
+    const nodeDimensions: Record<string, { width: number; height: number }> = {
+      note: { width: 400, height: 400 },
+      prompt: { width: 400, height: 300 },
+      group: { width: 560, height: 300 },
+      textLabel: { width: 300, height: 50 },
+      agent: { width: 400, height: 400 },
+    };
+    const defaultDimensions = { width: 400, height: 400 };
+    const typeDimensions = nodeDimensions[node.type || 'note'] || defaultDimensions;
+    return {
+      width: (node.width as number) || typeDimensions.width,
+      height: (node.height as number) || typeDimensions.height,
+    };
+  }, []);
+
+  // Track last snapped position to avoid unnecessary updates
+  const lastSnappedPositionRef = useRef<{ nodeId: string; x: number; y: number } | null>(null);
+
+  // Handle node dragging with alignment snapping
+  const onNodeDrag: OnNodeDrag = useCallback(
+    (event, node) => {
+      // Calculate snapped position
+      const snappedPosition = calculateSnappedPosition(node, nodes, getNodeDimensions);
+      
+      if (snappedPosition) {
+        // Check if position actually changed to avoid unnecessary updates
+        const lastSnap = lastSnappedPositionRef.current;
+        if (
+          !lastSnap ||
+          lastSnap.nodeId !== node.id ||
+          Math.abs(lastSnap.x - snappedPosition.x) > 0.1 ||
+          Math.abs(lastSnap.y - snappedPosition.y) > 0.1
+        ) {
+          // Use updateNode for more efficient position updates during drag
+          reactFlowInstance.updateNode(node.id, {
+            position: snappedPosition,
+          });
+          lastSnappedPositionRef.current = {
+            nodeId: node.id,
+            x: snappedPosition.x,
+            y: snappedPosition.y,
+          };
+        }
+      } else {
+        // Clear last snap if no snapping
+        if (lastSnappedPositionRef.current?.nodeId === node.id) {
+          lastSnappedPositionRef.current = null;
+        }
+      }
+    },
+    [nodes, getNodeDimensions, reactFlowInstance]
+  );
+
+  // Handle node drag start
+  const onNodeDragStart: OnNodeDrag = useCallback((event, node) => {
+    setDraggingNodeId(node.id);
+    // Reset last snapped position
+    lastSnappedPositionRef.current = null;
+  }, []);
+
   // Handle dragging nodes into groups
   const onNodeDragStop: OnNodeDrag = useCallback(
     (event, node) => {
+      // Clear dragging state
+      setDraggingNodeId(null);
+      // Clear last snapped position
+      lastSnappedPositionRef.current = null;
+      
       // Skip if node is hidden (already in a group)
       if (node.hidden) return;
 
@@ -307,14 +378,7 @@ export default function Canvas() {
         };
 
         // Get node dimensions based on type
-        const nodeDimensions: Record<string, { width: number; height: number }> = {
-          note: { width: 400, height: 400 },
-          prompt: { width: 400, height: 300 },
-          agent: { width: 400, height: 400 },
-          textLabel: { width: 300, height: 120 },
-        };
-
-        const dimensions = nodeDimensions[node.type || 'note'] || { width: 400, height: 400 };
+        const dimensions = getNodeDimensions(node);
         const nodeCenterX = node.position.x + dimensions.width / 2;
         const nodeCenterY = node.position.y + dimensions.height / 2;
 
@@ -330,7 +394,7 @@ export default function Canvas() {
         addNoteToGroup(node.id, droppedOnGroup.id);
       }
     },
-    [nodes, addNoteToGroup]
+    [nodes, addNoteToGroup, getNodeDimensions]
   );
 
   // MiniMap node color based on type
@@ -423,12 +487,15 @@ export default function Canvas() {
     >
       <TopLeftBar />
       <TopRightBar />
+      <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
         onSelectionChange={onSelectionChange}
         onBeforeDelete={onBeforeDelete}

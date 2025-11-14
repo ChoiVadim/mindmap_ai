@@ -210,8 +210,8 @@
         "id": "node_7",
         "type": "note",
         "position": {
-          "x": 249.03955616986906,
-          "y": 305.3716461131082
+          "x": 263.296575741861,
+          "y": 303.58951866660914
         },
         "data": {
           "label": "Main info about me",
@@ -232,8 +232,8 @@
         "id": "node_8",
         "type": "prompt",
         "position": {
-          "x": 1371.7542079462278,
-          "y": 590.4368065212851
+          "x": 1380.6648451787228,
+          "y": 659.939776934746
         },
         "data": {
           "label": "New Prompt",
@@ -248,14 +248,15 @@
         "measured": {
           "width": 400,
           "height": 291
-        }
+        },
+        "dragging": false
       },
       {
         "id": "node_9",
         "type": "agent",
         "position": {
-          "x": 864.8100173981516,
-          "y": 536.7824350462927
+          "x": 848.7708703796606,
+          "y": 592.0283858877615
         },
         "data": {
           "label": "Korean Email AI Agent",
@@ -274,14 +275,15 @@
           "width": 400,
           "height": 473
         },
-        "resizing": false
+        "resizing": false,
+        "dragging": false
       },
       {
         "id": "node_10",
         "type": "note",
         "position": {
-          "x": 262.4955737989449,
-          "y": 856.4663372330439
+          "x": 266.05982869194287,
+          "y": 972.3046212554787
         },
         "data": {
           "label": "Class information",
@@ -400,6 +402,6 @@
       }
     ],
     "createdAt": "2025-11-11T12:38:44.742Z",
-    "updatedAt": "2025-11-14T06:51:13.977Z"
+    "updatedAt": "2025-11-14T07:00:04.678Z"
   }
 ]
