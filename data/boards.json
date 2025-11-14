@@ -41,12 +41,12 @@
         },
         "measured": {
           "width": 400,
-          "height": 222
+          "height": 264
         },
         "selected": true,
         "dragging": false,
         "width": 400,
-        "height": 222,
+        "height": 264,
         "resizing": false
       },
       {
@@ -200,7 +200,7 @@
       }
     ],
     "createdAt": "2025-11-11T12:37:34.040Z",
-    "updatedAt": "2025-11-14T06:44:22.452Z"
+    "updatedAt": "2025-11-14T07:00:33.558Z"
   },
   {
     "id": "board_1762864724742_55mgdo0hm",
@@ -237,17 +237,17 @@
         },
         "data": {
           "label": "New Prompt",
-          "content": "Напиши имейл моему професору!\\\nЯ хочу чтобы он поменял оценку за 1 домашнюю работу так как я ему тогда объеснил идею когда мы встречались с ним в кафешке. И он сказал типо что только понял что идея была глубже чем он думал\n\nфы\n",
+          "content": "Напиши имейл моему професору!\\\nЯ хочу чтобы он поменял оценку за 1 домашнюю работу так как я ему тогда объеснил идею когда мы встречались с ним в кафешке. И он сказал типо что только понял что идея была глубже чем он думал\n",
           "type": "prompt",
           "isRunning": false,
           "collapsed": false
         },
         "selected": false,
         "width": 400,
-        "height": 291,
+        "height": 264,
         "measured": {
           "width": 400,
-          "height": 291
+          "height": 264
         },
         "dragging": false
       },
@@ -287,7 +287,7 @@
         },
         "data": {
           "label": "Class information",
-          "content": "**데이터사이언스개론 (I060-2-9158-01) - 장남수** \n\n금 5,6교시/새빛205\n",
+          "content": "**데이터사이언스개론 (I060-2-9158-01) - 장남수** \n\n금 5,6교시/새빛205\n\nфыав\n",
           "type": "note"
         },
         "selected": false,
@@ -303,13 +303,13 @@
         "id": "node_11",
         "type": "note",
         "position": {
-          "x": 1871.7542079462278,
-          "y": 590.4368065212851
+          "x": 2064.989402395691,
+          "y": 694.4865266094577
         },
         "data": {
           "type": "note",
           "label": "AI Generated",
-          "content": "제목: 데이터사이언스개론 과제 1 점수 관련 문의드립니다.\n\n안녕하세요, 교수님.\n\n데이터사이언스개론 수업을 듣고 있는 최바딤(학번: 2022203502)입니다.\n\n이전에 교수님과 카페에서 만나 과제 1에 대한 제 아이디어를 설명드렸을 때, 교수님께서 제 아이디어가 생각보다 깊이 있다는 말씀을 해주셨습니다. 혹시 가능하시다면 해당 과제의 점수를 재검토해주실 수 있을지 문의드립니다.\n\n감사합니다.\n\n최바딤 드림.asd\n",
+          "content": "제목: 데이터사이언스개론 과제 1 점수 관련 문의드립니다.\n\n안녕하세요, 교수님.\n\n데이터사이언스개론 수업을 듣고 있는 최바딤(학번: 2022203502)입니다.\n\n이전에 교수님과 카페에서 만나 과제 1에 대한 제 아이디어를 설명드렸을 때, 교수님께서 제 아이디어가 생각보다 깊이 있다는 말씀을 해주셨습니다. 혹시 가능하시다면 해당 과제의 점수를 재검토해주실 수 있을지 문의드립니다.\n\n감사합니다.\n\n최바딤 드림\n",
           "collapsed": false
         },
         "selected": false,
@@ -318,7 +318,49 @@
         "measured": {
           "width": 400,
           "height": 400
-        }
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_28",
+        "type": "note",
+        "position": {
+          "x": 2214.989593715553,
+          "y": 651.5975665932211
+        },
+        "data": {
+          "label": "New Note",
+          "content": "",
+          "type": "note"
+        },
+        "width": 400,
+        "height": 400,
+        "measured": {
+          "width": 400,
+          "height": 400
+        },
+        "selected": false
+      },
+      {
+        "id": "node_33",
+        "type": "note",
+        "position": {
+          "x": 1829.9939522918623,
+          "y": 1225.4679951312028
+        },
+        "data": {
+          "label": "New Note",
+          "content": "",
+          "type": "note"
+        },
+        "width": 400,
+        "height": 400,
+        "measured": {
+          "width": 400,
+          "height": 400
+        },
+        "selected": false,
+        "dragging": false
       }
     ],
     "edges": [
@@ -402,6 +444,36 @@
       }
     ],
     "createdAt": "2025-11-11T12:38:44.742Z",
-    "updatedAt": "2025-11-14T07:00:04.678Z"
+    "updatedAt": "2025-11-14T07:54:55.088Z"
+  },
+  {
+    "id": "board_1763106901538_ov8la4ayt",
+    "name": "фыв",
+    "nodes": [
+      {
+        "id": "node_61",
+        "type": "prompt",
+        "position": {
+          "x": 771.92984122177,
+          "y": 109.2759353966369
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "selected": false
+      }
+    ],
+    "edges": [],
+    "createdAt": "2025-11-14T07:55:01.538Z",
+    "updatedAt": "2025-11-14T08:01:52.517Z"
   }
 ]

@@ -142,10 +142,33 @@ export default function Canvas() {
       
       if (nodeId && groupId) {
         // This is a node being dragged from a group
-        const position = reactFlowInstance.screenToFlowPosition({
-          x: event.clientX,
-          y: event.clientY,
-        });
+        // Get ReactFlow container element (the actual .react-flow div)
+        const reactFlowElement = reactFlowWrapper.current?.querySelector('.react-flow') as HTMLElement;
+        
+        if (!reactFlowElement) {
+          console.error('ReactFlow element not found');
+          return;
+        }
+
+        // Get ReactFlow container bounds
+        const reactFlowBounds = reactFlowElement.getBoundingClientRect();
+        
+        // Get current viewport state (zoom, pan)
+        const viewport = reactFlowInstance.getViewport();
+        
+        // Calculate position relative to ReactFlow container (in screen pixels)
+        const screenX = event.clientX - reactFlowBounds.left;
+        const screenY = event.clientY - reactFlowBounds.top;
+
+        // Convert screen coordinates to flow coordinates
+        // Formula: flow = (screen - viewportOffset) / zoom
+        const flowX = (screenX - viewport.x) / viewport.zoom;
+        const flowY = (screenY - viewport.y) / viewport.zoom;
+        
+        const position = {
+          x: flowX,
+          y: flowY,
+        };
         
         // Remove from group (this will make the node visible)
         removeNoteFromGroup(nodeId, groupId);
@@ -194,33 +217,48 @@ export default function Canvas() {
 
       const dimensions = nodeDimensions[type] || { width: 400, height: 400 };
 
-      // Get ReactFlow viewport to ensure we calculate coordinates correctly
-      const reactFlowViewport = reactFlowWrapper.current?.querySelector('.react-flow__viewport') as HTMLElement;
+      // Get ReactFlow container element (the actual .react-flow div)
+      const reactFlowElement = reactFlowWrapper.current?.querySelector('.react-flow') as HTMLElement;
       
-      if (!reactFlowViewport) {
-        console.error('ReactFlow viewport not found');
+      if (!reactFlowElement) {
+        console.error('ReactFlow element not found');
         return;
       }
 
-      // Get viewport bounds
-      const viewportRect = reactFlowViewport.getBoundingClientRect();
+      // Get ReactFlow container bounds
+      const reactFlowBounds = reactFlowElement.getBoundingClientRect();
       
-      // Calculate position relative to viewport (this is more accurate)
-      const viewportX = event.clientX - viewportRect.left;
-      const viewportY = event.clientY - viewportRect.top;
+      // Get current viewport state (zoom, pan)
+      const viewport = reactFlowInstance.getViewport();
+      
+      // Calculate position relative to ReactFlow container (in screen pixels)
+      const screenX = event.clientX - reactFlowBounds.left;
+      const screenY = event.clientY - reactFlowBounds.top;
 
-      // Convert to flow coordinates using the ReactFlow instance
-      // screenToFlowPosition automatically accounts for zoom, pan, and viewport position
-      // We use clientX/clientY which screenToFlowPosition will convert correctly
-      const cursorFlowPosition = reactFlowInstance.screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
+      // Convert screen coordinates to flow coordinates
+      // Formula from AlignmentGuides: screen = flow * zoom + viewportOffset
+      // Reverse: flow = (screen - viewportOffset) / zoom
+      // viewport.x and viewport.y are the pan offsets in screen coordinates relative to container
+      const flowX = (screenX - viewport.x) / viewport.zoom;
+      const flowY = (screenY - viewport.y) / viewport.zoom;
+
+      // Debug logging
+      console.log('Drop coordinates:', {
+        clientX: event.clientX,
+        clientY: event.clientY,
+        reactFlowBounds: { left: reactFlowBounds.left, top: reactFlowBounds.top },
+        screenX,
+        screenY,
+        viewport: { x: viewport.x, y: viewport.y, zoom: viewport.zoom },
+        flowX,
+        flowY,
       });
 
-      // Then calculate position so node center is at cursor
+      // Calculate position so node center is at cursor position
+      // Subtract half the node dimensions to center it on the cursor
       const position = {
-        x: cursorFlowPosition.x - dimensions.width / 2,
-        y: cursorFlowPosition.y - dimensions.height / 2,
+        x: flowX - dimensions.width / 2,
+        y: flowY - dimensions.height / 2,
       };
 
       addNode(type as any, position);
