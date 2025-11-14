@@ -153,7 +153,7 @@ export default function Canvas() {
         // Get ReactFlow container bounds
         const reactFlowBounds = reactFlowElement.getBoundingClientRect();
         
-        // Get current viewport state (zoom, pan)
+        // Get current viewport state
         const viewport = reactFlowInstance.getViewport();
         
         // Calculate position relative to ReactFlow container (in screen pixels)
@@ -228,17 +228,17 @@ export default function Canvas() {
       // Get ReactFlow container bounds
       const reactFlowBounds = reactFlowElement.getBoundingClientRect();
       
-      // Get current viewport state (zoom, pan)
+      // Get current viewport state
       const viewport = reactFlowInstance.getViewport();
       
       // Calculate position relative to ReactFlow container (in screen pixels)
       const screenX = event.clientX - reactFlowBounds.left;
       const screenY = event.clientY - reactFlowBounds.top;
 
-      // Convert screen coordinates to flow coordinates
+      // Convert screen coordinates to flow coordinates using the correct formula
       // Formula from AlignmentGuides: screen = flow * zoom + viewportOffset
       // Reverse: flow = (screen - viewportOffset) / zoom
-      // viewport.x and viewport.y are the pan offsets in screen coordinates relative to container
+      // viewport.x and viewport.y represent where flow point (0,0) appears in screen coordinates
       const flowX = (screenX - viewport.x) / viewport.zoom;
       const flowY = (screenY - viewport.y) / viewport.zoom;
 
@@ -252,6 +252,10 @@ export default function Canvas() {
         viewport: { x: viewport.x, y: viewport.y, zoom: viewport.zoom },
         flowX,
         flowY,
+        calculatedPosition: {
+          x: flowX - dimensions.width / 2,
+          y: flowY - dimensions.height / 2,
+        },
       });
 
       // Calculate position so node center is at cursor position
@@ -346,49 +350,29 @@ export default function Canvas() {
     };
   }, []);
 
-  // Track last snapped position to avoid unnecessary updates
-  const lastSnappedPositionRef = useRef<{ nodeId: string; x: number; y: number } | null>(null);
+  // Track original positions to prevent unwanted snapping
+  const originalPositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
 
-  // Handle node dragging with alignment snapping
+  // Handle node dragging - prevent any snapping by preserving original position
   const onNodeDrag: OnNodeDrag = useCallback(
     (event, node) => {
-      // Calculate snapped position
-      const snappedPosition = calculateSnappedPosition(node, nodes, getNodeDimensions);
+      // DEBUG: Log to see if this is being called when nodes are added
+      console.log('🔍 onNodeDrag called for node:', node.id, 'position:', node.position);
       
-      if (snappedPosition) {
-        // Check if position actually changed to avoid unnecessary updates
-        const lastSnap = lastSnappedPositionRef.current;
-        if (
-          !lastSnap ||
-          lastSnap.nodeId !== node.id ||
-          Math.abs(lastSnap.x - snappedPosition.x) > 0.1 ||
-          Math.abs(lastSnap.y - snappedPosition.y) > 0.1
-        ) {
-          // Use updateNode for more efficient position updates during drag
-          reactFlowInstance.updateNode(node.id, {
-            position: snappedPosition,
-          });
-          lastSnappedPositionRef.current = {
-            nodeId: node.id,
-            x: snappedPosition.x,
-            y: snappedPosition.y,
-          };
-        }
-      } else {
-        // Clear last snap if no snapping
-        if (lastSnappedPositionRef.current?.nodeId === node.id) {
-          lastSnappedPositionRef.current = null;
-        }
+      // Store original position on first drag
+      if (!originalPositionsRef.current.has(node.id)) {
+        originalPositionsRef.current.set(node.id, { x: node.position.x, y: node.position.y });
       }
+      
+      // Do nothing - let ReactFlow handle dragging naturally without any position adjustments
+      // This prevents any snapping behavior
     },
-    [nodes, getNodeDimensions, reactFlowInstance]
+    []
   );
 
   // Handle node drag start
   const onNodeDragStart: OnNodeDrag = useCallback((event, node) => {
     setDraggingNodeId(node.id);
-    // Reset last snapped position
-    lastSnappedPositionRef.current = null;
   }, []);
 
   // Handle dragging nodes into groups
@@ -396,8 +380,6 @@ export default function Canvas() {
     (event, node) => {
       // Clear dragging state
       setDraggingNodeId(null);
-      // Clear last snapped position
-      lastSnappedPositionRef.current = null;
       
       // Skip if node is hidden (already in a group)
       if (node.hidden) return;
@@ -435,21 +417,6 @@ export default function Canvas() {
     [nodes, addNoteToGroup, getNodeDimensions]
   );
 
-  // MiniMap node color based on type
-  const nodeColor = useCallback((node: any) => {
-    switch (node.type) {
-      case 'note':
-        return '#3B82F6'; // blue
-      case 'prompt':
-        return '#A855F7'; // purple
-      case 'group':
-        return '#6B7280'; // gray
-      case 'agent':
-        return '#0EA5E9'; // cyan/blue
-      default:
-        return '#9CA3AF'; // gray
-    }
-  }, []);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -525,7 +492,7 @@ export default function Canvas() {
     >
       <TopLeftBar />
       <TopRightBar />
-      <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} />
+      {/* <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} /> */}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -553,6 +520,12 @@ export default function Canvas() {
         selectNodesOnDrag={false}
         // Make all nodes draggable (default is true, but explicit for clarity)
         nodesDraggable={true}
+        // Disable snap to grid - nodes should appear exactly where dropped
+        snapToGrid={false}
+        snapGrid={[1, 1]}
+        // Explicitly disable any automatic node positioning
+        nodesConnectable={true}
+        elementsSelectable={true}
         // Большая канва (в 3 раза больше)
         translateExtent={[[-15000, -15000], [15000, 15000]]}
         // Touchpad panning with two fingers (ускоренное передвижение)

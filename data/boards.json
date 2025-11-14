@@ -451,29 +451,29 @@
     "name": "фыв",
     "nodes": [
       {
-        "id": "node_61",
-        "type": "prompt",
+        "id": "node_0",
+        "type": "note",
         "position": {
-          "x": 771.92984122177,
-          "y": 109.2759353966369
+          "x": 208.32036025964487,
+          "y": 100.16811756124838
         },
         "data": {
-          "label": "New Prompt",
+          "label": "New Note",
           "content": "",
-          "type": "prompt",
-          "isRunning": false
+          "type": "note"
         },
         "width": 400,
-        "height": 200,
+        "height": 400,
         "measured": {
           "width": 400,
-          "height": 200
+          "height": 400
         },
-        "selected": false
+        "selected": false,
+        "dragging": false
       }
     ],
     "edges": [],
     "createdAt": "2025-11-14T07:55:01.538Z",
-    "updatedAt": "2025-11-14T08:01:52.517Z"
+    "updatedAt": "2025-11-14T08:36:40.811Z"
   }
 ]
