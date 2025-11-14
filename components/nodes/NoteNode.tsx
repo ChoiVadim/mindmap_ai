@@ -441,7 +441,7 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
       {!isCollapsed && (
         <div 
           ref={contentRef}
-          className="flex-1 p-3 min-h-[200px] overflow-auto"
+          className="flex-1 px-12 py-6 min-h-[200px] overflow-auto"
           style={{
             width: '100%',
             overflowY: isManuallyResized ? 'auto' : 'visible',

@@ -431,7 +431,7 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
           {/* System Prompt Editor */}
           <div 
             ref={contentRef}
-            className="p-3 flex-1 overflow-auto"
+            className="px-12 py-6 flex-1 overflow-auto"
             style={{
               width: '100%',
               overflowY: isManuallyResized ? 'auto' : 'visible',
