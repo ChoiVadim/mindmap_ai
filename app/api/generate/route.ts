@@ -149,53 +149,71 @@ export async function POST(request: NextRequest) {
     // Determine provider and configuration
     const provider: AIProvider = agent?.provider || 'openai';
     const model = agent?.model || (provider === 'openai' ? 'gpt-4o' : provider === 'gemini' ? 'gemini-1.5-pro' : 'claude-3-5-sonnet-20241022');
-    const systemPrompt = agent?.systemPrompt || 'You are a helpful AI assistant integrated into MindCanvas AI, a visual knowledge management tool. Provide clear, concise, and helpful responses.';
+    const systemPrompt = agent?.systemPrompt || '';
     
-    // Build context text from connected nodes
+    // Build context text from connected nodes in the required format
     let contextText = '';
     if (context && context.length > 0) {
       contextText = context
         .map((ctx: any) => {
           const label = ctx.label || 'Untitled';
           const content = ctx.content || '';
-          return `${label}:\n${content}`;
+          return `[${label}]\n\n${content}`;
         })
-        .join('\n\n---\n\n');
+        .join('\n\n');
     }
 
-    // Build the final prompt in the required format
-    let taskPrompt = `<Task>\n\n${prompt}\n\n`;
+    // Build the final prompt in the required format:
+    // <Role>
+    // text from agentnode input
+    //
+    // <Context>
+    // [Name of note]
+    // text from notenode
+    //
+    // <Task>
+    // text from promptnode
+    let finalPrompt = '';
     
-    if (contextText) {
-      taskPrompt += `<Context>\n\n${contextText}\n\n`;
-    } else {
-      taskPrompt += `<Context>\n\n(No context provided)\n\n`;
+    // Add Role section (from agent node input)
+    if (systemPrompt && systemPrompt.trim()) {
+      finalPrompt += `<Role>\n\n${systemPrompt}\n\n`;
     }
+    
+    // Add Context section (from note nodes)
+    finalPrompt += `<Context>\n\n`;
+    if (contextText) {
+      finalPrompt += `${contextText}\n\n`;
+    } else {
+      finalPrompt += `(No context provided)\n\n`;
+    }
+    
+    // Add Task section (from prompt node)
+    finalPrompt += `<Task>\n\n${prompt}\n\n`;
 
     // Log the final prompt for debugging
     console.log('\n========== FINAL PROMPT TO AI ==========');
     console.log(`Provider: ${provider}, Model: ${model}`);
-    console.log(`System Prompt:\n${systemPrompt || '(empty)'}`);
-    console.log(`Task Prompt:\n${taskPrompt}`);
+    console.log(`Final Prompt:\n${finalPrompt}`);
     console.log('\n========================================\n');
 
     // Call the appropriate API
-    // For OpenAI and Claude, we pass system prompt separately
+    // For OpenAI and Claude, we pass system prompt separately (but now it's in the prompt)
     // For Gemini, we combine everything
     let generatedText: string;
     switch (provider) {
       case 'openai':
-        generatedText = await callOpenAI(taskPrompt, systemPrompt, model);
+        // For OpenAI, we can pass the full prompt as user message
+        // and optionally still use system prompt if needed, but the Role is already in the prompt
+        generatedText = await callOpenAI(finalPrompt, '', model);
         break;
       case 'gemini':
-        // For Gemini, combine system prompt and task prompt
-        const geminiPrompt = systemPrompt 
-          ? `<Role>\n\n${systemPrompt}\n\n${taskPrompt}`
-          : taskPrompt;
-        generatedText = await callGemini(geminiPrompt, '', model);
+        // For Gemini, send the full prompt
+        generatedText = await callGemini(finalPrompt, '', model);
         break;
       case 'claude':
-        generatedText = await callClaude(taskPrompt, systemPrompt, model);
+        // For Claude, send the full prompt as user message
+        generatedText = await callClaude(finalPrompt, '', model);
         break;
       default:
         throw new Error(`Unsupported provider: ${provider}`);

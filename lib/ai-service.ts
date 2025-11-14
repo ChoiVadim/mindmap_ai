@@ -39,56 +39,40 @@ export function gatherAIContext(
   
   // Find connected agent node (if any)
   let agentNode: CanvasNode | undefined;
+  const contextNodes: CanvasNode[] = [];
+  
   for (const nodeId of sourceNodeIds) {
     const node = nodes.find((n) => n.id === nodeId);
     if (node && node.data.type === 'agent') {
       agentNode = node;
       
-      // Collect system prompt from connected notes to agent node
+      // Collect notes connected to agent node - these should go to Context, not Role
       const agentIncomingEdges = edges.filter((edge) => edge.target === nodeId);
       const agentSourceNodeIds = agentIncomingEdges.map((edge) => edge.source);
-      const agentConnectedNotes: string[] = [];
       
       for (const agentSourceId of agentSourceNodeIds) {
         const agentSourceNode = nodes.find((n) => n.id === agentSourceId);
         if (agentSourceNode && agentSourceNode.data.type === 'note') {
-          agentConnectedNotes.push(agentSourceNode.data.content || '');
+          // Add note connected to agent to context nodes
+          console.log(`Added note node connected to agent ${nodeId}: "${agentSourceNode.data.label}"`);
+          contextNodes.push(agentSourceNode);
         } else if (agentSourceNode && agentSourceNode.data.type === 'group') {
           // Expand group to get child notes
           const childNodes = nodes.filter((n) =>
             agentSourceNode.data.childNodes?.includes(n.id)
           );
-          agentConnectedNotes.push(...childNodes.map(n => n.data.content || ''));
+          console.log(`Group node connected to agent ${nodeId} expanded to ${childNodes.length} child notes`);
+          contextNodes.push(...childNodes);
         }
       }
       
-      // Combine system prompt from editor and connected notes
-      const editorSystemPrompt = node.data.systemPrompt || '';
-      const notesSystemPrompt = agentConnectedNotes.join('\n\n');
-      const combinedSystemPrompt = [editorSystemPrompt, notesSystemPrompt]
-        .filter(s => s.trim())
-        .join('\n\n');
-      
-      if (combinedSystemPrompt && combinedSystemPrompt !== editorSystemPrompt) {
-        // Update agent node with combined system prompt (temporary, for this request)
-        agentNode = {
-          ...agentNode,
-          data: {
-            ...agentNode.data,
-            systemPrompt: combinedSystemPrompt,
-          },
-        };
-        console.log(`Agent node ${nodeId}: combined system prompt from editor and ${agentConnectedNotes.length} connected notes`);
-      }
-      
+      // Use only the editor's system prompt for Role (not notes connected to agent)
       console.log(`Found agent node ${nodeId}: provider=${node.data.provider}, model=${node.data.model}`);
       break; // Only one agent node per prompt
     }
   }
   
-  // Collect context from all connected nodes (excluding agent node)
-  const contextNodes: CanvasNode[] = [];
-  
+  // Collect context from all nodes connected directly to prompt (excluding agent node)
   for (const nodeId of sourceNodeIds) {
     const node = nodes.find((n) => n.id === nodeId);
     if (!node) continue;

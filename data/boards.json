@@ -1177,15 +1177,15 @@
     "name": "Alina",
     "nodes": [
       {
-        "id": "node_0",
+        "id": "node_3",
         "type": "note",
         "position": {
-          "x": 256,
-          "y": 180
+          "x": 789.6318796422378,
+          "y": 241.11768243379618
         },
         "data": {
-          "label": "New Note",
-          "content": "",
+          "label": "Words",
+          "content": "asd\n",
           "type": "note"
         },
         "width": 400,
@@ -1197,15 +1197,15 @@
         "selected": false
       },
       {
-        "id": "node_1",
+        "id": "node_4",
         "type": "prompt",
         "position": {
-          "x": 796.7818771514765,
-          "y": 238.69227076266486
+          "x": 1934.2464280297809,
+          "y": 575.5601708865659
         },
         "data": {
           "label": "New Prompt",
-          "content": "",
+          "content": "456\n",
           "type": "prompt",
           "isRunning": false
         },
@@ -1214,6 +1214,114 @@
         "measured": {
           "width": 400,
           "height": 200
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "node_5",
+        "type": "agent",
+        "position": {
+          "x": 1375.6438730924601,
+          "y": 555.3772296258176
+        },
+        "data": {
+          "label": "AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "openai",
+          "model": "gpt-4o",
+          "systemPrompt": "asdfgh\n"
+        },
+        "width": 400,
+        "height": 300,
+        "measured": {
+          "width": 400,
+          "height": 300
+        },
+        "selected": false,
+        "dragging": false,
+        "resizing": false
+      },
+      {
+        "id": "node_6",
+        "type": "note",
+        "position": {
+          "x": 793.1734078633876,
+          "y": 777.5922672330937
+        },
+        "data": {
+          "label": "Numbers",
+          "content": "123\n",
+          "type": "note"
+        },
+        "selected": true,
+        "width": 400,
+        "height": 400,
+        "measured": {
+          "width": 400,
+          "height": 400
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_7",
+        "type": "note",
+        "position": {
+          "x": 2434.246428029781,
+          "y": 575.5601708865659
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "It seems like you have input some placeholder text or random characters. Could you please provide more specific information or clarify what you need assistance with?\n"
+        },
+        "width": 400,
+        "height": 400,
+        "measured": {
+          "width": 400,
+          "height": 400
+        }
+      },
+      {
+        "id": "node_8",
+        "type": "prompt",
+        "position": {
+          "x": 1543.1828750459538,
+          "y": 1131.3539659212784
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "456\n",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "selected": false,
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_9",
+        "type": "note",
+        "position": {
+          "x": 2043.1828750459538,
+          "y": 1131.3539659212784
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "It seems like you have provided a list with three sections: Words, Numbers, and Task, but the content in each section appears to be minimal or placeholder text. Could you please provide more context or details for each section so I can better understand and assist you with your task?\n"
+        },
+        "width": 400,
+        "height": 400,
+        "measured": {
+          "width": 400,
+          "height": 400
         }
       }
     ],
@@ -1232,15 +1340,130 @@
           "color": "#94a3b8"
         },
         "interactionWidth": 20,
-        "source": "node_0",
+        "source": "node_3",
         "sourceHandle": "right-source",
-        "target": "node_1",
+        "target": "node_5",
         "targetHandle": "left",
-        "id": "xy-edge__node_0right-source-node_1left",
+        "id": "xy-edge__node_3right-source-node_5left",
         "selected": false
+      },
+      {
+        "type": "highlightable",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "interactionWidth": 20,
+        "source": "node_6",
+        "sourceHandle": "right-source",
+        "target": "node_5",
+        "targetHandle": "left",
+        "id": "xy-edge__node_6right-source-node_5left",
+        "selected": false
+      },
+      {
+        "type": "highlightable",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "interactionWidth": 20,
+        "source": "node_5",
+        "sourceHandle": "right",
+        "target": "node_4",
+        "targetHandle": "left",
+        "id": "xy-edge__node_5right-node_4left"
+      },
+      {
+        "id": "node_4-node_7",
+        "source": "node_4",
+        "target": "node_7",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        }
+      },
+      {
+        "type": "highlightable",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "interactionWidth": 20,
+        "source": "node_3",
+        "sourceHandle": "right-source",
+        "target": "node_8",
+        "targetHandle": "left",
+        "id": "xy-edge__node_3right-source-node_8left"
+      },
+      {
+        "type": "highlightable",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "interactionWidth": 20,
+        "source": "node_6",
+        "sourceHandle": "right-source",
+        "target": "node_8",
+        "targetHandle": "left",
+        "id": "xy-edge__node_6right-source-node_8left"
+      },
+      {
+        "id": "node_8-node_9",
+        "source": "node_8",
+        "target": "node_9",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        }
       }
     ],
     "createdAt": "2025-11-14T14:23:23.055Z",
-    "updatedAt": "2025-11-14T14:52:06.853Z"
+    "updatedAt": "2025-11-14T15:22:18.277Z"
   }
 ]

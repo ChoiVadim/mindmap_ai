@@ -74,14 +74,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         position={Position.Left}
         id="left"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ left: '-5px' }}
+        style={{ left: '-12px' }}
       />
       <Handle
         type="source"
         position={Position.Left}
         id="left-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ left: '-5px' }}
+        style={{ left: '-12px' }}
       />
       
       {/* Right side - both source and target */}
@@ -90,14 +90,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         position={Position.Right}
         id="right"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ right: '-5px' }}
+        style={{ right: '-12px' }}
       />
       <Handle
         type="source"
         position={Position.Right}
         id="right-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ right: '-5px' }}
+        style={{ right: '-12px' }}
       />
       
       {/* Top side - both source and target */}
@@ -106,14 +106,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         position={Position.Top}
         id="top"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ top: '-5px' }}
+        style={{ top: '-12px' }}
       />
       <Handle
         type="source"
         position={Position.Top}
         id="top-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ top: '-5px' }}
+        style={{ top: '-12px' }}
       />
       
       {/* Bottom side - both source and target */}
@@ -122,14 +122,14 @@ function GroupNode({ id, data, selected }: NodeProps) {
         position={Position.Bottom}
         id="bottom"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ bottom: '-5px' }}
+        style={{ bottom: '-12px' }}
       />
       <Handle
         type="source"
         position={Position.Bottom}
         id="bottom-source"
         className={`!w-4 !h-4 !bg-gray-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ bottom: '-5px' }}
+        style={{ bottom: '-12px' }}
       />
 
       {/* Header */}

@@ -337,14 +337,14 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
         position={Position.Left}
         id="left"
         className={`!w-4 !h-4 !bg-blue-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ left: '-5px' }}
+        style={{ left: '-12px' }}
       />
       <Handle
         type="source"
         position={Position.Right}
         id="right"
         className={`!w-4 !h-4 !bg-blue-500 !border-2 !border-white !rounded-full transition-all ${selected ? 'opacity-100' : 'opacity-0'}`}
-        style={{ right: '-5px' }}
+        style={{ right: '-12px' }}
       />
 
       {/* Header */}
