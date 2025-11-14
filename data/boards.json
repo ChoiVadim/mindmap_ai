@@ -7,30 +7,12 @@
         "id": "node_0",
         "type": "note",
         "position": {
-          "x": 266.5007027476133,
-          "y": 403.52834415374014
+          "x": 114.42036906114168,
+          "y": 261.7880991791825
         },
         "data": {
-          "label": "New Note",
-          "content": "",
-          "type": "note"
-        },
-        "measured": {
-          "width": 400,
-          "height": 400
-        },
-        "selected": false
-      },
-      {
-        "id": "node_1",
-        "type": "note",
-        "position": {
-          "x": 792.6083881861541,
-          "y": 417.06871164432
-        },
-        "data": {
-          "label": "New Note",
-          "content": "",
+          "label": "Main info about me",
+          "content": "Name: Vadim\n",
           "type": "note"
         },
         "measured": {
@@ -38,7 +20,99 @@
           "height": 400
         },
         "selected": false,
-        "dragging": false
+        "dragging": false,
+        "width": 400,
+        "height": 400
+      },
+      {
+        "id": "node_2",
+        "type": "prompt",
+        "position": {
+          "x": 1271.7542079462278,
+          "y": 490.4368065212851
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Напиши имейл моему професору!\\\nЯ хочу чтобы он поменял оценку за 1 домашнюю работу так как я ему тогда объеснил идею когда мы встречались с ним в кафешке. И он сказал типо что только понял что идея была глубже чем он думал\n",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "measured": {
+          "width": 400,
+          "height": 205
+        },
+        "selected": false,
+        "dragging": false,
+        "width": 400,
+        "height": 205,
+        "resizing": false
+      },
+      {
+        "id": "node_3",
+        "type": "agent",
+        "position": {
+          "x": 771.9321189945884,
+          "y": 396.08471163808224
+        },
+        "data": {
+          "label": "AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "openai",
+          "model": "gpt-4o",
+          "systemPrompt": "You are a professional Email writer.\\\nUse a Korean language. Use a way what koreans use when writing to the professors!\n"
+        },
+        "measured": {
+          "width": 400,
+          "height": 438
+        },
+        "selected": false,
+        "dragging": false,
+        "width": 400,
+        "height": 438,
+        "resizing": false
+      },
+      {
+        "id": "node_4",
+        "type": "note",
+        "position": {
+          "x": 180.29685674179615,
+          "y": 864.4847337824539
+        },
+        "data": {
+          "label": "Class information",
+          "content": "**데이터사이언스개론 (I060-2-9158-01) - 장남수** \n\n금 5,6교시/새빛205\n",
+          "type": "note"
+        },
+        "measured": {
+          "width": 400,
+          "height": 400
+        },
+        "selected": false,
+        "dragging": false,
+        "width": 400,
+        "height": 400,
+        "resizing": false
+      },
+      {
+        "id": "node_6",
+        "type": "note",
+        "position": {
+          "x": 1771.7542079462278,
+          "y": 490.4368065212851
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "제목: 데이터사이언스개론 과제 1점수 관련 문의드립니다.\n\n장남수 교수님께,\n\n안녕하세요 교수님, 데이터사이언스개론 수업을 듣고 있는 학생 바딤입니다.\n\n지난번 교수님과 카페에서 만나 뵐 때, 제가 데이터사이언스개론 과제 1의 아이디어에 대해 설명드렸던 것을 기억하실지 모르겠습니다. 그때 교수님께서 제 아이디어가 처음 생각했던 것보다 더 깊이가 있다는 말씀을 해주셨습니다.\n\n혹시 가능하시다면, 그때 말씀드린 내용을 바탕으로 과제 1의 점수를 다시 한번 고려해 주실 수 있을지 여쭤보고 싶습니다. 제 아이디어가 과제 평가에 긍정적으로 반영될 수 있다면 정말 감사하겠습니다.\n\n항상 열정적으로 강의해 주셔서 감사합니다. 교수님의 피드백을 기다리겠습니다.\n\n감사합니다.\n\n바딤 드림\n"
+        },
+        "width": 400,
+        "height": 474,
+        "measured": {
+          "width": 400,
+          "height": 474
+        },
+        "selected": false
       }
     ],
     "edges": [
@@ -55,16 +129,73 @@
           "height": 20,
           "color": "#94a3b8"
         },
+        "source": "node_3",
+        "sourceHandle": "right",
+        "target": "node_2",
+        "targetHandle": "left",
+        "id": "xy-edge__node_3right-node_2left",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
         "source": "node_0",
         "sourceHandle": "right-source",
-        "target": "node_1",
+        "target": "node_3",
         "targetHandle": "left",
-        "id": "xy-edge__node_0right-source-node_1left",
+        "id": "xy-edge__node_0right-source-node_3left",
         "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_4",
+        "sourceHandle": "right-source",
+        "target": "node_3",
+        "targetHandle": "left",
+        "id": "xy-edge__node_4right-source-node_3left",
+        "selected": false
+      },
+      {
+        "id": "node_2-node_6",
+        "source": "node_2",
+        "target": "node_6",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        }
       }
     ],
     "createdAt": "2025-11-11T12:37:34.040Z",
-    "updatedAt": "2025-11-11T13:12:07.758Z"
+    "updatedAt": "2025-11-14T06:17:17.280Z"
   },
   {
     "id": "board_1762864724742_55mgdo0hm",

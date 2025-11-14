@@ -18,6 +18,7 @@ export interface BaseNodeData {
 // Note node - stores text, ideas, fragments
 export interface NoteNodeData extends BaseNodeData {
   type: 'note';
+  manuallyResized?: boolean; // Whether the user has manually resized the node
 }
 
 // Prompt node - stores AI prompts (empty or saved)
