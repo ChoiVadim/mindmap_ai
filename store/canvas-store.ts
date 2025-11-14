@@ -303,11 +303,16 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
 
   loadCanvas: (nodes, edges) => {
     updateNodeIdCounter(nodes);
-    set({ nodes, edges });
+    // Ensure all edges have the correct type for highlighting
+    const edgesWithType = edges.map((edge) => ({
+      ...edge,
+      type: edge.type || 'highlightable',
+    }));
+    set({ nodes, edges: edgesWithType });
     // Initialize history with loaded state
     history = [{
       nodes: JSON.parse(JSON.stringify(nodes)),
-      edges: JSON.parse(JSON.stringify(edges)),
+      edges: JSON.parse(JSON.stringify(edgesWithType)),
     }];
     historyIndex = 0;
   },

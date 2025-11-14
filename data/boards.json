@@ -2,209 +2,14 @@
   {
     "id": "board_1762864654040_feluuqqa0",
     "name": "Main Board",
-    "nodes": [
-      {
-        "id": "node_0",
-        "type": "note",
-        "position": {
-          "x": 114.42036906114168,
-          "y": 261.7880991791825
-        },
-        "data": {
-          "label": "Main info about me",
-          "content": "Name: Choi Vadim (최바딤)\n\nСтуденческий номер 2022203502\n",
-          "type": "note",
-          "collapsed": false
-        },
-        "measured": {
-          "width": 400,
-          "height": 400
-        },
-        "selected": true,
-        "dragging": false,
-        "width": 400,
-        "height": 400
-      },
-      {
-        "id": "node_2",
-        "type": "prompt",
-        "position": {
-          "x": 1271.7542079462278,
-          "y": 490.4368065212851
-        },
-        "data": {
-          "label": "New Prompt",
-          "content": "Напиши имейл моему професору!\\\nЯ хочу чтобы он поменял оценку за 1 домашнюю работу так как я ему тогда объеснил идею когда мы встречались с ним в кафешке. И он сказал типо что только понял что идея была глубже чем он думал\n",
-          "type": "prompt",
-          "isRunning": false,
-          "collapsed": false
-        },
-        "measured": {
-          "width": 400,
-          "height": 264
-        },
-        "selected": true,
-        "dragging": false,
-        "width": 400,
-        "height": 264,
-        "resizing": false
-      },
-      {
-        "id": "node_3",
-        "type": "agent",
-        "position": {
-          "x": 764.8100173981517,
-          "y": 436.7824350462926
-        },
-        "data": {
-          "label": "Korean Email AI Agent",
-          "content": "",
-          "type": "agent",
-          "provider": "openai",
-          "model": "gpt-4o",
-          "systemPrompt": "You are a professional Email writer.\\\nUse a Korean language. Use a way what koreans use when writing to the professors!\\\n\\\nДелай имейл кратким и четким без лишней воды. Не будь навясщевым!\\\n\\\nНе надо льстить фальшиво. Не добавляй фразы льстящие пожалуйчта\n",
-          "collapsed": false
-        },
-        "measured": {
-          "width": 400,
-          "height": 450
-        },
-        "selected": true,
-        "dragging": false,
-        "width": 400,
-        "height": 450,
-        "resizing": false
-      },
-      {
-        "id": "node_4",
-        "type": "note",
-        "position": {
-          "x": 112.94790018693465,
-          "y": 729.7868206727308
-        },
-        "data": {
-          "label": "Class information",
-          "content": "**데이터사이언스개론 (I060-2-9158-01) - 장남수** \n\n금 5,6교시/새빛205\n",
-          "type": "note"
-        },
-        "measured": {
-          "width": 400,
-          "height": 400
-        },
-        "selected": true,
-        "dragging": false,
-        "width": 400,
-        "height": 400,
-        "resizing": false
-      },
-      {
-        "id": "node_6",
-        "type": "note",
-        "position": {
-          "x": 1771.7542079462278,
-          "y": 490.4368065212851
-        },
-        "data": {
-          "type": "note",
-          "label": "AI Generated",
-          "content": "제목: 데이터사이언스개론 과제 1 점수 관련 문의드립니다.\n\n안녕하세요, 교수님.\n\n데이터사이언스개론 수업을 듣고 있는 최바딤(학번: 2022203502)입니다.\n\n이전에 교수님과 카페에서 만나 과제 1에 대한 제 아이디어를 설명드렸을 때, 교수님께서 제 아이디어가 생각보다 깊이 있다는 말씀을 해주셨습니다. 혹시 가능하시다면 해당 과제의 점수를 재검토해주실 수 있을지 문의드립니다.\n\n감사합니다.\n\n최바딤 드림.\n",
-          "collapsed": false
-        },
-        "width": 400,
-        "height": 400,
-        "measured": {
-          "width": 400,
-          "height": 400
-        },
-        "selected": true
-      }
-    ],
-    "edges": [
-      {
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "source": "node_3",
-        "sourceHandle": "right",
-        "target": "node_2",
-        "targetHandle": "left",
-        "id": "xy-edge__node_3right-node_2left",
-        "selected": true
-      },
-      {
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "source": "node_0",
-        "sourceHandle": "right-source",
-        "target": "node_3",
-        "targetHandle": "left",
-        "id": "xy-edge__node_0right-source-node_3left",
-        "selected": true
-      },
-      {
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "source": "node_4",
-        "sourceHandle": "right-source",
-        "target": "node_3",
-        "targetHandle": "left",
-        "id": "xy-edge__node_4right-source-node_3left",
-        "selected": true
-      },
-      {
-        "id": "node_2-node_6",
-        "source": "node_2",
-        "target": "node_6",
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "selected": true
-      }
-    ],
+    "nodes": [],
+    "edges": [],
     "createdAt": "2025-11-11T12:37:34.040Z",
-    "updatedAt": "2025-11-14T07:00:33.558Z"
+    "updatedAt": "2025-11-14T14:45:47.269Z"
   },
   {
     "id": "board_1762864724742_55mgdo0hm",
-    "name": "Вадим",
+    "name": "Email Agent",
     "nodes": [
       {
         "id": "node_7",
@@ -287,7 +92,7 @@
         },
         "data": {
           "label": "Class information",
-          "content": "**데이터사이언스개론 (I060-2-9158-01) - 장남수** \n\n금 5,6교시/새빛205\n\nфыав\n",
+          "content": "**데이터사이언스개론 (I060-2-9158-01)**\n\n**professor name - 장남수** \n\n금 5,6교시/새빛205\n",
           "type": "note"
         },
         "selected": false,
@@ -309,55 +114,36 @@
         "data": {
           "type": "note",
           "label": "AI Generated",
-          "content": "제목: 데이터사이언스개론 과제 1 점수 관련 문의드립니다.\n\n안녕하세요, 교수님.\n\n데이터사이언스개론 수업을 듣고 있는 최바딤(학번: 2022203502)입니다.\n\n이전에 교수님과 카페에서 만나 과제 1에 대한 제 아이디어를 설명드렸을 때, 교수님께서 제 아이디어가 생각보다 깊이 있다는 말씀을 해주셨습니다. 혹시 가능하시다면 해당 과제의 점수를 재검토해주실 수 있을지 문의드립니다.\n\n감사합니다.\n\n최바딤 드림\n",
+          "content": "제목: 데이터사이언스개론 과제 점수 관련 문의드립니다.\n\n안녕하세요, 교수님. 최바딤입니다. (학번: 2022203502)\n\n지난번에 교수님과 카페에서 만나 데이터사이언스개론 과제에 대해 논의했던 내용을 기억하실지 모르겠습니다. 그때 교수님께서 제가 설명드린 아이디어가 생각보다 깊이가 있다고 말씀하셨던 것이 기억납니다.\n\n혹시 가능하시다면, 해당 과제의 점수를 재검토해주실 수 있을지 문의드립니다. 교수님의 소중한 시간을 빼앗아 죄송합니다.\n\n감사합니다.\n\n최바딤 드림.\n",
           "collapsed": false
         },
         "selected": false,
         "width": 400,
-        "height": 400,
+        "height": 420,
         "measured": {
           "width": 400,
-          "height": 400
+          "height": 420
         },
         "dragging": false
       },
       {
-        "id": "node_28",
-        "type": "note",
+        "id": "node_17",
+        "type": "prompt",
         "position": {
-          "x": 2214.989593715553,
-          "y": 651.5975665932211
+          "x": 1394.809090772014,
+          "y": 1091.5126558177071
         },
         "data": {
-          "label": "New Note",
+          "label": "New Prompt",
           "content": "",
-          "type": "note"
+          "type": "prompt",
+          "isRunning": false
         },
         "width": 400,
-        "height": 400,
+        "height": 200,
         "measured": {
           "width": 400,
-          "height": 400
-        },
-        "selected": false
-      },
-      {
-        "id": "node_33",
-        "type": "note",
-        "position": {
-          "x": 1829.9939522918623,
-          "y": 1225.4679951312028
-        },
-        "data": {
-          "label": "New Note",
-          "content": "",
-          "type": "note"
-        },
-        "width": 400,
-        "height": 400,
-        "measured": {
-          "width": 400,
-          "height": 400
+          "height": 200
         },
         "selected": false,
         "dragging": false
@@ -441,21 +227,961 @@
           "color": "#94a3b8"
         },
         "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_9",
+        "sourceHandle": "right",
+        "target": "node_17",
+        "targetHandle": "left",
+        "id": "xy-edge__node_9right-node_17left",
+        "selected": false
       }
     ],
     "createdAt": "2025-11-11T12:38:44.742Z",
-    "updatedAt": "2025-11-14T07:54:55.088Z"
+    "updatedAt": "2025-11-14T14:18:38.771Z"
   },
   {
     "id": "board_1763106901538_ov8la4ayt",
-    "name": "фыв",
+    "name": "Cover Letter",
+    "nodes": [
+      {
+        "id": "node_1",
+        "type": "note",
+        "position": {
+          "x": -871.2349062211977,
+          "y": 580.5069072885517
+        },
+        "data": {
+          "label": "My Info",
+          "content": "Hello, my name is Vadim 👋\\\n\\\nI am a Computer Science student at Kwangwoon University, ranked in the top 5% of my program (GPA 4.17/4.5). My focus is on building AI-driven and full-stack applications that combine technical depth with real-world impact.\\\n\\\nI have led multiple academic and freelance projects, mentoring peers and delivering solutions that achieved consistent A+ evaluations. As a freelance developer, I built and deployed 20+ automation bots for clients, improving efficiency by 30% and reducing deployment times by 25%.\\\n\\\nMy technical stack spans:\\\n• AI/ML: TensorFlow, PyTorch, GANs, CNNs, RNNs, Prompt Engineering\\\n• Full-Stack: Python, FastAPI, Next.js, React, Tailwind, Supabase\\\n• DevOps: Docker, GitHub Actions, AWS (EC2)\\\n• Databases: PostgreSQL, Redis, SQLAlchemy\\\n\\\nSelected projects include:\\\n• HanJaemi – AI Korean learning platform (50+ test users) integrating OpenAI/Whisper\\\n• Sticker Generator – GAN-based personalized avatar pipeline with reproducible research standards\\\n• KLAS Notification Bot – used by 45+ students weekly for deadlines and campus updates\\\n• Native Checker Bot – Telegram bot with 100+ daily users providing bilingual translation and TTS\\\n\\\nBeyond coding, I mentor students in C, C++, and Python, and actively participate in hackathons and coding challenges (1,000+ Codewars, 40+ LeetCode, 200+ SQL).\\\n\\\nI am passionate about creating scalable products that merge AI with practical usability. My goal is to contribute as an AI product builder or software engineer, applying both technical expertise and entrepreneurial thinking to bring innovative solutions to life.\n",
+          "type": "note",
+          "collapsed": false,
+          "manuallyResized": true
+        },
+        "selected": false,
+        "width": 548,
+        "height": 900,
+        "measured": {
+          "width": 548,
+          "height": 900
+        },
+        "resizing": false,
+        "dragging": false
+      },
+      {
+        "id": "node_2",
+        "type": "prompt",
+        "position": {
+          "x": 1403.5564916494554,
+          "y": 819.8108586186825
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Help me to write a Cover Letter\n",
+          "type": "prompt",
+          "isRunning": false,
+          "collapsed": false
+        },
+        "selected": false,
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_3",
+        "type": "agent",
+        "position": {
+          "x": 537.5681205974499,
+          "y": 829.0959691484984
+        },
+        "data": {
+          "label": "Korean Email AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "openai",
+          "model": "gpt-4o",
+          "systemPrompt": "You are professional HR. With 20 years of expirience.\n",
+          "collapsed": false,
+          "manuallyResized": true
+        },
+        "selected": false,
+        "width": 400,
+        "height": 473,
+        "measured": {
+          "width": 400,
+          "height": 473
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_4",
+        "type": "note",
+        "position": {
+          "x": -869.5713966343956,
+          "y": 1550.9168767420124
+        },
+        "data": {
+          "label": "Work position information",
+          "content": "**About the job**\n\n**Join our Team**\\\n\\\n**About this opportunity:**\\\n\\\nWe are a Cross-Functional Team (XFT) responsible for the end-to-end development of cutting-edge baseband software (L2/common UPC) for Cloud gNB. This includes everything from system analysis and design to testing and deployment. By focusing on a technically rich and mission-critical domain, we offer team members the opportunity to work at the forefront of 5G technology. Our Agile environment supports continuous delivery and improvement, while our close collaboration with global colleagues ensures a diverse, innovative, and globally aligned development experience. [read more](http://erilink.ericsson.se/eridoc/erl/objectId/09004cff867b17ab?docno=EAB-13:036308Uenandaction=approvedandformat=pdf)\\\n\\\n**What skills and experience are essential:**\n\n* Engage in all software development activities, including requirement analysis, system design, software design, integration, verification, and product lifecycle management support, ensuring high-quality and innovative solutions.\n\n* Design and implement new features using C/C++.\n\n* Perform ongoing analysis and manage requirements for current projects.\n\n* Oversee software deliveries using version control systems.\n\n* Create automated test cases to maintain the stability of existing features while integrating new software.\n\n**Beneficial but Can Be Learned:**\n\n* Thoroughly document system analysis, software designs, and test plans.\n\n* Utilize expertise in Real-Time Software development and wireless communication protocols (e.g., 5G NR).\n\n* Adopt Agile methodologies and collaborate effectively within small, cross-functional teams.\n\n* Experience with open-source software components and tools\n\n* Experience with scripting languages such as Perl and Python\n\n* Proficiency in Linux environments, UNIX, Windows, and TCP/IP networking\n\n* Ability to take initiative, drive technical topics, and inspire your team\n\n* Knowledge of Security, DevOps, and/or AI/ML is a plus\n\n**Work and Growth**\\\n\\\n**What kind of work and growth can the person expect?**\\\n\\\nYou’ll work on complex 5G NR baseband features for Cloud gNB, requiring strong problem-solving skills and ownership from design to delivery. Within 3 months, you’ll gain hands-on experience with L2/UPC and large-scale development. By 6 months, you’ll contribute independently, and by 12 months, lead feature development. This role offers a clear growth path through global collaboration, advanced feature delivery, and end-to-end development experience.\\\n\\\n**Why join Ericsson?**\\\n\\\nAt Ericsson, you´ll have an outstanding opportunity. The chance to use your skills and imagination to push the boundaries of what´s possible. To build solutions never seen before to some of the world’s toughest problems. You´ll be challenged, but you won’t be alone. You´ll be joining a team of diverse innovators, all driven to go beyond the status quo to craft what comes next.\\\n\\\n**What happens once you apply?**\\\n\\\n[Click Here](http://www.ericsson.com/en/careers/hiring-process) to find all you need to know about what our typical hiring process looks like.\\\n\\\nEncouraging a diverse and inclusive organization is core to our values at Ericsson, that's why we champion it in everything we do. We truly believe that by collaborating with people with different experiences we drive innovation, which is essential for our future growth. We encourage people from all backgrounds to apply and realize their full potential as part of our Ericsson team. Ericsson is proud to be an Equal Opportunity Employer. [learn more.](http://www.ericsson.com/en/careers)\n",
+          "type": "note",
+          "manuallyResized": true
+        },
+        "selected": false,
+        "width": 567,
+        "height": 1806,
+        "measured": {
+          "width": 567,
+          "height": 1806
+        },
+        "dragging": false,
+        "resizing": false
+      },
+      {
+        "id": "node_6",
+        "type": "prompt",
+        "position": {
+          "x": 1401.331866596546,
+          "y": 1126.6739197854613
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Help me to write a short self-introduction\n",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "selected": false,
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_7",
+        "type": "note",
+        "position": {
+          "x": 2962.280503013561,
+          "y": 298.6861304381632
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "Hello, my name is Vadim. I am currently pursuing a degree in Computer Science at Kwangwoon University, where I am in the top 5% of my class with a GPA of 4.17/4.5. My passion lies in developing AI-driven and full-stack applications that effectively solve real-world problems. I have successfully led several academic and freelance projects, delivering solutions that consistently received top evaluations. Additionally, I have experience as a freelance developer, where I created over 20 automation bots that improved clients' operational efficiency.\n\nMy technical expertise includes AI/ML technologies like TensorFlow and PyTorch, as well as full-stack development with Python, FastAPI, and Next.js. I am also skilled in DevOps, using tools such as Docker and AWS, and have experience with databases like PostgreSQL.\n\nI am eager to contribute as an AI product builder or software engineer, bringing both technical skills and an entrepreneurial mindset to create innovative, scalable products. Beyond coding, I enjoy mentoring students and actively participating in hackathons and coding challenges. I am excited about the opportunity to work in a dynamic and forward-thinking environment where I can continue to grow and make a meaningful impact.\n"
+        },
+        "width": 400,
+        "height": 780,
+        "measured": {
+          "width": 400,
+          "height": 780
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "node_8",
+        "type": "note",
+        "position": {
+          "x": 2778.509469148277,
+          "y": -928.9373212977247
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "Certainly! Based on the information you've provided about your skills and experiences, as well as the job opportunity at Ericsson, here's a tailored cover letter:\n\n***\n\n[Your Name]\\\n[Your Address]\\\n[City, State, Zip Code]\\\n[Email Address]\\\n[Phone Number]\\\n[Date]\n\nHiring Manager\\\nEricsson\n\nDear Hiring Manager,\n\nI am writing to express my interest in the software engineer position within Ericsson's Cross-Functional Team (XFT) for the development of baseband software for Cloud gNB. With a strong academic background and hands-on experience in AI-driven and full-stack applications, I am eager to contribute to the forefront of 5G technology at Ericsson.\n\nAs a Computer Science student at Kwangwoon University, I have consistently achieved academic excellence, ranking in the top 5% of my program with a GPA of 4.17/4.5. My studies, combined with extensive freelance work, have equipped me with a robust technical stack, including proficiency in AI/ML, full-stack development, and DevOps practices. Notably, my freelance projects involved building over 20 automation bots, which improved client efficiency by 30% and reduced deployment times by 25%.\n\nI am particularly drawn to Ericsson's commitment to innovation and the opportunity to work within a dynamic Agile environment. My experience with Python, C, and C++ aligns well with the technical requirements for designing and implementing new features, as outlined in the job description. Additionally, my participation in hackathons and coding challenges has honed my problem-solving skills, enabling me to tackle complex development tasks with creativity and precision.\n\nThroughout my academic and professional journey, I have demonstrated a proactive approach to learning and collaboration. I have mentored peers in programming languages such as C, C++, and Python, and have actively engaged in projects that require cross-functional teamwork. I am confident that my technical expertise, coupled with my passion for creating scalable AI-driven solutions, will allow me to make meaningful contributions to Ericsson's development efforts.\n\nI am excited about the potential to grow within Ericsson, taking on increasing responsibilities from initial design to feature leadership within a year. The opportunity to collaborate with global colleagues and drive innovation in 5G technology is incredibly motivating.\n\nThank you for considering my application. I look forward to the possibility of discussing how I can contribute to Ericsson’s success in advancing cutting-edge baseband software for Cloud gNB.\n\nWarm regards,\n\nVadim\n\n***\n\nEnsure to customize any personal details and adjust the information to better match your style and further details about your experiences and aspirations. Good luck with your application!\n",
+          "manuallyResized": true
+        },
+        "width": 797,
+        "height": 1062,
+        "measured": {
+          "width": 797,
+          "height": 1062
+        },
+        "selected": false,
+        "dragging": false,
+        "resizing": false
+      },
+      {
+        "id": "node_11",
+        "type": "agent",
+        "position": {
+          "x": 540.5179498269049,
+          "y": 2472.8138075384304
+        },
+        "data": {
+          "label": "Korean Email AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "claude",
+          "model": "claude-sonnet-4-5",
+          "systemPrompt": "You are professional HR. With 20 years of expirience.\n",
+          "collapsed": false,
+          "manuallyResized": true
+        },
+        "selected": false,
+        "width": 400,
+        "height": 473,
+        "measured": {
+          "width": 400,
+          "height": 473
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_12",
+        "type": "prompt",
+        "position": {
+          "x": 1398.5995110227973,
+          "y": 2781.3865649467334
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Help me to write a short self-introduction\n",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "selected": false,
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_14",
+        "type": "agent",
+        "position": {
+          "x": 542.4435072986153,
+          "y": 1659.056717035895
+        },
+        "data": {
+          "label": "Korean Email AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "gemini",
+          "model": "gemini-2.5-flash",
+          "systemPrompt": "You are professional HR. With 20 years of expirience.\n",
+          "collapsed": false,
+          "manuallyResized": true
+        },
+        "selected": false,
+        "width": 400,
+        "height": 473,
+        "measured": {
+          "width": 400,
+          "height": 473
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_15",
+        "type": "prompt",
+        "position": {
+          "x": 1404.7399963790158,
+          "y": 1979.5406296383755
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Help me to write a short self-introduction\n",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "selected": false,
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_16",
+        "type": "note",
+        "position": {
+          "x": 2783.05485678678,
+          "y": 2504.52415159574
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "Hello, my name is Vadim. I am a Computer Science student from Kwangwoon University, ranking in the top 5% of my program with a GPA of 4.17/4.5. My academic journey and freelance experience have provided me with a strong foundation in end-to-end software development, problem-solving, and delivering high-impact solutions, including leading projects to A+ evaluations and building 20+ automation bots.\n\nWhile my primary focus has been on AI-driven and full-stack applications using Python, FastAPI, and Next.js, I also possess practical experience in C/C++ through mentoring students and engaging in competitive programming, making me proficient in core development. I am adept with Python scripting, experienced in DevOps practices like Docker and AWS (EC2), and comfortable working in Linux environments, all of which are directly relevant to this role. My background also includes creating automated test cases for my projects, ensuring stability and reliability.\n\nI am particularly drawn to this opportunity at Ericsson to contribute to the cutting-edge baseband software development for Cloud gNB. I am eager to apply my robust technical skills, drive for innovation, and ability to quickly master complex systems to the challenges of 5G technology. My strong AI/ML background is also a significant plus, offering a forward-thinking perspective. I am confident I can quickly integrate into your Agile cross-functional team, contribute from design to delivery, and grow into a leading role within this critical domain.\n",
+          "manuallyResized": true
+        },
+        "width": 474,
+        "height": 728,
+        "measured": {
+          "width": 474,
+          "height": 728
+        },
+        "selected": false,
+        "dragging": false,
+        "resizing": false
+      },
+      {
+        "id": "node_17",
+        "type": "note",
+        "position": {
+          "x": 2683.431113176891,
+          "y": 5597.55587669383
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "# Professional Self-Introduction\n\n***\n\nHello, I'm **Vadim** – a Computer Science student at Kwangwoon University (top 5%, GPA 4.17/4.5) and a **full-stack AI developer** passionate about building scalable, intelligent solutions.\n\n## Why I'm a Strong Fit for Ericsson's 5G Baseband Team\n\n**Technical Foundation:**\n\n* Proficient in **C/C++** and **Python** with experience in complex system design\n\n* Strong background in **real-time software development** through academic projects and hands-on coding\n\n* Proven ability to work in **Linux environments** and scripting (Python, tested through 1,000+ coding challenges)\n\n* Experience with **version control systems** (GitHub) and CI/CD pipelines (GitHub Actions)\n\n**Proven Delivery Track Record:**\n\n* Led **20+ end-to-end projects** from requirements to deployment, consistently achieving A+ evaluations\n\n* Built production systems serving **100+ daily users** (Native Checker Bot) with 99%+ uptime\n\n* Delivered **HanJaemi platform** to 50+ test users, demonstrating full lifecycle ownership\n\n**Learning Agility & Collaboration:**\n\n* Actively mentor peers in C/C++, showing ability to both learn and teach complex technical concepts\n\n* Thrive in cross-functional environments through academic team projects and freelance client collaboration\n\n* Quick learner: self-taught advanced AI/ML frameworks and successfully integrated them into production systems\n\n**What Excites Me About This Role:** I'm drawn to the technical depth of 5G NR baseband development and the opportunity to work on mission-critical infrastructure that powers global communications. The combination of Agile methodology, end-to-end ownership, and cutting-edge wireless technology aligns perfectly with my goal to build impactful, scalable systems at the intersection of software engineering and innovation.\n\nI'm ready to contribute from day one while growing into a feature delivery leader through your structured 12-month development path.\n\n***\n\n**Let's connect:** I'm eager to discuss how my technical skills and ownership mindset can contribute to your Cloud gNB development team.\n",
+          "manuallyResized": true
+        },
+        "width": 734,
+        "height": 1159,
+        "measured": {
+          "width": 734,
+          "height": 1159
+        },
+        "selected": false,
+        "resizing": false,
+        "dragging": false
+      },
+      {
+        "id": "node_18",
+        "type": "prompt",
+        "position": {
+          "x": 1398.1711448724132,
+          "y": 1652.1710866449896
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Help me to write a Cover Letter\n",
+          "type": "prompt",
+          "isRunning": false,
+          "collapsed": false
+        },
+        "selected": false,
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_19",
+        "type": "note",
+        "position": {
+          "x": 2706.7785604135534,
+          "y": 1329.9225302865805
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "Dear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the Cross-Functional Team (XFT) opportunity at Ericsson, as advertised. With a strong academic foundation in Computer Science, a proven track record in developing impactful, AI-driven applications, and a passion for scalable product development, I am confident I possess the core competencies and drive to contribute significantly to your cutting-edge baseband software development for Cloud gNB.\n\nAs a Computer Science student at Kwangwoon University, ranked in the top 5% of my program (GPA 4.17/4.5), I have cultivated a deep understanding of core computer science principles. This includes a robust grasp of languages fundamental to system-level development, particularly C and C++, which I not only utilize in complex data structures and algorithms but also actively mentor other students in. This foundational expertise, combined with my focus on building AI-driven and full-stack applications, aligns perfectly with the technical depth and innovative solutions your team is pursuing in 5G technology.\n\nMy experience extends beyond the classroom into practical, real-world impact. As a freelance developer, I built and deployed over 20 automation bots, demonstrably improving client efficiency by 30% and reducing deployment times by 25%. This hands-on experience has honed my skills in requirements analysis, meticulous software design, and ensuring robust, high-quality deliverables – all essential activities for your team. Leading multiple academic projects, which consistently achieved A+ evaluations, further underscores my ability to oversee end-to-end development, from initial conception through to verification and deployment, often leveraging agile methodologies.\n\nI am particularly excited by the opportunity to apply my versatile technical stack to such a mission-critical domain. While my AI/ML expertise (TensorFlow, PyTorch, GANs, CNNs, RNNs) is a clear \"plus\" for Ericsson, my strong proficiency in Python for scripting and automation directly addresses a beneficial skill for your team. My experience with DevOps tools like Docker and GitHub Actions, coupled with cloud platforms such as AWS (EC2), indicates a practical understanding of Linux environments and continuous delivery, which are central to your agile approach. The development of projects like the KLAS Notification Bot (used by 45+ students weekly) and the Native Checker Bot (100+ daily users) also reflects my ability to create automated test cases and build stable, user-centric features.\n\nThe prospect of working on complex 5G NR baseband features, demanding strong problem-solving skills and end-to-end ownership, deeply resonates with my professional aspirations. My dedication to continuous learning, as evidenced by my active participation in coding challenges (1,000+ Codewars, 40+ LeetCode), prepares me to rapidly acquire expertise in wireless communication protocols and contribute independently within the ambitious timelines you've outlined. I am eager to contribute my technical expertise, entrepreneurial thinking, and collaborative spirit to a team that pushes the boundaries of what's possible in global 5G innovation.\n\nThank you for considering my application. I am enthusiastic about the possibility of contributing to Ericsson's pioneering work and welcome the opportunity to discuss how my skills and passion align with your team's goals.\n\nSincerely,\n\nVadim\n",
+          "manuallyResized": true
+        },
+        "width": 697,
+        "height": 1060,
+        "measured": {
+          "width": 697,
+          "height": 1060
+        },
+        "selected": false,
+        "dragging": false,
+        "resizing": false
+      },
+      {
+        "id": "node_20",
+        "type": "prompt",
+        "position": {
+          "x": 1403.0921343465875,
+          "y": 2483.635527436215
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Help me to write a Cover Letter\n",
+          "type": "prompt",
+          "isRunning": false,
+          "collapsed": false
+        },
+        "selected": false,
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "dragging": false
+      },
+      {
+        "id": "node_21",
+        "type": "note",
+        "position": {
+          "x": 2580.1895307014984,
+          "y": 3402.8891960212354
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "# Cover Letter for Ericsson - 5G Baseband Software Engineer Position\n\n***\n\n**Vadim [Last Name]**\\\n[Your Address]\\\n[City, Country]\\\n[Phone Number]\\\n[Email Address]\\\n[LinkedIn Profile]\\\n[Date]\n\n**Hiring Manager**\\\nEricsson\\\n[Company Address]\n\nDear Hiring Manager,\n\nI am writing to express my strong interest in the 5G Baseband Software Engineer position within Ericsson's Cross-Functional Team. As a top-performing Computer Science student at Kwangwoon University (top 5%, GPA 4.17/4.5) with extensive hands-on experience in software development, AI/ML integration, and Agile methodologies, I am excited about the opportunity to contribute to cutting-edge 5G NR baseband software development for Cloud gNB.\n\n## Why I'm the Right Fit\n\n**Technical Excellence in Software Development**\\\nMy experience mirrors the core requirements of this role. I have successfully led end-to-end development of multiple complex projects, from system analysis and design to testing and deployment. My work on **HanJaemi** – an AI-powered Korean learning platform serving 50+ test users – demonstrates my ability to handle the complete software lifecycle. I architected the system using FastAPI, integrated OpenAI and Whisper APIs, implemented PostgreSQL with SQLAlchemy, and deployed on AWS EC2 with Docker – achieving 95% uptime and 200ms response times.\n\n**Strong Foundation in C/C++ and System-Level Programming**\\\nThrough my academic coursework and mentoring experience, I have developed solid proficiency in C and C++. I regularly mentor students in these languages and have completed 1,000+ coding challenges across Codewars, LeetCode, and SQL platforms, demonstrating my problem-solving capabilities and algorithmic thinking essential for baseband software development.\n\n**Agile Development and Cross-Functional Collaboration**\\\nAs a freelance developer, I built and deployed 20+ automation bots using Agile practices, reducing deployment times by 25% and improving client efficiency by 30%. My **KLAS Notification Bot** serves 45+ students weekly, requiring continuous integration and automated testing to maintain stability – directly applicable to your CI/CD environment. I thrive in collaborative settings, having worked with diverse teams across different time zones and technical backgrounds.\n\n## Alignment with Growth Path\n\nI am particularly attracted to your structured 12-month growth trajectory. My track record shows rapid learning and progression:\n\n* **3 Months**: My experience quickly mastering complex systems (TensorFlow, PyTorch, GANs) and large codebases positions me to understand L2/UPC architecture efficiently\n\n* **6 Months**: My independent project leadership (GAN-based Sticker Generator with reproducible research standards) demonstrates my ability to contribute autonomously\n\n* **12 Months**: My mentorship experience and project ownership indicate readiness for feature development leadership\n\n## Additional Value I Bring\n\n**DevOps & Automation**: Proficient in Docker, GitHub Actions, and AWS EC2, with hands-on experience in Linux environments and TCP/IP networking through my bot deployment infrastructure.\n\n**Scripting & Testing**: Extensive Python expertise with automation scripts for testing and deployment. My projects include comprehensive automated test suites ensuring feature stability.\n\n**AI/ML Knowledge**: While not core to the role, my background in TensorFlow, PyTorch, and prompt engineering could contribute to future AI/ML integration initiatives in 5G systems.\n\n**Open-Source Mindset**: All my major projects leverage open-source tools (FastAPI, Next.js, PostgreSQL, Redis), demonstrating familiarity with open-source development practices.\n\n## Passion for 5G and Wireless Technology\n\nThe opportunity to work on 5G NR baseband features excites me because it represents the intersection of complex system design, real-time software challenges, and global impact. While I am eager to learn wireless communication protocols, my strong foundation in system architecture, performance optimization, and real-time constraints (demonstrated through my low-latency bot systems) provides an excellent starting point.\n\nI am genuinely enthusiastic about joining Ericsson's diverse, innovative team and contributing to solutions that shape the future of telecommunications. Your commitment to pushing boundaries aligns perfectly with my drive to work on technically rich, mission-critical projects.\n\nI would welcome the opportunity to discuss how my technical skills, rapid learning ability, and passion for innovation can contribute to your Cross-Functional Team's success. Thank you for considering my application.\n\nSincerely,\\\nVadim [Last Name]\n\n***\n\n## Key Strengths of This Cover Letter:\n\n✅ **Directly addresses all essential requirements** (C/C++, software lifecycle, Agile, testing)\\\n✅ **Quantifies achievements** (50+ users, 95% uptime, 25% improvement)\\\n✅ **Maps experience to growth trajectory** (3-6-12 month plan)\\\n✅ **Shows enthusiasm for learning** (wireless protocols, real-time systems)\\\n✅ **Demonstrates cultural fit** (collaboration, innovation, diversity)\\\n✅ **Highlights transferable skills** (DevOps, scripting, Linux, open-source)\\\n✅ **Professional yet passionate tone** (HR-approved balance)\n\n**Recommended next step**: Customize [Last Name] and contact details, then tailor 1-2 sentences to any specific Ericsson office or team details if known.\n",
+          "manuallyResized": true
+        },
+        "width": 1019,
+        "height": 2005,
+        "measured": {
+          "width": 1019,
+          "height": 2005
+        },
+        "selected": false,
+        "resizing": false,
+        "dragging": false
+      },
+      {
+        "id": "node_22",
+        "type": "agent",
+        "position": {
+          "x": 4358.479283622898,
+          "y": 1848.876568611636
+        },
+        "data": {
+          "label": "AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "openai",
+          "model": "gpt-4o",
+          "systemPrompt": "You are the world number 1 HR in the world!\n"
+        },
+        "width": 400,
+        "height": 300,
+        "measured": {
+          "width": 400,
+          "height": 300
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "node_25",
+        "type": "prompt",
+        "position": {
+          "x": 4888.377102245595,
+          "y": 1917.5128874895427
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "Judge all tree coverl letter and give final one\n",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "selected": false
+      },
+      {
+        "id": "node_26",
+        "type": "note",
+        "position": {
+          "x": 5506.88754323094,
+          "y": 1684.195456799644
+        },
+        "data": {
+          "type": "note",
+          "label": "AI Generated",
+          "content": "To craft the most effective cover letter for the 5G Baseband Software Engineer position at Ericsson, we should integrate the strongest elements from each of the provided drafts. Here's a final version that combines these strengths:\n\n***\n\n**Vadim [Last Name]**\\\n[Your Address]\\\n[City, Country]\\\n[Phone Number]\\\n[Email Address]\\\n[LinkedIn Profile]\\\n[Date]\n\n**Hiring Manager**\\\nEricsson\\\n[Company Address]\n\nDear Hiring Manager,\n\nI am writing to express my enthusiastic interest in the 5G Baseband Software Engineer position within Ericsson's Cross-Functional Team. As a top-performing Computer Science student at Kwangwoon University, ranked in the top 5% of my program (GPA 4.17/4.5), and with a proven track record in software development and AI-driven applications, I am eager to contribute to Ericsson's pioneering efforts in 5G NR baseband software for Cloud gNB.\n\n**Technical Excellence and Real-World Impact**\\\nI bring a robust technical foundation, with expertise in C, C++, and Python, essential for system-level programming and high-performance software development. My experience in leading end-to-end projects, such as the AI-powered HanJaemi platform, showcases my ability to manage the complete software lifecycle – from architecture design using FastAPI to deployment on AWS EC2, achieving 95% uptime and 200ms response times.\n\n**Alignment with Ericsson's Agile Environment**\\\nI am particularly drawn to your Agile development practices. My freelance work, where I developed over 20 automation bots, reduced client deployment times by 25% and improved efficiency by 30%, directly aligns with your commitment to continuous integration and delivery. The KLAS Notification Bot I developed, serving 45+ students weekly, exemplifies my proficiency in creating scalable, stable solutions in a collaborative setting.\n\n**Growth and Innovation in 5G Technology**\\\nThe opportunity to work on complex 5G NR baseband features excites me as it represents the intersection of real-time software challenges and global impact. Ericsson's structured growth path is appealing, and I am prepared to rapidly progress: mastering L2/UPC architectures within three months, contributing autonomously by six months, and leading feature development by twelve months.\n\n**Additional Value and Passion for Telecommunications**\\\nBeyond the core requirements, I offer strong DevOps skills with Docker, GitHub Actions, and AWS, alongside a deep understanding of Linux environments. My experience with AI/ML tools, while not central to the role, could support future innovations in 5G systems. I am passionate about open-source development and continuously participate in coding challenges to hone my problem-solving skills.\n\nI am genuinely enthusiastic about the possibility of joining Ericsson's diverse and innovative team. Your commitment to pushing the boundaries of telecommunications aligns perfectly with my aspirations to work on technically rich, mission-critical projects. I look forward to discussing how my skills and passion can contribute to your team's success.\n\nThank you for considering my application.\n\nSincerely,\\\nVadim [Last Name]\n\n***\n\n**Key Strengths of This Final Cover Letter:**\n\n* **Directly addresses the role's requirements** (technical expertise, Agile environment)\n\n* **Quantifies achievements** (uptime, response times, efficiency improvements)\n\n* **Aligns with growth trajectory** (3-6-12 month plan)\n\n* **Shows passion for the field** (real-time software, telecommunications)\n\n* **Highlights additional skills** (DevOps, AI/ML, open-source development)\n\n* **Professional tone** with enthusiasm for the role\n\nEnsure to customize [Last Name] and contact details before submission. Good luck with your application!\n",
+          "manuallyResized": true
+        },
+        "width": 916,
+        "height": 1334,
+        "measured": {
+          "width": 916,
+          "height": 1334
+        },
+        "selected": false,
+        "resizing": false,
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_3",
+        "sourceHandle": "right",
+        "target": "node_2",
+        "targetHandle": "left",
+        "id": "node_3-node_2",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_1",
+        "sourceHandle": "right-source",
+        "target": "node_3",
+        "targetHandle": "left",
+        "id": "node_1-node_3",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_4",
+        "sourceHandle": "right-source",
+        "target": "node_3",
+        "targetHandle": "left",
+        "id": "node_4-node_3",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_3",
+        "sourceHandle": "right",
+        "target": "node_6",
+        "targetHandle": "left",
+        "id": "node_3-node_6",
+        "selected": false
+      },
+      {
+        "id": "node_6-node_7",
+        "source": "node_6",
+        "target": "node_7",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "selected": false
+      },
+      {
+        "id": "node_2-node_8",
+        "source": "node_2",
+        "target": "node_8",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_11",
+        "sourceHandle": "right",
+        "target": "node_12",
+        "targetHandle": "left",
+        "id": "node_11-node_12",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_14",
+        "sourceHandle": "right",
+        "target": "node_15",
+        "targetHandle": "left",
+        "id": "node_14-node_15",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_1",
+        "sourceHandle": "right-source",
+        "target": "node_14",
+        "targetHandle": "left",
+        "id": "xy-edge__node_1right-source-node_14left",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_1",
+        "sourceHandle": "right-source",
+        "target": "node_11",
+        "targetHandle": "left",
+        "id": "xy-edge__node_1right-source-node_11left",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_4",
+        "sourceHandle": "right-source",
+        "target": "node_14",
+        "targetHandle": "left",
+        "id": "xy-edge__node_4right-source-node_14left",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_4",
+        "sourceHandle": "right-source",
+        "target": "node_11",
+        "targetHandle": "left",
+        "id": "xy-edge__node_4right-source-node_11left",
+        "selected": false
+      },
+      {
+        "id": "node_15-node_16",
+        "source": "node_15",
+        "target": "node_16",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "selected": false
+      },
+      {
+        "id": "node_12-node_17",
+        "source": "node_12",
+        "target": "node_17",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_14",
+        "sourceHandle": "right",
+        "target": "node_18",
+        "targetHandle": "left",
+        "id": "xy-edge__node_14right-node_18left",
+        "selected": false
+      },
+      {
+        "id": "node_18-node_19",
+        "source": "node_18",
+        "target": "node_19",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_11",
+        "sourceHandle": "right",
+        "target": "node_20",
+        "targetHandle": "left",
+        "id": "xy-edge__node_11right-node_20left",
+        "selected": false
+      },
+      {
+        "id": "node_20-node_21",
+        "source": "node_20",
+        "target": "node_21",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_19",
+        "sourceHandle": "right-source",
+        "target": "node_22",
+        "targetHandle": "left",
+        "id": "xy-edge__node_19right-source-node_22left",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_8",
+        "sourceHandle": "right-source",
+        "target": "node_22",
+        "targetHandle": "left",
+        "id": "xy-edge__node_8right-source-node_22left",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_21",
+        "sourceHandle": "right-source",
+        "target": "node_22",
+        "targetHandle": "left",
+        "id": "xy-edge__node_21right-source-node_22left",
+        "selected": false
+      },
+      {
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "source": "node_22",
+        "sourceHandle": "right",
+        "target": "node_25",
+        "targetHandle": "left",
+        "id": "xy-edge__node_22right-node_25left",
+        "selected": false
+      },
+      {
+        "id": "node_25-node_26",
+        "source": "node_25",
+        "target": "node_26",
+        "type": "default",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "selected": false
+      }
+    ],
+    "createdAt": "2025-11-14T07:55:01.538Z",
+    "updatedAt": "2025-11-14T14:21:28.976Z"
+  },
+  {
+    "id": "board_1763130203055_o35psnwmc",
+    "name": "Alina",
     "nodes": [
       {
         "id": "node_0",
         "type": "note",
         "position": {
-          "x": 208.32036025964487,
-          "y": 100.16811756124838
+          "x": 256,
+          "y": 180
         },
         "data": {
           "label": "New Note",
@@ -468,12 +1194,53 @@
           "width": 400,
           "height": 400
         },
-        "selected": false,
-        "dragging": false
+        "selected": false
+      },
+      {
+        "id": "node_1",
+        "type": "prompt",
+        "position": {
+          "x": 796.7818771514765,
+          "y": 238.69227076266486
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        }
       }
     ],
-    "edges": [],
-    "createdAt": "2025-11-14T07:55:01.538Z",
-    "updatedAt": "2025-11-14T08:36:40.811Z"
+    "edges": [
+      {
+        "type": "highlightable",
+        "animated": false,
+        "style": {
+          "strokeWidth": 2,
+          "stroke": "#94a3b8"
+        },
+        "markerEnd": {
+          "type": "arrow",
+          "width": 20,
+          "height": 20,
+          "color": "#94a3b8"
+        },
+        "interactionWidth": 20,
+        "source": "node_0",
+        "sourceHandle": "right-source",
+        "target": "node_1",
+        "targetHandle": "left",
+        "id": "xy-edge__node_0right-source-node_1left",
+        "selected": false
+      }
+    ],
+    "createdAt": "2025-11-14T14:23:23.055Z",
+    "updatedAt": "2025-11-14T14:52:06.853Z"
   }
 ]

@@ -25,6 +25,7 @@ import Toolbar from './Toolbar';
 import TopLeftBar from './TopLeftBar';
 import TopRightBar from './TopRightBar';
 import AlignmentGuides, { calculateSnappedPosition } from './AlignmentGuides';
+import HighlightableEdge from './HighlightableEdge';
 
 // Define custom node types
 const nodeTypes: any = {
@@ -33,6 +34,11 @@ const nodeTypes: any = {
   group: GroupNode,
   textLabel: TextLabelNode,
   agent: AgentNode,
+};
+
+// Define custom edge types
+const edgeTypes: any = {
+  highlightable: HighlightableEdge,
 };
 
 export default function Canvas() {
@@ -492,7 +498,7 @@ export default function Canvas() {
     >
       <TopLeftBar />
       <TopRightBar />
-      {/* <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} /> */}
+      <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -505,6 +511,7 @@ export default function Canvas() {
         onSelectionChange={onSelectionChange}
         onBeforeDelete={onBeforeDelete}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         connectionMode={ConnectionMode.Loose}
         fitView
         minZoom={0.1}
@@ -539,7 +546,7 @@ export default function Canvas() {
         // Hide React Flow attribution
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={{
-          type: 'default',
+          type: 'highlightable',
           animated: false,
           style: { strokeWidth: 2, stroke: '#94a3b8' },
           markerEnd: {
@@ -548,6 +555,8 @@ export default function Canvas() {
             height: 20,
             color: '#94a3b8',
           },
+          // Увеличиваем область клика для более легкого выделения
+          interactionWidth: 20,
         }}
       >
         <Background
