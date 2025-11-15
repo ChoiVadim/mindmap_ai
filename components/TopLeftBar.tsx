@@ -35,28 +35,46 @@ export default function TopLeftBar() {
 
   const currentBoard = getCurrentBoard();
 
-  // Load boards on mount
+  // Load boards on mount - load only metadata first, then load first board's data
   useEffect(() => {
     const loadBoards = async () => {
       setLoading(true);
       try {
+        // First, load only board metadata (fast)
         const response = await fetch('/api/boards');
         if (response.ok) {
-          const loadedBoards = await response.json();
+          const boardsMetadata = await response.json();
           
-          // Ensure loadedBoards is an array
-          const boardsArray = Array.isArray(loadedBoards) ? loadedBoards : [];
+          // Ensure boardsMetadata is an array
+          const boardsArray = Array.isArray(boardsMetadata) ? boardsMetadata : [];
+          
+          // Set boards list immediately (without data)
           setBoards(boardsArray);
-
+          
           // Use first board or create default if none exist
           if (boardsArray.length > 0) {
-            setCurrentBoard(boardsArray[0].id);
-            loadCanvas(boardsArray[0].nodes || [], boardsArray[0].edges || []);
+            const firstBoardId = boardsArray[0].id;
+            setCurrentBoard(firstBoardId);
+            
+            // Load first board's data on demand
+            const boardResponse = await fetch(`/api/boards/${firstBoardId}`);
+            if (boardResponse.ok) {
+              const firstBoard = await boardResponse.json();
+              loadCanvas(firstBoard.nodes || [], firstBoard.edges || []);
+              
+              // Update the board in store with loaded data
+              setBoards(boardsArray.map(b => 
+                b.id === firstBoardId ? firstBoard : b
+              ));
+            }
           } else {
             // Create default board if none exist
             const defaultBoard = await createBoard('Main Board');
             loadCanvas(defaultBoard.nodes || [], defaultBoard.edges || []);
+            setBoards([defaultBoard]);
           }
+        } else {
+          setBoards([]);
         }
       } catch (error) {
         console.error('Error loading boards:', error);
@@ -73,10 +91,34 @@ export default function TopLeftBar() {
 
   const handleBoardChange = async (boardId: string) => {
     const board = boards.find((b) => b.id === boardId);
-    if (board) {
-      setCurrentBoard(boardId);
+    if (!board) return;
+    
+    setCurrentBoard(boardId);
+    setIsDropdownOpen(false);
+    
+    // If board data is already loaded (has nodes or edges), use it
+    if (board.nodes.length > 0 || board.edges.length > 0) {
       loadCanvas(board.nodes || [], board.edges || []);
-      setIsDropdownOpen(false);
+      return;
+    }
+    
+    // Otherwise, load board data on demand
+    setLoading(true);
+    try {
+      const boardResponse = await fetch(`/api/boards/${boardId}`);
+      if (boardResponse.ok) {
+        const loadedBoard = await boardResponse.json();
+        loadCanvas(loadedBoard.nodes || [], loadedBoard.edges || []);
+        
+        // Update the board in store with loaded data
+        setBoards(boards.map(b => 
+          b.id === boardId ? loadedBoard : b
+        ));
+      }
+    } catch (error) {
+      console.error('Error loading board data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 

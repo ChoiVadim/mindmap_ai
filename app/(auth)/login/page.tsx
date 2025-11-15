@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { SignInPage, Testimonial } from '@/components/ui/sign-in';
+import { Component as LumaSpin } from '@/components/ui/luma-spin';
 
 const sampleTestimonials: Testimonial[] = [
   {
@@ -49,11 +50,13 @@ export default function LoginPage() {
 
       if (error) throw error;
 
+      // Keep loading state true during navigation - the canvas will handle its own loading state
       router.push('/');
       router.refresh();
+      // Don't set loading to false here - let it persist during navigation
+      // The component will unmount anyway when navigation completes
     } catch (error: any) {
       setError(error.message || 'An error occurred during login');
-    } finally {
       setLoading(false);
     }
   };
@@ -71,6 +74,7 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
+      // Keep loading state true during OAuth redirect
     } catch (error: any) {
       setError(error.message || 'An error occurred during Google sign in');
       setLoading(false);
@@ -91,6 +95,11 @@ export default function LoginPage() {
       {error && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 p-4 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg shadow-lg max-w-md">
           {error}
+        </div>
+      )}
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 dark:bg-black/40 backdrop-blur-sm">
+          <LumaSpin />
         </div>
       )}
       <SignInPage

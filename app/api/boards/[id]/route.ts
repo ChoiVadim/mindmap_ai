@@ -2,6 +2,72 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Board } from '@/store/board-store';
 
+// GET /api/boards/[id] - Get a single board with nodes and edges
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> | { id: string } }
+) {
+  try {
+    const resolvedParams = await Promise.resolve(params);
+    const boardId = resolvedParams.id;
+    const supabase = await createClient();
+    
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Fetch board
+    const { data: board, error: boardError } = await supabase
+      .from('boards')
+      .select('*')
+      .eq('id', boardId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (boardError || !board) {
+      return NextResponse.json(
+        { error: 'Board not found' },
+        { status: 404 }
+      );
+    }
+
+    // Fetch nodes and edges in parallel
+    const [nodesResult, edgesResult] = await Promise.all([
+      supabase
+        .from('board_nodes')
+        .select('node_data')
+        .eq('board_id', boardId),
+      supabase
+        .from('board_edges')
+        .select('edge_data')
+        .eq('board_id', boardId),
+    ]);
+
+    const result: Board = {
+      id: board.id,
+      name: board.name,
+      nodes: nodesResult.data?.map((n) => n.node_data) || [],
+      edges: edgesResult.data?.map((e) => e.edge_data) || [],
+      createdAt: board.created_at,
+      updatedAt: board.updated_at,
+    };
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error('Error fetching board:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch board' },
+      { status: 500 }
+    );
+  }
+}
+
 // PATCH /api/boards/[id] - Update a board (name, nodes, edges)
 export async function PATCH(
   request: NextRequest,
@@ -113,28 +179,30 @@ export async function PATCH(
       }
     }
 
-    // Fetch updated board with nodes and edges
-    const { data: updatedBoard } = await supabase
-      .from('boards')
-      .select('*')
-      .eq('id', boardId)
-      .single();
+    // Fetch updated board with nodes and edges in parallel
+    const [updatedBoardResult, nodesResult, edgesResult] = await Promise.all([
+      supabase
+        .from('boards')
+        .select('*')
+        .eq('id', boardId)
+        .single(),
+      supabase
+        .from('board_nodes')
+        .select('node_data')
+        .eq('board_id', boardId),
+      supabase
+        .from('board_edges')
+        .select('edge_data')
+        .eq('board_id', boardId),
+    ]);
 
-    const { data: nodesData } = await supabase
-      .from('board_nodes')
-      .select('node_data')
-      .eq('board_id', boardId);
-
-    const { data: edgesData } = await supabase
-      .from('board_edges')
-      .select('edge_data')
-      .eq('board_id', boardId);
+    const updatedBoard = updatedBoardResult.data;
 
     const result: Board = {
       id: updatedBoard!.id,
       name: updatedBoard!.name,
-      nodes: nodesData?.map((n) => n.node_data) || [],
-      edges: edgesData?.map((e) => e.edge_data) || [],
+      nodes: nodesResult.data?.map((n) => n.node_data) || [],
+      edges: edgesResult.data?.map((e) => e.edge_data) || [],
       createdAt: updatedBoard!.created_at,
       updatedAt: updatedBoard!.updated_at,
     };

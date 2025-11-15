@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Board } from '@/store/board-store';
 
-// GET /api/boards - Get all boards for the authenticated user
+// GET /api/boards - Get all boards metadata only (without nodes/edges for performance)
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -17,10 +17,10 @@ export async function GET() {
       );
     }
 
-    // Fetch boards for the user
+    // Fetch only board metadata (no nodes/edges) for fast initial load
     const { data: boards, error } = await supabase
       .from('boards')
-      .select('*')
+      .select('id, name, created_at, updated_at')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
 
@@ -32,33 +32,17 @@ export async function GET() {
       );
     }
 
-    // For each board, fetch its nodes and edges
-    const boardsWithData: Board[] = await Promise.all(
-      (boards || []).map(async (board) => {
-        // Fetch nodes
-        const { data: nodesData } = await supabase
-          .from('board_nodes')
-          .select('node_data')
-          .eq('board_id', board.id);
+    // Return boards with empty nodes/edges - data will be loaded on demand
+    const boardsMetadata: Board[] = (boards || []).map((board) => ({
+      id: board.id,
+      name: board.name,
+      nodes: [], // Will be loaded when board is opened
+      edges: [], // Will be loaded when board is opened
+      createdAt: board.created_at,
+      updatedAt: board.updated_at,
+    }));
 
-        // Fetch edges
-        const { data: edgesData } = await supabase
-          .from('board_edges')
-          .select('edge_data')
-          .eq('board_id', board.id);
-
-        return {
-          id: board.id,
-          name: board.name,
-          nodes: nodesData?.map((n) => n.node_data) || [],
-          edges: edgesData?.map((e) => e.edge_data) || [],
-          createdAt: board.created_at,
-          updatedAt: board.updated_at,
-        };
-      })
-    );
-
-    return NextResponse.json(boardsWithData);
+    return NextResponse.json(boardsMetadata);
   } catch (error) {
     console.error('Error reading boards:', error);
     return NextResponse.json(
@@ -175,3 +159,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+  
