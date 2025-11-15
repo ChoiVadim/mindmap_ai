@@ -8,6 +8,7 @@ import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { AgentNodeData, AIProvider } from '@/types/canvas';
 import { useCanvasStore } from '@/store/canvas-store';
+import { createPasteHandler } from '@/lib/blocknote-helpers';
 
 // Model options for each provider
 const MODEL_OPTIONS: Record<AIProvider, string[]> = {
@@ -41,21 +42,7 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
     initialContent: typedData.systemPrompt && typedData.systemPrompt.trim() !== '' 
       ? undefined
       : undefined,
-    _tiptapOptions: {
-      editorProps: {
-        transformPastedHTML(html) {
-          return html.replace(/<ol(\s|>)/g, (match, after) => {
-            if (match.includes('start=')) {
-              return match;
-            }
-            return `<ol start="1"${after}`;
-          });
-        },
-        transformPastedText(text) {
-          return text;
-        },
-      },
-    },
+    pasteHandler: createPasteHandler(),
   });
 
   // Update label when data changes

@@ -7,7 +7,8 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { NoteNodeData } from '@/types/canvas';
-import { useCanvasStore } from '@/store/canvas-store';  
+import { useCanvasStore } from '@/store/canvas-store';
+import { createPasteHandler } from '@/lib/blocknote-helpers';  
 
 function NoteNode({ id, data, selected, width, height }: NodeProps) {
   const typedData = data as NoteNodeData;
@@ -36,27 +37,7 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
     initialContent: typedData.content && typedData.content.trim() !== '' 
       ? undefined  // Will be loaded in useEffect
       : undefined,
-    // Fix for numbered lists without start attribute
-    _tiptapOptions: {
-      editorProps: {
-        transformPastedHTML(html) {
-          // Fix ordered lists that don't have start attribute
-          // Handle both <ol> and <ol with attributes>
-          return html.replace(/<ol(\s|>)/g, (match, after) => {
-            // If there's already a start attribute, leave it
-            if (match.includes('start=')) {
-              return match;
-            }
-            // Otherwise add start="1"
-            return `<ol start="1"${after}`;
-          });
-        },
-        transformPastedText(text) {
-          // Also handle plain text paste - ensure no issues with special characters
-          return text;
-        },
-      },
-    },
+    pasteHandler: createPasteHandler(),
   });
 
   // Update label when data changes
