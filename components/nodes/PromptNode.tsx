@@ -91,6 +91,26 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
 
   const isCollapsed = typedData.collapsed ?? false;
 
+  // Track dark mode
+  const [isDark, setIsDark] = useState(false);
+  
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+    
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
   // Update refs when width/height change
   useEffect(() => {
     currentWidthRef.current = width || DEFAULT_WIDTH;
@@ -406,10 +426,11 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
   return (
     <div
       className={`
-        relative bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg shadow-md border-2
-        ${selected ? 'border-purple-500 shadow-lg' : 'border-purple-200'}
+        relative rounded-lg shadow-md border-2
+        ${selected ? 'border-purple-500 shadow-lg' : isDark ? 'border-purple-800' : 'border-purple-200'}
         transition-all duration-200 hover:shadow-lg
         w-full h-full
+        ${isDark ? 'bg-gradient-to-br from-purple-900/40 to-pink-900/40' : 'bg-gradient-to-br from-purple-50 to-pink-50'}
       `}
       style={{
         minWidth: '400px',
@@ -441,9 +462,9 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-purple-100">
+      <div className={`flex items-center justify-between p-3 border-b ${isDark ? 'border-purple-800' : 'border-purple-100'}`}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Sparkles className="w-4 h-4 text-purple-500 flex-shrink-0" />
+          <Sparkles className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-purple-400' : 'text-purple-500'}`} />
           {isEditingLabel ? (
             <input
               autoFocus
@@ -455,13 +476,13 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
                   handleLabelBlur();
                 }
               }}
-              className="nodrag nopan text-sm font-semibold text-purple-700 bg-transparent border border-purple-300 rounded px-1 focus:outline-none focus:ring-1 focus:ring-purple-500 flex-1 min-w-0"
+              className={`nodrag nopan text-sm font-semibold bg-transparent border rounded px-1 focus:outline-none focus:ring-1 flex-1 min-w-0 ${isDark ? 'text-purple-200 border-purple-600 focus:ring-purple-500' : 'text-purple-700 border-purple-300 focus:ring-purple-500'}`}
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <span
               onClick={() => setIsEditingLabel(true)}
-              className="text-sm font-semibold text-purple-700 cursor-text hover:text-purple-900 truncate"
+              className={`text-sm font-semibold cursor-text truncate ${isDark ? 'text-purple-200 hover:text-purple-100' : 'text-purple-700 hover:text-purple-900'}`}
             >
               {label || 'Prompt'}
             </span>
@@ -471,23 +492,23 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
           <button
             onClick={handleRun}
             disabled={typedData.isRunning}
-            className="p-1 hover:bg-purple-100 rounded transition-colors disabled:opacity-50"
+            className={`p-1 rounded transition-colors disabled:opacity-50 ${isDark ? 'hover:bg-purple-800' : 'hover:bg-purple-100'}`}
           >
             {typedData.isRunning ? (
-              <Loader2 className="w-3 h-3 text-purple-500 animate-spin" />
+              <Loader2 className={`w-3 h-3 animate-spin ${isDark ? 'text-purple-400' : 'text-purple-500'}`} />
             ) : (
-              <Play className="w-3 h-3 text-purple-500" />
+              <Play className={`w-3 h-3 ${isDark ? 'text-purple-400' : 'text-purple-500'}`} />
             )}
           </button>
           <button
             onClick={handleToggleCollapse}
-            className="p-1 hover:bg-purple-100 rounded transition-colors"
+            className={`p-1 rounded transition-colors ${isDark ? 'hover:bg-purple-800' : 'hover:bg-purple-100'}`}
             title={isCollapsed ? 'Развернуть' : 'Свернуть'}
           >
             {isCollapsed ? (
-              <ChevronDown className="w-3 h-3 text-purple-600" />
+              <ChevronDown className={`w-3 h-3 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
             ) : (
-              <ChevronUp className="w-3 h-3 text-purple-600" />
+              <ChevronUp className={`w-3 h-3 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
             )}
           </button>
           <button

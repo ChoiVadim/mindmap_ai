@@ -93,6 +93,26 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
 
   const isCollapsed = typedData.collapsed ?? false;
 
+  // Track dark mode
+  const [isDark, setIsDark] = useState(false);
+  
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+    
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
   // Update refs when width/height change
   useEffect(() => {
     currentWidthRef.current = width || DEFAULT_WIDTH;
@@ -398,10 +418,11 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
   return (
     <div
       className={`
-        relative bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg shadow-md border-2
-        ${selected ? 'border-blue-500 shadow-lg' : 'border-blue-200'}
+        relative rounded-lg shadow-md border-2
+        ${selected ? 'border-blue-500 shadow-lg' : isDark ? 'border-blue-800' : 'border-blue-200'}
         transition-all duration-200 hover:shadow-lg
         w-full h-full
+        ${isDark ? 'bg-gradient-to-br from-blue-900/40 to-cyan-900/40' : 'bg-gradient-to-br from-blue-50 to-cyan-50'}
       `}
       style={{
         minWidth: '400px',
@@ -433,9 +454,9 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-blue-100">
+      <div className={`flex items-center justify-between p-3 border-b ${isDark ? 'border-blue-800' : 'border-blue-100'}`}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Bot className="w-4 h-4 text-blue-500 flex-shrink-0" />
+          <Bot className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
           {isEditingLabel ? (
             <input
               autoFocus
@@ -447,13 +468,13 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
                   handleLabelBlur();
                 }
               }}
-              className="nodrag nopan text-sm font-semibold text-blue-700 bg-transparent border border-blue-300 rounded px-1 focus:outline-none focus:ring-1 focus:ring-blue-500 flex-1 min-w-0"
+              className={`nodrag nopan text-sm font-semibold bg-transparent border rounded px-1 focus:outline-none focus:ring-1 flex-1 min-w-0 ${isDark ? 'text-blue-200 border-blue-600 focus:ring-blue-500' : 'text-blue-700 border-blue-300 focus:ring-blue-500'}`}
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <span
               onClick={() => setIsEditingLabel(true)}
-              className="text-sm font-semibold text-blue-700 cursor-text hover:text-blue-900 truncate"
+              className={`text-sm font-semibold cursor-text truncate ${isDark ? 'text-blue-200 hover:text-blue-100' : 'text-blue-700 hover:text-blue-900'}`}
             >
               {label || 'AI Agent'}
             </span>
@@ -462,13 +483,13 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={handleToggleCollapse}
-            className="p-1 hover:bg-blue-100 rounded transition-colors"
+            className={`p-1 rounded transition-colors ${isDark ? 'hover:bg-blue-800' : 'hover:bg-blue-100'}`}
             title={isCollapsed ? 'Развернуть' : 'Свернуть'}
           >
             {isCollapsed ? (
-              <ChevronDown className="w-3 h-3 text-blue-600" />
+              <ChevronDown className={`w-3 h-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
             ) : (
-              <ChevronUp className="w-3 h-3 text-blue-600" />
+              <ChevronUp className={`w-3 h-3 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
             )}
           </button>
           <button
@@ -484,13 +505,13 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
       {!isCollapsed && (
         <>
           {/* Provider and Model Selection */}
-          <div className="p-3 border-b border-blue-100 space-y-2">
+          <div className={`p-3 border-b space-y-2 ${isDark ? 'border-blue-800' : 'border-blue-100'}`}>
             <div>
-              <label className="text-xs font-medium text-blue-600 mb-1 block">Provider</label>
+              <label className={`text-xs font-medium mb-1 block ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>Provider</label>
               <select
                 value={typedData.provider}
                 onChange={handleProviderChange}
-                className="w-full px-2 py-1.5 text-sm border border-blue-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-2 py-1.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-gray-700 border-blue-800 text-gray-200' : 'bg-white border-blue-200 text-gray-900'}`}
               >
                 <option value="openai">OpenAI</option>
                 <option value="gemini">Google Gemini</option>
@@ -498,11 +519,11 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-blue-600 mb-1 block">Model</label>
+              <label className={`text-xs font-medium mb-1 block ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>Model</label>
               <select
                 value={typedData.model || MODEL_OPTIONS[typedData.provider][0]}
                 onChange={handleModelChange}
-                className="w-full px-2 py-1.5 text-sm border border-blue-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-2 py-1.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-gray-700 border-blue-800 text-gray-200' : 'bg-white border-blue-200 text-gray-900'}`}
               >
                 {MODEL_OPTIONS[typedData.provider].map((model) => (
                   <option key={model} value={model}>
@@ -523,7 +544,7 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
               overflowX: 'hidden',
             }}
           >
-            <label className="text-xs font-medium text-blue-600 mb-2 block">System Prompt</label>
+            <label className={`text-xs font-medium mb-2 block ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>System Prompt</label>
             <div className="nodrag nopan" style={{ width: '100%' }}>
               <BlockNoteView
                 editor={editor}

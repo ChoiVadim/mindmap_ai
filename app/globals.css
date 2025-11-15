@@ -18,7 +18,7 @@
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: #000000;
   --foreground: #ededed;
   --secondary: #1f2937;
   --secondary-foreground: #f9fafb;
@@ -186,15 +186,15 @@ body {
 
 /* Dark mode support for ReactFlow */
 .dark .react-flow {
-  background: #1f2937 !important;
+  background: #292929 !important;
 }
 
 .dark .react-flow__background {
-  background: #1f2937 !important;
+  background: #292929 !important;
 }
 
 .dark .react-flow__background line {
-  stroke: #374151 !important;
+  stroke: rgba(255, 255, 255, 0.08) !important;
 }
 
 .dark .react-flow__controls button {

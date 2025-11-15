@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useEffect } from 'react';
 import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
 import { Hash, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { GroupNodeData } from '@/types/canvas';
@@ -13,6 +13,26 @@ function GroupNode({ id, data, selected }: NodeProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(typedData.label || '');
   const [color] = useState(typedData.color || COLORS[Math.floor(Math.random() * COLORS.length)]);
+  
+  // Track dark mode
+  const [isDark, setIsDark] = useState(false);
+  
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+    
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
   
   const updateNodeData = useCanvasStore((state) => state.updateNodeData);
   const deleteNode = useCanvasStore((state) => state.deleteNode);
@@ -45,17 +65,20 @@ function GroupNode({ id, data, selected }: NodeProps) {
   return (
     <div
       className={`
-        relative bg-white rounded-xl shadow-lg border-2
-        ${selected ? 'border-gray-400 shadow-xl' : 'border-gray-200'}
+        relative rounded-xl shadow-lg border-2
+        ${selected ? 'border-gray-400 shadow-xl' : isDark ? 'border-gray-700' : 'border-gray-200'}
         transition-all duration-200 hover:shadow-xl
         w-full
+        ${isDark ? 'bg-gray-800' : 'bg-white'}
       `}
       style={{
         width: '560px',
         height: isCollapsed ? '80px' : '300px',
         minHeight: isCollapsed ? '80px' : '300px',
         outline: 'none',
-        borderColor: selected ? 'rgb(156 163 175)' : 'rgb(229 231 235)'
+        borderColor: selected 
+          ? (isDark ? 'rgb(156 163 175)' : 'rgb(156 163 175)')
+          : (isDark ? 'rgb(55 65 81)' : 'rgb(229 231 235)')
       }}
     >
       {/* Node Resizer */}
@@ -150,18 +173,18 @@ function GroupNode({ id, data, selected }: NodeProps) {
               value={label}
               onChange={handleLabelChange}
               onBlur={handleBlur}
-              className="nodrag nopan w-full px-2 py-1 text-base font-semibold border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`nodrag nopan w-full px-2 py-1 text-base font-semibold border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'}`}
               placeholder="Group name"
             />
           ) : (
             <h3
               onClick={() => setIsEditing(true)}
-              className="text-base font-semibold text-gray-800 cursor-text hover:text-gray-600"
+              className={`text-base font-semibold cursor-text ${isDark ? 'text-gray-200 hover:text-gray-100' : 'text-gray-800 hover:text-gray-600'}`}
             >
               {label || 'Untitled Group'}
             </h3>
           )}
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             {typedData.itemCount} {typedData.itemCount === 1 ? 'item' : 'items'}
           </p>
         </div>
@@ -170,13 +193,13 @@ function GroupNode({ id, data, selected }: NodeProps) {
         <div className="flex items-center gap-1">
           <button
             onClick={handleToggleCollapse}
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            className={`p-1 rounded transition-colors ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
             title={isCollapsed ? 'Развернуть' : 'Свернуть'}
           >
             {isCollapsed ? (
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              <ChevronDown className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
             ) : (
-              <ChevronUp className="w-4 h-4 text-gray-600" />
+              <ChevronUp className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
             )}
           </button>
           <button
@@ -211,10 +234,10 @@ function GroupNode({ id, data, selected }: NodeProps) {
                 draggable
                 onDragStart={handleDragStart}
                 onMouseDown={handleMouseDown}
-                className="nodrag nopan flex items-center gap-2 p-2 bg-gray-50 rounded-lg text-sm cursor-move hover:bg-gray-100 transition-colors"
+                className={`nodrag nopan flex items-center gap-2 p-2 rounded-lg text-sm cursor-move transition-colors ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-gray-100'}`}
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-              <span className="text-gray-700 truncate">
+              <div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-gray-500' : 'bg-gray-400'}`} />
+              <span className={`truncate ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 {node.data.label || 'Untitled'}
               </span>
             </div>

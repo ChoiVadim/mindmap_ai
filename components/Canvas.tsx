@@ -70,6 +70,28 @@ export default function Canvas() {
   // Track dragging node for alignment guides
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
   
+  // Track dark mode
+  const [isDark, setIsDark] = useState(false);
+  
+  useEffect(() => {
+    // Check initial theme
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+    
+    checkTheme();
+    
+    // Watch for theme changes
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+  
   // Track if we're currently loading to prevent saves during load
   const isLoadingRef = useRef(false);
   const previousNodesRef = useRef<string>('');
@@ -494,8 +516,8 @@ export default function Canvas() {
   return (
     <div 
       ref={reactFlowWrapper}
-      className="w-full h-screen dark:bg-gray-900 transition-colors duration-300"
-      style={{ backgroundColor: '#f9fafb' }}
+      className="w-full h-screen dark:bg-black transition-colors duration-300"
+      style={{ backgroundColor: isDark ? '#000000' : '#f9fafb' }}
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
@@ -572,8 +594,8 @@ export default function Canvas() {
         <Background
           variant={BackgroundVariant.Lines}
           gap={200}
-          color="#e5e7ef"
-          bgColor="#ffffff"
+          color={isDark ? "rgba(255, 255, 255, 0.08)" : "#e5e7ef"}
+          bgColor={isDark ? "#000000" : "#ffffff"}
         />
   
         

@@ -93,6 +93,26 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
 
   const isCollapsed = typedData.collapsed ?? false;
 
+  // Track dark mode
+  const [isDark, setIsDark] = useState(false);
+  
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+    
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
+
   // Update refs when width/height change
   useEffect(() => {
     currentWidthRef.current = width || DEFAULT_WIDTH;
@@ -348,13 +368,14 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
     <div
       ref={nodeRef}
       className={`
-        relative bg-white rounded-lg shadow-md border-2
-        ${selected ? 'border-blue-500 shadow-lg' : 'border-gray-200'}
+        relative rounded-lg shadow-md border-2
+        ${selected ? 'border-blue-500 shadow-lg' : isDark ? 'border-gray-700' : 'border-gray-200'}
         transition-all duration-200 hover:shadow-lg
         w-full h-full flex flex-col
+        ${isDark ? 'bg-gray-800' : 'bg-white'}
       `}
       style={{ 
-        backgroundColor: typedData.color || '#ffffff',
+        backgroundColor: typedData.color || (isDark ? '#1f2937' : '#ffffff'),
         minWidth: `${DEFAULT_WIDTH}px`,
         minHeight: isCollapsed ? 'auto' : `${DEFAULT_MIN_HEIGHT}px`
       }}
@@ -433,9 +454,9 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-100 flex-shrink-0">
+      <div className={`flex items-center justify-between p-3 border-b flex-shrink-0 ${isDark ? 'border-gray-700' : 'border-gray-100'}`}>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <StickyNote className="w-4 h-4 text-blue-500 flex-shrink-0" />
+          <StickyNote className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
           {isEditingLabel ? (
             <input
               autoFocus
@@ -447,13 +468,13 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
                   handleLabelBlur();
                 }
               }}
-              className="nodrag nopan text-sm font-semibold text-gray-700 bg-transparent border border-blue-300 rounded px-1 focus:outline-none focus:ring-1 focus:ring-blue-500 flex-1 min-w-0"
+              className={`nodrag nopan text-sm font-semibold bg-transparent border rounded px-1 focus:outline-none focus:ring-1 flex-1 min-w-0 ${isDark ? 'text-gray-200 border-blue-600 focus:ring-blue-500' : 'text-gray-700 border-blue-300 focus:ring-blue-500'}`}
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <span
               onClick={() => setIsEditingLabel(true)}
-              className="text-sm font-semibold text-gray-700 cursor-text hover:text-gray-900 truncate"
+              className={`text-sm font-semibold cursor-text truncate ${isDark ? 'text-gray-200 hover:text-gray-100' : 'text-gray-700 hover:text-gray-900'}`}
             >
               {label || 'Note'}
             </span>
@@ -462,13 +483,13 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={handleToggleCollapse}
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            className={`p-1 rounded transition-colors ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
             title={isCollapsed ? 'Развернуть' : 'Свернуть'}
           >
             {isCollapsed ? (
-              <ChevronDown className="w-3 h-3 text-gray-600" />
+              <ChevronDown className={`w-3 h-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
             ) : (
-              <ChevronUp className="w-3 h-3 text-gray-600" />
+              <ChevronUp className={`w-3 h-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
             )}
           </button>
           <button

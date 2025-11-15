@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { NodeProps, NodeResizer, useReactFlow } from '@xyflow/react';
 import { Type, Trash2 } from 'lucide-react';
 import { useCreateBlockNote } from '@blocknote/react';
@@ -26,6 +26,26 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
   const lastWidthRef = useRef<number | null>(null);
   const DEFAULT_WIDTH = 300;
   const DEFAULT_MIN_HEIGHT = 100;
+
+  // Track dark mode
+  const [isDark, setIsDark] = useState(false);
+  
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+    
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    
+    return () => observer.disconnect();
+  }, []);
 
   // Create editor instance
   const editor = useCreateBlockNote({
@@ -282,7 +302,7 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
     <div
       className={`
         relative bg-transparent rounded-lg border-2 border-dashed
-        ${selected ? 'border-gray-400' : 'border-gray-300'}
+        ${selected ? 'border-gray-400' : isDark ? 'border-gray-600' : 'border-gray-300'}
         transition-all duration-200
         w-full h-full group
       `}
