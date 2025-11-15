@@ -28,6 +28,7 @@ import BottomRightBar from './BottomRightBar';
 import BottomLeftBar from './BottomLeftBar';
 import AlignmentGuides, { calculateSnappedPosition } from './AlignmentGuides';
 import HighlightableEdge from './HighlightableEdge';
+import { Component as LumaSpin } from './ui/luma-spin';
 
 // Define custom node types
 const nodeTypes: any = {
@@ -498,6 +499,11 @@ export default function Canvas() {
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 dark:bg-black/40 backdrop-blur-sm">
+          <LumaSpin />
+        </div>
+      )}
       <TopLeftBar />
       <TopRightBar />
       <BottomRightBar />

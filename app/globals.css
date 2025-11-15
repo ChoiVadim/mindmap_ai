@@ -9,6 +9,12 @@
   --popover: #ffffff;
   --popover-foreground: #171717;
   --border: #e5e7eb;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
 }
 
 .dark {
@@ -19,6 +25,12 @@
   --popover: #1f2937;
   --popover-foreground: #f9fafb;
   --border: #374151;
+  --primary: #818cf8;
+  --primary-foreground: #ffffff;
+  --card: #1f2937;
+  --card-foreground: #f9fafb;
+  --muted: #374151;
+  --muted-foreground: #9ca3af;
 }
 
 @theme inline {
@@ -29,6 +41,12 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -221,4 +239,176 @@ body {
   padding: 0 !important;
   border-radius: 0 !important;
   border-color: transparent !important;
+}
+
+/* Luma Spin Loader Animation */
+@keyframes loaderAnim {
+  0% {
+    inset: 0 35px 35px 0;
+  }
+  12.5% {
+    inset: 0 35px 0 0;
+  }
+  25% {
+    inset: 35px 35px 0 0;
+  }
+  37.5% {
+    inset: 35px 0 0 0;
+  }
+  50% {
+    inset: 35px 0 0 35px;
+  }
+  62.5% {
+    inset: 0 0 0 35px;
+  }
+  75% {
+    inset: 0 0 35px 35px;
+  }
+  87.5% {
+    inset: 0 0 35px 0;
+  }
+  100% {
+    inset: 0 35px 35px 0;
+  }
+}
+
+.animate-loaderAnim {
+  animation: loaderAnim 2.5s infinite;
+}
+
+.animation-delay {
+  animation-delay: -1.25s;
+}
+
+/* Sign In Page Animations */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px);
+  }
+}
+
+@keyframes slideRightIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateX(0px);
+  }
+}
+
+@keyframes testimonialIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px) scale(1);
+  }
+}
+
+.animate-element {
+  animation: fadeSlideIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slide-right {
+  animation: slideRightIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-testimonial {
+  animation: testimonialIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animate-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animate-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animate-delay-700 {
+  animation-delay: 0.7s;
+}
+
+.animate-delay-800 {
+  animation-delay: 0.8s;
+}
+
+.animate-delay-900 {
+  animation-delay: 0.9s;
+}
+
+.animate-delay-1000 {
+  animation-delay: 1.0s;
+}
+
+.animate-delay-1200 {
+  animation-delay: 1.2s;
+}
+
+.animate-delay-1400 {
+  animation-delay: 1.4s;
+}
+
+/* Custom Checkbox Styles */
+.custom-checkbox {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 0.25rem;
+  background-color: var(--background);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.custom-checkbox:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 0.25rem;
+  height: 0.5rem;
+  border: solid var(--primary-foreground);
+  border-width: 0 2px 2px 0;
 }
