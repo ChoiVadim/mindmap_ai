@@ -27,8 +27,10 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
   const lastWidthRef = useRef<number | null>(null);
   const currentWidthRef = useRef<number | null>(null);
   const currentHeightRef = useRef<number | null>(null);
+  const savedHeightRef = useRef<number | null>(null);
   const DEFAULT_WIDTH = 400;
   const DEFAULT_MIN_HEIGHT = 200;
+  const COLLAPSED_HEIGHT = 60; // Height when collapsed (header only)
 
   // Create editor instance with markdown support
   const editor = useCreateBlockNote({
@@ -279,6 +281,66 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
       hasSetDefaultWidthRef.current = true;
     }
   }, []); // Run only once on mount - eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle collapse/expand state changes
+  useEffect(() => {
+    if (isUpdatingSizeRef.current) {
+      return;
+    }
+
+    const currentWidth = currentWidthRef.current || DEFAULT_WIDTH;
+    const currentHeight = currentHeightRef.current || DEFAULT_MIN_HEIGHT;
+
+    if (isCollapsed) {
+      // Save current height before collapsing (if not already saved or if height changed)
+      if (savedHeightRef.current === null || currentHeight > COLLAPSED_HEIGHT) {
+        savedHeightRef.current = currentHeight;
+      }
+      
+      // Only update if height is not already collapsed
+      if (Math.abs(currentHeight - COLLAPSED_HEIGHT) > 5) {
+        isProgrammaticResizeRef.current = true;
+        isUpdatingSizeRef.current = true;
+        
+        updateNode(id, {
+          width: currentWidth,
+          height: COLLAPSED_HEIGHT,
+        });
+
+        setTimeout(() => {
+          isUpdatingSizeRef.current = false;
+        }, 200);
+      }
+    } else {
+      // Restore saved height or calculate from content
+      const heightToRestore = savedHeightRef.current || DEFAULT_MIN_HEIGHT;
+      
+      // Only update if height is different from what we want to restore
+      if (Math.abs(currentHeight - heightToRestore) > 5) {
+        isProgrammaticResizeRef.current = true;
+        isUpdatingSizeRef.current = true;
+        
+        updateNode(id, {
+          width: currentWidth,
+          height: heightToRestore,
+        });
+
+        // After restoring, update height from content if needed
+        setTimeout(() => {
+          isUpdatingSizeRef.current = false;
+          // Trigger height update from content after a short delay to allow content to render
+          setTimeout(() => {
+            updateHeightFromContent();
+          }, 100);
+        }, 200);
+      } else {
+        // Height is already correct, but still trigger content update in case content changed
+        setTimeout(() => {
+          updateHeightFromContent();
+        }, 100);
+      }
+    }
+  }, [isCollapsed, id, updateNode, updateHeightFromContent]);
 
   const nodes = useCanvasStore((state) => state.nodes);
   const edges = useCanvasStore((state) => state.edges);

@@ -84,11 +84,13 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
       return;
     }
 
+    // Find the actual editor content element
     const editorElement = contentRef.current.querySelector('[data-id="editor-container"]') as HTMLElement;
     const contentElement = editorElement || contentRef.current.querySelector('.bn-container') as HTMLElement;
     
     if (!contentElement) return;
 
+    // Use scrollHeight to get the actual content height
     const contentHeight = contentElement.scrollHeight || contentElement.offsetHeight;
     const padding = 24; // 12px top + 12px bottom
     const iconHeight = 40; // Icon and button area
@@ -97,6 +99,7 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
     const currentWidth = currentWidthRef.current || DEFAULT_WIDTH;
     const currentHeight = currentHeightRef.current || DEFAULT_MIN_HEIGHT;
 
+    // Only update if height actually changed significantly
     if (Math.abs(newHeight - currentHeight) > 5) {
       lastHeightRef.current = newHeight;
       currentHeightRef.current = newHeight;
@@ -108,6 +111,7 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
         height: newHeight,
       });
 
+      // Reset the flag after a short delay
       setTimeout(() => {
         isUpdatingSizeRef.current = false;
       }, 200);
@@ -122,7 +126,10 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
       const markdown = await editor.blocksToMarkdownLossy(editor.document);
       updateNodeData(id, { content: markdown });
       
+      // Update height after content change with multiple attempts to ensure it works
       setTimeout(updateHeightFromContent, 50);
+      setTimeout(updateHeightFromContent, 150);
+      setTimeout(updateHeightFromContent, 300);
     } catch (error) {
       console.error('Failed to convert to markdown:', error);
     }
@@ -154,30 +161,34 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
     lastWidthRef.current = currentWidth;
   }, [id, width, isManuallyResized, updateNodeData]);
 
-  // Initial height update when content is loaded
+  // Initial height update when content is loaded and observe content changes
   useEffect(() => {
     if (isManuallyResized || !contentRef.current) {
       return;
     }
 
-    const timeoutId = setTimeout(() => {
+    // Function to update height
+    const performHeightUpdate = () => {
       if (isManuallyResized || isUpdatingSizeRef.current || !contentRef.current) {
         return;
       }
 
+      // Find the actual editor content element
       const editorElement = contentRef.current.querySelector('[data-id="editor-container"]') as HTMLElement;
       const contentElement = editorElement || contentRef.current.querySelector('.bn-container') as HTMLElement;
       
       if (!contentElement) return;
 
+      // Use scrollHeight to get the actual content height
       const contentHeight = contentElement.scrollHeight || contentElement.offsetHeight;
-      const padding = 24;
-      const iconHeight = 40;
+      const padding = 24; // 12px top + 12px bottom
+      const iconHeight = 40; // Icon and button area
       const newHeight = Math.max(DEFAULT_MIN_HEIGHT, contentHeight + padding + iconHeight);
 
       const currentWidth = currentWidthRef.current || DEFAULT_WIDTH;
       const currentHeight = currentHeightRef.current || DEFAULT_MIN_HEIGHT;
 
+      // Only update if height actually changed significantly
       if (Math.abs(newHeight - currentHeight) > 5) {
         lastHeightRef.current = newHeight;
         currentHeightRef.current = newHeight;
@@ -193,9 +204,44 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
           isUpdatingSizeRef.current = false;
         }, 200);
       }
-    }, 200);
+    };
 
-    return () => clearTimeout(timeoutId);
+    // Wait for editor to render
+    const timeoutId1 = setTimeout(performHeightUpdate, 200);
+    const timeoutId2 = setTimeout(performHeightUpdate, 500);
+    const timeoutId3 = setTimeout(performHeightUpdate, 1000);
+
+    // Set up MutationObserver to watch for content changes with debounce
+    let debounceTimeout: NodeJS.Timeout | null = null;
+    const observer = new MutationObserver(() => {
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
+      debounceTimeout = setTimeout(() => {
+        performHeightUpdate();
+      }, 100);
+    });
+
+    // Observe changes in the content container
+    if (contentRef.current) {
+      observer.observe(contentRef.current, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['style', 'class'],
+      });
+    }
+
+    return () => {
+      clearTimeout(timeoutId1);
+      clearTimeout(timeoutId2);
+      clearTimeout(timeoutId3);
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
+      observer.disconnect();
+    };
   }, [id, isManuallyResized, updateNode]);
 
   // Set default width if not set and not manually resized (only once on mount)
@@ -254,24 +300,22 @@ function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
         lineStyle={{ display: 'none' }}
       />
 
-      <div className="flex items-start gap-2 px-12 py-6 h-full">
-        <div 
-          ref={contentRef}
-          className="flex-1 min-h-[60px] overflow-auto"
-          style={{
-            width: '100%',
-            overflowY: isManuallyResized ? 'auto' : 'visible',
-            overflowX: 'hidden',
-          }}
-        >
-          <div className="nodrag nopan" style={{ width: '100%' }}>
-            <BlockNoteView
-              editor={editor}
-              onChange={handleContentChange}
-              theme="light"
-              data-color-mode="light"
-            />
-          </div>
+      <div 
+        ref={contentRef}
+        className="flex-1 px-12 py-6 min-h-[60px] overflow-auto"
+        style={{
+          width: '100%',
+          overflowY: isManuallyResized ? 'auto' : 'visible',
+          overflowX: 'hidden',
+        }}
+      >
+        <div className="nodrag nopan" style={{ width: '100%' }}>
+          <BlockNoteView
+            editor={editor}
+            onChange={handleContentChange}
+            theme="light"
+            data-color-mode="light"
+          />
         </div>
       </div>
     </div>

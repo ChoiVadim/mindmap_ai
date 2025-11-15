@@ -34,8 +34,10 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
   const lastWidthRef = useRef<number | null>(null);
   const currentWidthRef = useRef<number | null>(null);
   const currentHeightRef = useRef<number | null>(null);
+  const savedHeightRef = useRef<number | null>(null);
   const DEFAULT_WIDTH = 400;
   const DEFAULT_MIN_HEIGHT = 300;
+  const COLLAPSED_HEIGHT = 60; // Height when collapsed (header only)
 
   // Create editor instance for system prompt
   const editor = useCreateBlockNote({
@@ -138,6 +140,66 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
     }
   }, [id, isCollapsed, isManuallyResized, updateNode]);
 
+  // Handle collapse/expand state changes
+  useEffect(() => {
+    if (isUpdatingSizeRef.current) {
+      return;
+    }
+
+    const currentWidth = currentWidthRef.current || DEFAULT_WIDTH;
+    const currentHeight = currentHeightRef.current || DEFAULT_MIN_HEIGHT;
+
+    if (isCollapsed) {
+      // Save current height before collapsing (if not already saved or if height changed)
+      if (savedHeightRef.current === null || currentHeight > COLLAPSED_HEIGHT) {
+        savedHeightRef.current = currentHeight;
+      }
+      
+      // Only update if height is not already collapsed
+      if (Math.abs(currentHeight - COLLAPSED_HEIGHT) > 5) {
+        isProgrammaticResizeRef.current = true;
+        isUpdatingSizeRef.current = true;
+        
+        updateNode(id, {
+          width: currentWidth,
+          height: COLLAPSED_HEIGHT,
+        });
+
+        setTimeout(() => {
+          isUpdatingSizeRef.current = false;
+        }, 200);
+      }
+    } else {
+      // Restore saved height or calculate from content
+      const heightToRestore = savedHeightRef.current || DEFAULT_MIN_HEIGHT;
+      
+      // Only update if height is different from what we want to restore
+      if (Math.abs(currentHeight - heightToRestore) > 5) {
+        isProgrammaticResizeRef.current = true;
+        isUpdatingSizeRef.current = true;
+        
+        updateNode(id, {
+          width: currentWidth,
+          height: heightToRestore,
+        });
+
+        // After restoring, update height from content if needed
+        setTimeout(() => {
+          isUpdatingSizeRef.current = false;
+          // Trigger height update from content after a short delay to allow content to render
+          setTimeout(() => {
+            updateHeightFromContent();
+          }, 100);
+        }, 200);
+      } else {
+        // Height is already correct, but still trigger content update in case content changed
+        setTimeout(() => {
+          updateHeightFromContent();
+        }, 100);
+      }
+    }
+  }, [isCollapsed, id, updateNode, updateHeightFromContent]);
+
   // Handle system prompt changes
   const handleSystemPromptChange = useCallback(async () => {
     if (!editor) return;
@@ -146,8 +208,10 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
       const markdown = await editor.blocksToMarkdownLossy(editor.document);
       updateNodeData(id, { systemPrompt: markdown });
       
-      // Update height after content change
+      // Update height after content change with multiple attempts to ensure it works
       setTimeout(updateHeightFromContent, 50);
+      setTimeout(updateHeightFromContent, 150);
+      setTimeout(updateHeightFromContent, 300);
     } catch (error) {
       console.error('Failed to convert to markdown:', error);
     }
@@ -209,15 +273,14 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
     lastWidthRef.current = currentWidth;
   }, [id, width, isManuallyResized, updateNodeData]);
 
-  // Initial height update when content is loaded
+  // Initial height update when content is loaded and observe content changes
   useEffect(() => {
     if (isCollapsed || isManuallyResized || !contentRef.current) {
       return;
     }
 
-    // Wait for editor to render
-    const timeoutId = setTimeout(() => {
-      // Check flags again in case they changed
+    // Function to update height
+    const performHeightUpdate = () => {
       if (isManuallyResized || isUpdatingSizeRef.current || !contentRef.current) {
         return;
       }
@@ -254,9 +317,44 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
           isUpdatingSizeRef.current = false;
         }, 200);
       }
-    }, 200);
+    };
 
-    return () => clearTimeout(timeoutId);
+    // Wait for editor to render
+    const timeoutId1 = setTimeout(performHeightUpdate, 200);
+    const timeoutId2 = setTimeout(performHeightUpdate, 500);
+    const timeoutId3 = setTimeout(performHeightUpdate, 1000);
+
+    // Set up MutationObserver to watch for content changes with debounce
+    let debounceTimeout: NodeJS.Timeout | null = null;
+    const observer = new MutationObserver(() => {
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
+      debounceTimeout = setTimeout(() => {
+        performHeightUpdate();
+      }, 100);
+    });
+
+    // Observe changes in the content container
+    if (contentRef.current) {
+      observer.observe(contentRef.current, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ['style', 'class'],
+      });
+    }
+
+    return () => {
+      clearTimeout(timeoutId1);
+      clearTimeout(timeoutId2);
+      clearTimeout(timeoutId3);
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
+      observer.disconnect();
+    };
   }, [id, isCollapsed, isManuallyResized, updateNode]);
 
   // Set default width if not set and not manually resized (only once on mount)
@@ -418,7 +516,7 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
           {/* System Prompt Editor */}
           <div 
             ref={contentRef}
-            className="px-12 py-6 flex-1 overflow-auto"
+            className="px-12 py-6 flex-1 min-h-[200px] overflow-auto"
             style={{
               width: '100%',
               overflowY: isManuallyResized ? 'auto' : 'visible',
