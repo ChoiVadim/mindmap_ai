@@ -158,44 +158,33 @@ export async function POST(request: NextRequest) {
         .map((ctx: any) => {
           const label = ctx.label || 'Untitled';
           const content = ctx.content || '';
-          return `[${label}]\n\n${content}`;
+          return `[${label}]\n${content}`;
         })
-        .join('\n\n');
+        .join('\n');
     }
 
-    // Build the final prompt in the required format:
-    // <Role>
-    // text from agentnode input
-    //
-    // <Context>
-    // [Name of note]
-    // text from notenode
-    //
-    // <Task>
-    // text from promptnode
     let finalPrompt = '';
     
     // Add Role section (from agent node input)
     if (systemPrompt && systemPrompt.trim()) {
-      finalPrompt += `<Role>\n\n${systemPrompt}\n\n`;
+      finalPrompt += `<Role>\n${systemPrompt}\n`;
     }
     
     // Add Context section (from note nodes)
-    finalPrompt += `<Context>\n\n`;
+    finalPrompt += `<Context>\n`;
     if (contextText) {
-      finalPrompt += `${contextText}\n\n`;
+      finalPrompt += `${contextText}`;
     } else {
-      finalPrompt += `(No context provided)\n\n`;
+      finalPrompt += `(No context provided)`;
     }
     
     // Add Task section (from prompt node)
-    finalPrompt += `<Task>\n\n${prompt}\n\n`;
+    finalPrompt += `\n<Task>\n${prompt}`;
 
     // Log the final prompt for debugging
-    console.log('\n========== FINAL PROMPT TO AI ==========');
-    console.log(`Provider: ${provider}, Model: ${model}`);
-    console.log(`Final Prompt:\n${finalPrompt}`);
-    console.log('\n========================================\n');
+    console.log('\n========== FINAL PROMPT TO AI ==========\n');
+    console.log(`${finalPrompt}`);
+    console.log('========================================\n');
 
     // Call the appropriate API
     // For OpenAI and Claude, we pass system prompt separately (but now it's in the prompt)
