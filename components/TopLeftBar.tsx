@@ -35,8 +35,18 @@ export default function TopLeftBar() {
 
   const currentBoard = getCurrentBoard();
 
-  // Load boards on mount - load only metadata first, then load first board's data
+  // Load boards on mount - but only after authentication is complete
   useEffect(() => {
+    // Don't load boards until authentication is complete
+    if (authLoading) {
+      return;
+    }
+
+    // If user is not authenticated, don't try to load boards
+    if (!user) {
+      return;
+    }
+
     const loadBoards = async () => {
       setLoading(true);
       try {
@@ -87,7 +97,7 @@ export default function TopLeftBar() {
 
     loadBoards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
+  }, [authLoading, user]); // Wait for auth to complete before loading
 
   const handleBoardChange = async (boardId: string) => {
     const board = boards.find((b) => b.id === boardId);
