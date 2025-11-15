@@ -1,62 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { createClient } from '@/lib/supabase/server';
 import { Board } from '@/store/board-store';
 
-const BOARDS_FILE_PATH = path.join(process.cwd(), 'data', 'boards.json');
-
-// Ensure data directory exists
-async function ensureDataDirectory() {
-  const dataDir = path.join(process.cwd(), 'data');
-  try {
-    await fs.access(dataDir);
-  } catch {
-    await fs.mkdir(dataDir, { recursive: true });
-  }
-}
-
-// Read boards from file
-async function readBoards(): Promise<Board[]> {
-  try {
-    await ensureDataDirectory();
-    const fileContent = await fs.readFile(BOARDS_FILE_PATH, 'utf-8');
-    const parsed = JSON.parse(fileContent);
-    
-    // Handle case where file contains object with "boards" property
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      if (Array.isArray(parsed.boards)) {
-        return parsed.boards;
-      }
-      return [];
-    }
-    
-    // If it's already an array, return it
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-    
-    // Fallback to empty array
-    return [];
-  } catch (error: any) {
-    // If file doesn't exist, return empty array
-    if (error.code === 'ENOENT') {
-      return [];
-    }
-    throw error;
-  }
-}
-
-// Write boards to file
-async function writeBoards(boards: Board[]): Promise<void> {
-  await ensureDataDirectory();
-  await fs.writeFile(BOARDS_FILE_PATH, JSON.stringify(boards, null, 2), 'utf-8');
-}
-
-// GET /api/boards - Get all boards
+// GET /api/boards - Get all boards for the authenticated user
 export async function GET() {
   try {
-    const boards = await readBoards();
-    return NextResponse.json(boards);
+    const supabase = await createClient();
+    
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // Fetch boards for the user
+    const { data: boards, error } = await supabase
+      .from('boards')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching boards:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch boards' },
+        { status: 500 }
+      );
+    }
+
+    // For each board, fetch its nodes and edges
+    const boardsWithData: Board[] = await Promise.all(
+      (boards || []).map(async (board) => {
+        // Fetch nodes
+        const { data: nodesData } = await supabase
+          .from('board_nodes')
+          .select('node_data')
+          .eq('board_id', board.id);
+
+        // Fetch edges
+        const { data: edgesData } = await supabase
+          .from('board_edges')
+          .select('edge_data')
+          .eq('board_id', board.id);
+
+        return {
+          id: board.id,
+          name: board.name,
+          nodes: nodesData?.map((n) => n.node_data) || [],
+          edges: edgesData?.map((e) => e.edge_data) || [],
+          createdAt: board.created_at,
+          updatedAt: board.updated_at,
+        };
+      })
+    );
+
+    return NextResponse.json(boardsWithData);
   } catch (error) {
     console.error('Error reading boards:', error);
     return NextResponse.json(
@@ -69,38 +71,102 @@ export async function GET() {
 // POST /api/boards - Create a new board
 export async function POST(request: NextRequest) {
   try {
-    const newBoard: Board = await request.json();
+    const supabase = await createClient();
     
-    // Validate required fields
-    if (!newBoard.id || !newBoard.name) {
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'Board must have id and name' },
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, nodes = [], edges = [] } = body;
+
+    // Validate required fields
+    if (!name) {
+      return NextResponse.json(
+        { error: 'Board name is required' },
         { status: 400 }
       );
     }
 
-    const boards = await readBoards();
-    
-    // Check if board with this ID already exists
-    if (boards.some((b) => b.id === newBoard.id)) {
+    // Create board
+    const { data: board, error: boardError } = await supabase
+      .from('boards')
+      .insert({
+        user_id: user.id,
+        name,
+      })
+      .select()
+      .single();
+
+    if (boardError || !board) {
+      console.error('Error creating board:', boardError);
       return NextResponse.json(
-        { error: 'Board with this ID already exists' },
-        { status: 409 }
+        { error: 'Failed to create board' },
+        { status: 500 }
       );
     }
 
-    // Add timestamps if not provided
-    const now = new Date().toISOString();
-    const boardWithTimestamps: Board = {
-      ...newBoard,
-      createdAt: newBoard.createdAt || now,
-      updatedAt: now,
+    // Insert nodes if provided
+    if (nodes.length > 0) {
+      const nodesToInsert = nodes.map((node: any) => ({
+        board_id: board.id,
+        node_data: node,
+      }));
+
+      const { error: nodesError } = await supabase
+        .from('board_nodes')
+        .insert(nodesToInsert);
+
+      if (nodesError) {
+        console.error('Error inserting nodes:', nodesError);
+        // Continue anyway - board is created
+      }
+    }
+
+    // Insert edges if provided
+    if (edges.length > 0) {
+      const edgesToInsert = edges.map((edge: any) => ({
+        board_id: board.id,
+        edge_data: edge,
+      }));
+
+      const { error: edgesError } = await supabase
+        .from('board_edges')
+        .insert(edgesToInsert);
+
+      if (edgesError) {
+        console.error('Error inserting edges:', edgesError);
+        // Continue anyway - board is created
+      }
+    }
+
+    // Fetch the complete board with nodes and edges
+    const { data: nodesData } = await supabase
+      .from('board_nodes')
+      .select('node_data')
+      .eq('board_id', board.id);
+
+    const { data: edgesData } = await supabase
+      .from('board_edges')
+      .select('edge_data')
+      .eq('board_id', board.id);
+
+    const newBoard: Board = {
+      id: board.id,
+      name: board.name,
+      nodes: nodesData?.map((n) => n.node_data) || [],
+      edges: edgesData?.map((e) => e.edge_data) || [],
+      createdAt: board.created_at,
+      updatedAt: board.updated_at,
     };
 
-    boards.push(boardWithTimestamps);
-    await writeBoards(boards);
-
-    return NextResponse.json(boardWithTimestamps, { status: 201 });
+    return NextResponse.json(newBoard, { status: 201 });
   } catch (error) {
     console.error('Error creating board:', error);
     return NextResponse.json(
@@ -109,4 +175,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Plus, Trash2, Edit2, X, Check } from 'lucide-react';
+import { LayoutDashboard, Plus, Trash2, Edit2, X, Check, LogOut, User } from 'lucide-react';
 import Image from 'next/image';
 import { Dock } from '@/components/ui/dock-two';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBoardStore } from '@/store/board-store';
 import { useCanvasStore } from '@/store/canvas-store';
+import { useAuth } from '@/components/auth/AuthProvider';
 
 export default function TopLeftBar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function TopLeftBar() {
   } = useBoardStore();
 
   const { loadCanvas } = useCanvasStore();
+  const { user, signOut, loading: authLoading } = useAuth();
 
   const currentBoard = getCurrentBoard();
 
@@ -46,15 +48,8 @@ export default function TopLeftBar() {
           const boardsArray = Array.isArray(loadedBoards) ? loadedBoards : [];
           setBoards(boardsArray);
 
-          // Restore current board from localStorage or use first board
-          const savedBoardId = localStorage.getItem('mindcanvas-current-board-id');
-          if (savedBoardId && boardsArray.some((b: any) => b.id === savedBoardId)) {
-            setCurrentBoard(savedBoardId);
-            const board = boardsArray.find((b: any) => b.id === savedBoardId);
-            if (board) {
-              loadCanvas(board.nodes || [], board.edges || []);
-            }
-          } else if (boardsArray.length > 0) {
+          // Use first board or create default if none exist
+          if (boardsArray.length > 0) {
             setCurrentBoard(boardsArray[0].id);
             loadCanvas(boardsArray[0].nodes || [], boardsArray[0].edges || []);
           } else {
@@ -223,6 +218,23 @@ export default function TopLeftBar() {
                 exit={{ opacity: 0, y: -10 }}
                 className="absolute top-full left-0 mt-2 w-72 rounded-lg shadow-xl py-1 z-20 bg-popover border border-border"
               >
+                {/* User info and logout */}
+                {!authLoading && user && (
+                  <div className="px-4 py-2 border-b border-border">
+                    <div className="flex items-center gap-2 text-sm text-foreground/70 mb-2">
+                      <User className="w-4 h-4" />
+                      <span className="truncate">{user.email}</span>
+                    </div>
+                    <button
+                      onClick={signOut}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-foreground/70 hover:bg-secondary/50 rounded transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign out</span>
+                    </button>
+                  </div>
+                )}
+
                 {/* Board list */}
                 {Array.isArray(boards) && boards.map((board) => (
                   <div

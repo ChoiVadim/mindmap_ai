@@ -44,8 +44,6 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
 
   setCurrentBoard: (boardId) => {
     set({ currentBoardId: boardId });
-    // Save current board ID to localStorage for persistence
-    localStorage.setItem('mindcanvas-current-board-id', boardId);
   },
 
   getCurrentBoard: () => {
@@ -86,8 +84,6 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
         boards: [...state.boards, savedBoard],
         currentBoardId: savedBoard.id,
       }));
-
-      localStorage.setItem('mindcanvas-current-board-id', savedBoard.id);
       
       return savedBoard;
     } catch (error) {
@@ -117,11 +113,6 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       if (currentBoardId === boardId) {
         const newCurrentId = updatedBoards.length > 0 ? updatedBoards[0].id : null;
         set({ currentBoardId: newCurrentId });
-        if (newCurrentId) {
-          localStorage.setItem('mindcanvas-current-board-id', newCurrentId);
-        } else {
-          localStorage.removeItem('mindcanvas-current-board-id');
-        }
       }
     } catch (error) {
       console.error('Error deleting board:', error);
