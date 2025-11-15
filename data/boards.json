@@ -1177,27 +1177,6 @@
     "name": "Testing",
     "nodes": [
       {
-        "id": "node_3",
-        "type": "note",
-        "position": {
-          "x": 803.7875782299936,
-          "y": 228.98422650143402
-        },
-        "data": {
-          "label": "Words",
-          "content": "asd\n",
-          "type": "note"
-        },
-        "width": 400,
-        "height": 400,
-        "measured": {
-          "width": 400,
-          "height": 400
-        },
-        "selected": false,
-        "dragging": false
-      },
-      {
         "id": "node_4",
         "type": "prompt",
         "position": {
@@ -1230,8 +1209,8 @@
           "label": "AI Agent",
           "content": "",
           "type": "agent",
-          "provider": "claude",
-          "model": "claude-sonnet-4-5",
+          "provider": "openai",
+          "model": "gpt-4o",
           "systemPrompt": "You are a Math teacher\n"
         },
         "width": 400,
@@ -1245,27 +1224,6 @@
         "resizing": false
       },
       {
-        "id": "node_6",
-        "type": "note",
-        "position": {
-          "x": 781.0399519310255,
-          "y": 878.7044000027784
-        },
-        "data": {
-          "label": "Numbers",
-          "content": "123\n",
-          "type": "note"
-        },
-        "selected": false,
-        "width": 400,
-        "height": 400,
-        "measured": {
-          "width": 400,
-          "height": 400
-        },
-        "dragging": false
-      },
-      {
         "id": "node_7",
         "type": "note",
         "position": {
@@ -1275,13 +1233,13 @@
         "data": {
           "type": "note",
           "label": "AI Generated",
-          "content": "# Math Exercise: Pairing Words with Numbers\n\n## Given Information:\n\n* **Words:** asd\n\n* **Numbers:** 123\n\n## Solution:\n\nI'll pair each letter from the word \"asd\" with each number from \"123\":\n\n| Word/Letter | Number |\n| ----------- | ------ |\n| a           | 1      |\n| s           | 2      |\n| d           | 3      |\n\n## Result:\n\n* **a** + **1** = a1\n\n* **s** + **2** = s2\n\n* **d** + **3** = d3\n\n**Combined result:** a1, s2, d3\n\n***\n\n*Note: If you meant to add the numerical value (where a=1, b=2, etc.), let me know and I can recalculate! Or if you have different words and numbers to work with, please share them.*\n"
+          "content": "It seems like you want to create a list by combining each word from the \"words\" list with a number from the \"numbers\" list. However, you didn't provide the actual lists of words and numbers. Once you provide these lists, I can assist you in combining them. Please share the lists, and let me know how you want them combined (e.g., concatenated, formatted in pairs, etc.).\n"
         },
         "width": 400,
-        "height": 1138,
+        "height": 400,
         "measured": {
           "width": 400,
-          "height": 1138
+          "height": 400
         },
         "selected": false,
         "dragging": false
@@ -1373,51 +1331,30 @@
         },
         "selected": false,
         "dragging": false
+      },
+      {
+        "id": "node_14",
+        "type": "note",
+        "position": {
+          "x": 1225.6440176812484,
+          "y": 597.6357292067067
+        },
+        "data": {
+          "label": "New Note",
+          "content": "Если хочешь **длинное, со смыслом**, в стиле **SecondBrain / Superhuman / Evernote / Linear**, то это уже другой класс названий — смысловые, объясняющие, концептуальные.\n\nИ здесь намного проще найти свободный домен, потому что комбинаций гораздо больше.\n\nНиже — **крутые, брендовые, осмысленные длинные названия**, которые идеально подходят под идею *“AI-второй мозг / AI-мышление / визуальные связи / умный контекст”*.\n\nИ все они реально имеют шанс быть свободными в .com и точно свободны в .io/.app/.ai скорее всего.\n\n***\n\n# **🔥 Осмысленные названия в стиле SecondBrain**\n\n## **(длинные, концептуальные, сильная идея)**\n\n### **🧠&#xA0;**\n\n### **1. MindAtlas**\n\nКарта мыслей и знаний.\n\n### **✨&#xA0;**\n\n### **2. ThoughtCanvas**\n\nПолотно идей.\n\nАбсолютно в стиле Miro, но уникально.\n\n### **🧩&#xA0;**\n\n### **3. IdeaMesh**\n\nСетка идей, узлы, связи.\n\n### **🔗&#xA0;**\n\n### **4. KnowledgeFlow**\n\nПоток знаний, идеальный для AI.\n\n### **🧠&#xA0;**\n\n### **5. BrainChain**\n\nНейронные связи в буквальном смысле.\n\n### **🔍&#xA0;**\n\n### **6. ContextEngine**\n\nAI-движок контекста — очень профессионально.\n\n### **🧠&#xA0;**\n\n### **7. InsightGrid**\n\nСетка инсайтов.\n\n### **🔄&#xA0;**\n\n### **8. NeuralDesk**\n\nРабочий стол нейро-процессов.\n\n### **🗺️&#xA0;**\n\n### **9. ThoughtMap**\n\nКарта мышления. Простое, ясное.\n\n### **📚&#xA0;**\n\n### **10. KnowledgeSpace**\n\nПространство знаний — очень универсально.\n\n### **🧠&#xA0;**\n\n### **11. ThinkStack**\n\nСтек размышлений, как tech-stack.\n\n### **🔗&#xA0;**\n\n### **12. MindLinked**\n\nМозг-в-связях.\n\n### **🔮&#xA0;**\n\n### **13. SynapseHub**\n\nХаб синапсов, нейронно и чисто.\n\n### **🧠&#xA0;**\n\n### **14. CognitiveSphere**\n\nСфера мышления — “премиальный” вариант.\n\n### **⚡&#xA0;**\n\n### **15. IdeaCircuit**\n\nСхема идей, электровайб.\n\n### **🌐&#xA0;**\n\n### **16. BrainOrbit**\n\nОрбиты знаний, динамика.\n\n### **🧠&#xA0;**\n\n### **17. ThoughtBase**\n\nБаза мыслей.\n\n### **🔵&#xA0;**\n\n### **18. NeuralBoard**\n\nДоска нейро-идей (как Miro, но умнее).\n\n### **🧠&#xA0;**\n\n### **19. Mindstream**\n\nПоток сознания, звучит мягко и уникально.\n\n### **🔍&#xA0;**\n\n### **20. InsightLayer**\n\nСлой инсайтов, глубоко и профессионально.\n\n***\n\n# **⭐ Мои топ-5 из длинных, которые лучше всего подойдут именно под твой продукт**\n\n### **1. ThoughtCanvas**\n\n### **&#xA0;— абсолютно топ.**\n\nИдеально под визуальный AI-мозг.\n\nСвободных доменов много (.app, .io, .tech).\n\n### **2. MindAtlas**\n\n### **&#xA0;— коротко, мощно, красиво.**\n\nПрямо про карту мозга.\n\n### **3. InsightGrid**\n\n### **&#xA0;— очень технологично.**\n\nЗвучит как стартап уровня Series A.\n\n### **4. IdeaMesh**\n\n### **&#xA0;— про связи.**\n\nСразу понятно, что про узлы и граф идей.\n\n### **5. Mindstream**\n\n### **&#xA0;— мягко и концептуально.**\n\nAI → поток → мысли → знания.\n\n***\n\n# **Хочешь, я могу:**\n\n* подобрать **ещё 20 в таком стиле**,\n\n* собрать варианты **до 15 букв**,\n\n* сделать список **100% свободных доменов именно для длинных названий**,\n\n* или создать **двухсловное бренд-имя**, как Superhuman / SecondBrain / Deepnote / NotionFlow.\n",
+          "type": "note",
+          "collapsed": false
+        },
+        "width": 400,
+        "height": 6325,
+        "measured": {
+          "width": 400,
+          "height": 6325
+        },
+        "selected": true
       }
     ],
     "edges": [
-      {
-        "type": "highlightable",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "interactionWidth": 20,
-        "source": "node_3",
-        "sourceHandle": "right-source",
-        "target": "node_5",
-        "targetHandle": "left",
-        "id": "xy-edge__node_3right-source-node_5left",
-        "selected": false
-      },
-      {
-        "type": "highlightable",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "interactionWidth": 20,
-        "source": "node_6",
-        "sourceHandle": "right-source",
-        "target": "node_5",
-        "targetHandle": "left",
-        "id": "xy-edge__node_6right-source-node_5left",
-        "selected": false
-      },
       {
         "type": "highlightable",
         "animated": false,
@@ -1455,48 +1392,6 @@
           "height": 20,
           "color": "#94a3b8"
         },
-        "selected": false
-      },
-      {
-        "type": "highlightable",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "interactionWidth": 20,
-        "source": "node_3",
-        "sourceHandle": "right-source",
-        "target": "node_8",
-        "targetHandle": "left",
-        "id": "xy-edge__node_3right-source-node_8left",
-        "selected": false
-      },
-      {
-        "type": "highlightable",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "interactionWidth": 20,
-        "source": "node_6",
-        "sourceHandle": "right-source",
-        "target": "node_8",
-        "targetHandle": "left",
-        "id": "xy-edge__node_6right-source-node_8left",
         "selected": false
       },
       {
@@ -1540,6 +1435,6 @@
       }
     ],
     "createdAt": "2025-11-14T14:23:23.055Z",
-    "updatedAt": "2025-11-15T06:16:46.567Z"
+    "updatedAt": "2025-11-15T07:00:19.678Z"
   }
 ]
