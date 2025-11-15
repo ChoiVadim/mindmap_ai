@@ -160,26 +160,26 @@ export async function POST(request: NextRequest) {
           const content = ctx.content || '';
           return `[${label}]\n${content}`;
         })
-        .join('\n');
+        .join('\n\n');
     }
 
     let finalPrompt = '';
     
     // Add Role section (from agent node input)
     if (systemPrompt && systemPrompt.trim()) {
-      finalPrompt += `<Role>\n${systemPrompt}\n`;
+      finalPrompt += `---\n# Role\n${systemPrompt}\n`;
     }
     
     // Add Context section (from note nodes)
-    finalPrompt += `<Context>\n`;
+    finalPrompt += `---\n# Context\n`;
     if (contextText) {
-      finalPrompt += `${contextText}`;
+      finalPrompt += `${contextText}\n`;
     } else {
-      finalPrompt += `(No context provided)`;
+      finalPrompt += `(No context provided)\n`;
     }
     
     // Add Task section (from prompt node)
-    finalPrompt += `\n<Task>\n${prompt}`;
+    finalPrompt += `---\n# Task\n${prompt}`;
 
     // Log the final prompt for debugging
     console.log('\n========== FINAL PROMPT TO AI ==========\n');
