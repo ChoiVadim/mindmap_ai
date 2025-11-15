@@ -5,7 +5,7 @@
     "nodes": [],
     "edges": [],
     "createdAt": "2025-11-11T12:37:34.040Z",
-    "updatedAt": "2025-11-14T14:45:47.269Z"
+    "updatedAt": "2025-11-15T07:37:41.049Z"
   },
   {
     "id": "board_1762864724742_55mgdo0hm",
@@ -54,33 +54,6 @@
           "width": 400,
           "height": 264
         },
-        "dragging": false
-      },
-      {
-        "id": "node_9",
-        "type": "agent",
-        "position": {
-          "x": 848.7708703796606,
-          "y": 592.0283858877615
-        },
-        "data": {
-          "label": "Korean Email AI Agent",
-          "content": "",
-          "type": "agent",
-          "provider": "openai",
-          "model": "gpt-4o",
-          "systemPrompt": "You are a professional Email writer.\\\nUse a Korean language. Use a way what koreans use when writing to the professors!\\\n\\\nДелай имейл кратким и четким без лишней воды. Не будь навясщевым!\\\n\\\nНе надо льстить фальшиво. Не добавляй фразы льстящие пожалуйста\n",
-          "collapsed": false,
-          "manuallyResized": true
-        },
-        "selected": false,
-        "width": 400,
-        "height": 473,
-        "measured": {
-          "width": 400,
-          "height": 473
-        },
-        "resizing": false,
         "dragging": false
       },
       {
@@ -147,69 +120,33 @@
         },
         "selected": false,
         "dragging": false
+      },
+      {
+        "id": "node_18",
+        "type": "agent",
+        "position": {
+          "x": 798.7641248217652,
+          "y": 630.297156330203
+        },
+        "data": {
+          "label": "AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "openai",
+          "model": "gpt-4o",
+          "systemPrompt": "You are a professional Email writer.\\\nUse a Korean language. Use a way what koreans use when writing to the professors!\\\n\\\nДелай имейл кратким и четким без лишней воды. Не будь навясщевым!\\\n\\\nНе надо льстить фальшиво. Не добавляй фразы льстящие пожалуйста\n\nыф\n\nвфы\n\nфыв\n"
+        },
+        "width": 400,
+        "height": 531,
+        "measured": {
+          "width": 400,
+          "height": 531
+        },
+        "selected": false,
+        "dragging": false
       }
     ],
     "edges": [
-      {
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "source": "node_9",
-        "sourceHandle": "right",
-        "target": "node_8",
-        "targetHandle": "left",
-        "id": "node_9-node_8",
-        "selected": false
-      },
-      {
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "source": "node_7",
-        "sourceHandle": "right-source",
-        "target": "node_9",
-        "targetHandle": "left",
-        "id": "node_7-node_9",
-        "selected": false
-      },
-      {
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "source": "node_10",
-        "sourceHandle": "right-source",
-        "target": "node_9",
-        "targetHandle": "left",
-        "id": "node_10-node_9",
-        "selected": false
-      },
       {
         "id": "node_8-node_11",
         "source": "node_8",
@@ -227,30 +164,10 @@
           "color": "#94a3b8"
         },
         "selected": false
-      },
-      {
-        "type": "default",
-        "animated": false,
-        "style": {
-          "strokeWidth": 2,
-          "stroke": "#94a3b8"
-        },
-        "markerEnd": {
-          "type": "arrow",
-          "width": 20,
-          "height": 20,
-          "color": "#94a3b8"
-        },
-        "source": "node_9",
-        "sourceHandle": "right",
-        "target": "node_17",
-        "targetHandle": "left",
-        "id": "xy-edge__node_9right-node_17left",
-        "selected": false
       }
     ],
     "createdAt": "2025-11-11T12:38:44.742Z",
-    "updatedAt": "2025-11-14T14:18:38.771Z"
+    "updatedAt": "2025-11-15T07:38:28.717Z"
   },
   {
     "id": "board_1763106901538_ov8la4ayt",
@@ -272,10 +189,10 @@
         },
         "selected": false,
         "width": 548,
-        "height": 900,
+        "height": 400,
         "measured": {
           "width": 548,
-          "height": 900
+          "height": 400
         },
         "resizing": false,
         "dragging": false
@@ -322,10 +239,10 @@
         },
         "selected": false,
         "width": 400,
-        "height": 473,
+        "height": 300,
         "measured": {
           "width": 400,
-          "height": 473
+          "height": 300
         },
         "dragging": false
       },
@@ -344,10 +261,10 @@
         },
         "selected": false,
         "width": 567,
-        "height": 1806,
+        "height": 400,
         "measured": {
           "width": 567,
-          "height": 1806
+          "height": 400
         },
         "dragging": false,
         "resizing": false
@@ -409,10 +326,10 @@
           "manuallyResized": true
         },
         "width": 797,
-        "height": 1062,
+        "height": 400,
         "measured": {
           "width": 797,
-          "height": 1062
+          "height": 400
         },
         "selected": false,
         "dragging": false,
@@ -437,10 +354,10 @@
         },
         "selected": false,
         "width": 400,
-        "height": 473,
+        "height": 300,
         "measured": {
           "width": 400,
-          "height": 473
+          "height": 300
         },
         "dragging": false
       },
@@ -485,10 +402,10 @@
         },
         "selected": false,
         "width": 400,
-        "height": 473,
+        "height": 300,
         "measured": {
           "width": 400,
-          "height": 473
+          "height": 300
         },
         "dragging": false
       },
@@ -528,10 +445,10 @@
           "manuallyResized": true
         },
         "width": 474,
-        "height": 728,
+        "height": 400,
         "measured": {
           "width": 474,
-          "height": 728
+          "height": 400
         },
         "selected": false,
         "dragging": false,
@@ -551,10 +468,10 @@
           "manuallyResized": true
         },
         "width": 734,
-        "height": 1159,
+        "height": 400,
         "measured": {
           "width": 734,
-          "height": 1159
+          "height": 400
         },
         "selected": false,
         "resizing": false,
@@ -597,10 +514,10 @@
           "manuallyResized": true
         },
         "width": 697,
-        "height": 1060,
+        "height": 400,
         "measured": {
           "width": 697,
-          "height": 1060
+          "height": 400
         },
         "selected": false,
         "dragging": false,
@@ -643,12 +560,12 @@
           "manuallyResized": true
         },
         "width": 1019,
-        "height": 2005,
+        "height": 400,
         "measured": {
           "width": 1019,
-          "height": 2005
+          "height": 400
         },
-        "selected": false,
+        "selected": true,
         "resizing": false,
         "dragging": false
       },
@@ -711,10 +628,10 @@
           "manuallyResized": true
         },
         "width": 916,
-        "height": 1334,
+        "height": 400,
         "measured": {
           "width": 916,
-          "height": 1334
+          "height": 400
         },
         "selected": false,
         "resizing": false,
@@ -1170,93 +1087,44 @@
       }
     ],
     "createdAt": "2025-11-14T07:55:01.538Z",
-    "updatedAt": "2025-11-14T14:21:28.976Z"
+    "updatedAt": "2025-11-15T07:35:33.308Z"
   },
   {
     "id": "board_1763130203055_o35psnwmc",
     "name": "Testing",
     "nodes": [
       {
-        "id": "node_18",
+        "id": "node_23",
         "type": "textLabel",
         "position": {
-          "x": 1034.0985660378205,
-          "y": 734.1498098676166
+          "x": 640.3568085440561,
+          "y": 626.4987839899853
         },
         "data": {
           "label": "Label",
-          "content": "фыв\n\nфывф\n\nыв\n\nфывы\n\nфв\n\nф\n",
+          "content": "",
           "type": "textLabel",
           "fontSize": 16
         },
         "width": 300,
-        "height": 253,
+        "height": 109,
         "measured": {
           "width": 300,
-          "height": 253
-        },
-        "selected": false,
-        "dragging": false
-      },
-      {
-        "id": "node_19",
-        "type": "agent",
-        "position": {
-          "x": 610.5635079337898,
-          "y": 1298.31442220046
-        },
-        "data": {
-          "label": "AI Agent",
-          "content": "",
-          "type": "agent",
-          "provider": "openai",
-          "model": "gpt-4o",
-          "systemPrompt": "фыв\n\nфыв\n\nфы\n\nвф\n\nывфыв\n\nфы\n\nвфыв\n\nфы\n\nвфыв\n\nфыв\n\nф\n\nывф\n\nыв\n\nфыв\n",
-          "collapsed": false
-        },
-        "width": 400,
-        "height": 660,
-        "measured": {
-          "width": 400,
-          "height": 660
+          "height": 109
         },
         "selected": false
       },
       {
-        "id": "node_20",
-        "type": "prompt",
-        "position": {
-          "x": 1145.366212961082,
-          "y": 1105.550941154369
-        },
-        "data": {
-          "label": "New Prompt",
-          "content": "фыв\n\nфыв\n\nфв\n\nфывфыв\n\nфы\n\nфыв\n\nфвы\n\nфыв\n",
-          "type": "prompt",
-          "isRunning": false,
-          "collapsed": false
-        },
-        "width": 400,
-        "height": 327,
-        "measured": {
-          "width": 400,
-          "height": 327
-        },
-        "selected": false,
-        "dragging": false
-      },
-      {
-        "id": "node_21",
+        "id": "node_24",
         "type": "note",
         "position": {
-          "x": 281.6506774739635,
-          "y": 623.1765677390235
+          "x": 576.6073916151196,
+          "y": 452.49877958585273
         },
         "data": {
           "label": "New Note",
-          "content": "Если хочешь **длинное, со смыслом**, в стиле **SecondBrain / Superhuman / Evernote / Linear**, то это уже другой класс названий — смысловые, объясняющие, концептуальные.\n\nИ здесь намного проще найти свободный домен, потому что комбинаций гораздо больше.\n\nНиже — **крутые, брендовые, осмысленные длинные названия**, которые идеально подходят под идею *“AI-второй мозг / AI-мышление / визуальные связи / умный контекст”*.\n\nИ все они реально имеют шанс быть свободными в .com и точно свободны в .io/.app/.ai скорее всего.\n\n***\n\n# **🔥 Осмысленные названия в стиле SecondBrain**\n\n## **(длинные, концептуальные, сильная идея)**\n\n### **🧠&#xA0;**\n\n### **1. MindAtlas**\n\nКарта мыслей и знаний.\n\n### **✨&#xA0;**\n\n### **2. ThoughtCanvas**\n\nПолотно идей.\n\nАбсолютно в стиле Miro, но уникально.\n\n### **🧩&#xA0;**\n\n### **3. IdeaMesh**\n\nСетка идей, узлы, связи.\n\n### **🔗&#xA0;**\n\n### **4. KnowledgeFlow**\n\nПоток знаний, идеальный для AI.\n\n### **🧠&#xA0;**\n\n### **5. BrainChain**\n\nНейронные связи в буквальном смысле.\n\n### **🔍&#xA0;**\n\n### **6. ContextEngine**\n\nAI-движок контекста — очень профессионально.\n\n### **🧠&#xA0;**\n\n### **7. InsightGrid**\n\nСетка инсайтов.\n\n### **🔄&#xA0;**\n\n### **8. NeuralDesk**\n\nРабочий стол нейро-процессов.\n\n### **🗺️&#xA0;**\n\n### **9. ThoughtMap**\n\nКарта мышления. Простое, ясное.\n\n### **📚&#xA0;**\n\n### **10. KnowledgeSpace**\n\nПространство знаний — очень универсально.\n\n### **🧠&#xA0;**\n\n### **11. ThinkStack**\n\nСтек размышлений, как tech-stack.\n\n### **🔗&#xA0;**\n\n### **12. MindLinked**\n\nМозг-в-связях.\n\n### **🔮&#xA0;**\n\n### **13. SynapseHub**\n\nХаб синапсов, нейронно и чисто.\n\n### **🧠&#xA0;**\n\n### **14. CognitiveSphere**\n\nСфера мышления — “премиальный” вариант.\n\n### **⚡&#xA0;**\n\n### **15. IdeaCircuit**\n\nСхема идей, электровайб.\n\n### **🌐&#xA0;**\n\n### **16. BrainOrbit**\n\nОрбиты знаний, динамика.\n\n### **🧠&#xA0;**\n\n### **17. ThoughtBase**\n\nБаза мыслей.\n\n### **🔵&#xA0;**\n\n### **18. NeuralBoard**\n\nДоска нейро-идей (как Miro, но умнее).\n\n### **🧠&#xA0;**\n\n### **19. Mindstream**\n\nПоток сознания, звучит мягко и уникально.\n\n### **🔍&#xA0;**\n\n### **20. InsightLayer**\n\nСлой инсайтов, глубоко и профессионально.\n\n***\n\n# **⭐ Мои топ-5 из длинных, которые лучше всего подойдут именно под твой продукт**\n\n### **1. ThoughtCanvas**\n\n### **&#xA0;— абсолютно топ.**\n\nИдеально под визуальный AI-мозг.\n\nСвободных доменов много (.app, .io, .tech).\n\n### **2. MindAtlas**\n\n### **&#xA0;— коротко, мощно, красиво.**\n\nПрямо про карту мозга.\n\n### **3. InsightGrid**\n\n### **&#xA0;— очень технологично.**\n\nЗвучит как стартап уровня Series A.\n\n### **4. IdeaMesh**\n\n### **&#xA0;— про связи.**\n\nСразу понятно, что про узлы и граф идей.\n\n### **5. Mindstream**\n\n### **&#xA0;— мягко и концептуально.**\n\nAI → поток → мысли → знания.\n\n***\n\n# **Хочешь, я могу:**\n\n* подобрать **ещё 20 в таком стиле**,\n\n* собрать варианты **до 15 букв**,\n\n* сделать список **100% свободных доменов именно для длинных названий**,\n\n* или создать **двухсловное бренд-имя**, как Superhuman / SecondBrain / Deepnote / NotionFlow.\n",
-          "type": "note",
-          "manuallyResized": true
+          "content": "",
+          "type": "note"
         },
         "width": 400,
         "height": 400,
@@ -1264,13 +1132,77 @@
           "width": 400,
           "height": 400
         },
-        "selected": true,
-        "dragging": false,
-        "resizing": false
+        "selected": false
+      },
+      {
+        "id": "node_25",
+        "type": "prompt",
+        "position": {
+          "x": 690.3567616493684,
+          "y": 517.2844839025423
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "selected": false
+      },
+      {
+        "id": "node_26",
+        "type": "prompt",
+        "position": {
+          "x": 840.3566318579012,
+          "y": 465.2844535575173
+        },
+        "data": {
+          "label": "New Prompt",
+          "content": "",
+          "type": "prompt",
+          "isRunning": false
+        },
+        "width": 400,
+        "height": 200,
+        "measured": {
+          "width": 400,
+          "height": 200
+        },
+        "selected": false
+      },
+      {
+        "id": "node_27",
+        "type": "agent",
+        "position": {
+          "x": 1144.675553726181,
+          "y": 425.8461547315243
+        },
+        "data": {
+          "label": "AI Agent",
+          "content": "",
+          "type": "agent",
+          "provider": "openai",
+          "model": "gpt-4o",
+          "systemPrompt": ""
+        },
+        "width": 400,
+        "height": 300,
+        "measured": {
+          "width": 400,
+          "height": 300
+        },
+        "selected": false,
+        "dragging": false
       }
     ],
     "edges": [],
     "createdAt": "2025-11-14T14:23:23.055Z",
-    "updatedAt": "2025-11-15T07:19:32.093Z"
+    "updatedAt": "2025-11-15T07:37:38.858Z"
   }
 ]

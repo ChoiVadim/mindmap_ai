@@ -24,6 +24,8 @@ import AgentNode from './nodes/AgentNode';
 import Toolbar from './Toolbar';
 import TopLeftBar from './TopLeftBar';
 import TopRightBar from './TopRightBar';
+import BottomRightBar from './BottomRightBar';
+import BottomLeftBar from './BottomLeftBar';
 import AlignmentGuides, { calculateSnappedPosition } from './AlignmentGuides';
 import HighlightableEdge from './HighlightableEdge';
 
@@ -498,6 +500,8 @@ export default function Canvas() {
     >
       <TopLeftBar />
       <TopRightBar />
+      <BottomRightBar />
+      <BottomLeftBar />
       <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} />
       <ReactFlow
         nodes={nodes}
