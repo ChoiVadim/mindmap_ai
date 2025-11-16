@@ -50,11 +50,8 @@ export default function LoginPage() {
 
       if (error) throw error;
 
-      // Keep loading state true during navigation - the canvas will handle its own loading state
-      router.push('/');
-      router.refresh();
-      // Don't set loading to false here - let it persist during navigation
-      // The component will unmount anyway when navigation completes
+      // Use hard redirect for immediate navigation to canvas
+      window.location.href = '/';
     } catch (error: any) {
       setError(error.message || 'An error occurred during login');
       setLoading(false);
@@ -74,7 +71,7 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
-      // Keep loading state true during OAuth redirect
+      // OAuth will redirect automatically via redirectTo option
     } catch (error: any) {
       setError(error.message || 'An error occurred during Google sign in');
       setLoading(false);
