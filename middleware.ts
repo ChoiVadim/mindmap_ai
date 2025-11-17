@@ -28,26 +28,52 @@ export async function middleware(request: NextRequest) {
   )
 
   // Refresh session if expired - required for Server Components
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Handle errors gracefully - invalid refresh tokens should not break the app
+  let user = null;
+  try {
+    const {
+      data: { user: authUser },
+      error,
+    } = await supabase.auth.getUser();
+    
+    // If refresh token is invalid, treat user as unauthenticated
+    // Supabase will handle cookie cleanup automatically
+    if (error && (error.message?.includes('refresh_token_not_found') || error.code === 'refresh_token_not_found')) {
+      // Silently treat as unauthenticated - no need to log or handle further
+      user = null;
+    } else if (!error) {
+      user = authUser;
+    }
+  } catch (error: any) {
+    // Silently handle any auth errors - user will be treated as unauthenticated
+    // Don't log refresh token errors as they're expected when sessions expire
+    if (!error?.message?.includes('refresh_token_not_found') && error?.code !== 'refresh_token_not_found') {
+      // Only log unexpected errors
+      console.error('Unexpected auth error in middleware:', error);
+    }
+    user = null;
+  }
 
-  // Allow OAuth callback route
-  if (request.nextUrl.pathname.startsWith('/auth/callback')) {
+  // Allow public routes (landing page, auth pages, OAuth callback)
+  const publicPaths = ['/', '/login', '/signup', '/auth/callback'];
+  const isPublicPath = publicPaths.includes(request.nextUrl.pathname) || 
+                      request.nextUrl.pathname.startsWith('/auth/callback');
+  
+  if (isPublicPath) {
+    // Redirect authenticated users away from auth pages to home
+    if (user && (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup'))) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
+    // Allow unauthenticated users to access public paths (including landing page)
     return supabaseResponse
   }
 
-  // Protect routes - redirect to login if not authenticated
-  if (!user && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/signup')) {
+  // Protect all other routes - redirect to login if not authenticated
+  if (!user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
-    return NextResponse.redirect(url)
-  }
-
-  // Redirect authenticated users away from auth pages
-  if (user && (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup'))) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/'
     return NextResponse.redirect(url)
   }
 

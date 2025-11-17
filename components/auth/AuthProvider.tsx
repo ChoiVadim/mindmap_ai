@@ -30,13 +30,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Get initial session - handle errors gracefully
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (!mounted) return;
+      
+      // If there's a refresh token error, clear the session silently
+      if (error && (error.message?.includes('refresh_token_not_found') || error.code === 'refresh_token_not_found')) {
+        // Clear invalid session
+        setSession(null);
+        setUser(null);
+        userRef.current = null;
+        setLoading(false);
+        return;
+      }
+      
       setSession(session);
       const initialUser = session?.user ?? null;
       setUser(initialUser);
       userRef.current = initialUser;
+      setLoading(false);
+    }).catch((error) => {
+      // Silently handle any errors during session retrieval
+      if (!mounted) return;
+      setSession(null);
+      setUser(null);
+      userRef.current = null;
       setLoading(false);
     });
 
@@ -45,6 +63,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
+      
+      // Handle token refresh errors silently
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        // Token refresh failed - clear session
+        setSession(null);
+        setUser(null);
+        userRef.current = null;
+        setLoading(false);
+        return;
+      }
       
       const previousUser = userRef.current;
       const newUser = session?.user ?? null;

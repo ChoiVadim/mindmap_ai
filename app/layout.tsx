@@ -7,7 +7,7 @@ const lexend = Lexend({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Strucly - Visual AI Knowledge Tool",
-  description: "A Miro-like canvas for structuring and connecting AI knowledge",
+  description: "A visual canvas where you structure knowledge, connect ideas, and let AI think with you. Plug-and-Think architecture for 10× more productive AI workflows.",
   icons: {
     icon: "/icon.png",
   },
