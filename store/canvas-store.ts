@@ -174,7 +174,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
         (edge) => edge.source !== nodeId && edge.target !== nodeId
       ),
     });
-    saveHistory();
+    saveHistoryState();
   },
 
   onNodesChange: (changes) => {
