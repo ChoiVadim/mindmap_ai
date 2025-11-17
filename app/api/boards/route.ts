@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Board } from '@/store/board-store';
+import { applyRateLimit, getRateLimitHeaders, checkRateLimit } from '@/lib/rate-limiter';
 
 // GET /api/boards - Get all boards metadata only (without nodes/edges for performance)
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     
@@ -15,6 +16,12 @@ export async function GET() {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Apply rate limiting
+    const rateLimitError = applyRateLimit(request, user.id);
+    if (rateLimitError) {
+      return rateLimitError;
     }
 
     // Fetch only board metadata (no nodes/edges) for fast initial load
@@ -42,7 +49,15 @@ export async function GET() {
       updatedAt: board.updated_at,
     }));
 
-    return NextResponse.json(boardsMetadata);
+    // Get rate limit info for headers
+    const rateLimitInfo = checkRateLimit(user.id, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+
+    return NextResponse.json(boardsMetadata, { headers });
   } catch (error) {
     console.error('Error reading boards:', error);
     return NextResponse.json(
@@ -65,6 +80,12 @@ export async function POST(request: NextRequest) {
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Apply rate limiting
+    const rateLimitError = applyRateLimit(request, user.id);
+    if (rateLimitError) {
+      return rateLimitError;
     }
 
     const body = await request.json();
@@ -182,7 +203,15 @@ export async function POST(request: NextRequest) {
       updatedAt: board.updated_at,
     };
 
-    return NextResponse.json(newBoard, { status: 201 });
+    // Get rate limit info for headers
+    const rateLimitInfo = checkRateLimit(user.id, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+
+    return NextResponse.json(newBoard, { status: 201, headers });
   } catch (error) {
     console.error('Error creating board:', error);
     return NextResponse.json(

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { applyRateLimit, getRateLimitHeaders, checkRateLimit } from '@/lib/rate-limiter';
+import { createClient } from '@/lib/supabase/server';
 
 type AIProvider = 'openai' | 'gemini' | 'claude';
 
@@ -176,6 +178,16 @@ async function callClaude(
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const userId = user?.id || null;
+    
+    const rateLimitError = applyRateLimit(request, userId);
+    if (rateLimitError) {
+      return rateLimitError;
+    }
+    
     const { prompt, context, agent } = await request.json();
 
     if (!prompt || typeof prompt !== 'string') {
@@ -294,9 +306,21 @@ export async function POST(request: NextRequest) {
 
     console.log('Generated text length:', generatedText.length);
     
-    return NextResponse.json({
-      content: generatedText,
-    });
+    // Get rate limit info for headers
+    const identifier = userId || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'anonymous';
+    const rateLimitInfo = checkRateLimit(identifier, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+    
+    return NextResponse.json(
+      {
+        content: generatedText,
+      },
+      { headers }
+    );
   } catch (error: any) {
     console.error('Error generating AI response:', error);
     return NextResponse.json(

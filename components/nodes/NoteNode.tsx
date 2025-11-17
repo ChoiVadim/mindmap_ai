@@ -30,6 +30,8 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
   const currentWidthRef = useRef<number | null>(null);
   const currentHeightRef = useRef<number | null>(null);
   const savedHeightRef = useRef<number | null>(null);
+  // Track all active timeouts for cleanup
+  const activeTimeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
   const DEFAULT_WIDTH = 400;
   const DEFAULT_MIN_HEIGHT = 400;
   const COLLAPSED_HEIGHT = 60; // Height when collapsed (header only)
@@ -153,9 +155,11 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
       });
 
       // Reset the flag after a short delay
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         isUpdatingSizeRef.current = false;
+        activeTimeoutsRef.current.delete(timeoutId);
       }, 200);
+      activeTimeoutsRef.current.add(timeoutId);
     }
   }, [id, isCollapsed, isManuallyResized, updateNode]); // Removed width and height from dependencies
 
@@ -184,9 +188,11 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
           height: COLLAPSED_HEIGHT,
         });
 
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           isUpdatingSizeRef.current = false;
+          activeTimeoutsRef.current.delete(timeoutId);
         }, 200);
+        activeTimeoutsRef.current.add(timeoutId);
       }
     } else {
       // Restore saved height or calculate from content
@@ -203,18 +209,24 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
         });
 
         // After restoring, update height from content if needed
-        setTimeout(() => {
+        const timeoutId1 = setTimeout(() => {
           isUpdatingSizeRef.current = false;
+          activeTimeoutsRef.current.delete(timeoutId1);
           // Trigger height update from content after a short delay to allow content to render
-          setTimeout(() => {
+          const timeoutId2 = setTimeout(() => {
             updateHeightFromContent();
+            activeTimeoutsRef.current.delete(timeoutId2);
           }, 100);
+          activeTimeoutsRef.current.add(timeoutId2);
         }, 200);
+        activeTimeoutsRef.current.add(timeoutId1);
       } else {
         // Height is already correct, but still trigger content update in case content changed
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           updateHeightFromContent();
+          activeTimeoutsRef.current.delete(timeoutId);
         }, 100);
+        activeTimeoutsRef.current.add(timeoutId);
       }
     }
   }, [isCollapsed, id, updateNode, updateHeightFromContent]);
@@ -228,7 +240,11 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
       updateNodeData(id, { content: markdown });
       
       // Update height after content change
-      setTimeout(updateHeightFromContent, 50);
+      const timeoutId = setTimeout(() => {
+        updateHeightFromContent();
+        activeTimeoutsRef.current.delete(timeoutId);
+      }, 50);
+      activeTimeoutsRef.current.add(timeoutId);
     } catch (error) {
       console.error('Failed to convert to markdown:', error);
     }
@@ -317,13 +333,18 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
           height: newHeight,
         });
 
-        setTimeout(() => {
+        const innerTimeoutId = setTimeout(() => {
           isUpdatingSizeRef.current = false;
+          activeTimeoutsRef.current.delete(innerTimeoutId);
         }, 200);
+        activeTimeoutsRef.current.add(innerTimeoutId);
       }
     }, 200);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      activeTimeoutsRef.current.delete(timeoutId);
+    };
   }, [id, isCollapsed, isManuallyResized, updateNode]); // Use updateNode directly
 
   // Set default width if not set and not manually resized (only once on mount)
@@ -363,6 +384,16 @@ function NoteNode({ id, data, selected, width, height }: NodeProps) {
       hasSetDefaultWidthRef.current = true;
     }
   }, []); // Run only once on mount - eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cleanup all timeouts on unmount
+  useEffect(() => {
+    return () => {
+      activeTimeoutsRef.current.forEach((timeoutId) => {
+        clearTimeout(timeoutId);
+      });
+      activeTimeoutsRef.current.clear();
+    };
+  }, []);
 
   return (
     <div

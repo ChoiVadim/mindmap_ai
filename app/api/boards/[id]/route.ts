@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Board } from '@/store/board-store';
+import { applyRateLimit, getRateLimitHeaders, checkRateLimit } from '@/lib/rate-limiter';
 
 // GET /api/boards/[id] - Get a single board with nodes and edges
 export async function GET(
@@ -20,6 +21,12 @@ export async function GET(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Apply rate limiting
+    const rateLimitError = applyRateLimit(request, user.id);
+    if (rateLimitError) {
+      return rateLimitError;
     }
 
     // Fetch board
@@ -58,7 +65,15 @@ export async function GET(
       updatedAt: board.updated_at,
     };
 
-    return NextResponse.json(result);
+    // Get rate limit info for headers
+    const rateLimitInfo = checkRateLimit(user.id, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+
+    return NextResponse.json(result, { headers });
   } catch (error: any) {
     console.error('Error fetching board:', error);
     return NextResponse.json(
@@ -86,6 +101,12 @@ export async function PATCH(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+    }
+
+    // Apply rate limiting
+    const rateLimitError = applyRateLimit(request, user.id);
+    if (rateLimitError) {
+      return rateLimitError;
     }
 
     // Verify user owns the board
@@ -263,7 +284,15 @@ export async function PATCH(
       updatedAt: updatedBoard.updated_at,
     };
 
-    return NextResponse.json(result);
+    // Get rate limit info for headers
+    const rateLimitInfo = checkRateLimit(user.id, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+
+    return NextResponse.json(result, { headers });
   } catch (error: any) {
     console.error('Error updating board:', error);
     return NextResponse.json(
@@ -322,7 +351,15 @@ export async function DELETE(
       );
     }
 
-    return NextResponse.json({ success: true });
+    // Get rate limit info for headers
+    const rateLimitInfo = checkRateLimit(user.id, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+
+    return NextResponse.json({ success: true }, { headers });
   } catch (error: any) {
     console.error('Error deleting board:', error);
     return NextResponse.json(

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { applyRateLimit, getRateLimitHeaders, checkRateLimit } from '@/lib/rate-limiter';
 
 // POST /api/feedback - Submit feedback
 export async function POST(request: NextRequest) {
@@ -46,6 +47,13 @@ export async function POST(request: NextRequest) {
 
     // Get authenticated user (optional - feedback can be submitted anonymously)
     const { data: { user } } = await supabase.auth.getUser();
+    
+    // Apply rate limiting (use user ID or IP)
+    const userId = user?.id || null;
+    const rateLimitError = applyRateLimit(request, userId);
+    if (rateLimitError) {
+      return rateLimitError;
+    }
 
     // Insert feedback into Supabase
     const { data: newFeedback, error: insertError } = await supabase
@@ -66,12 +74,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get rate limit info for headers
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const realIp = request.headers.get('x-real-ip');
+    const ip = forwardedFor?.split(',')[0]?.trim() || realIp || 'anonymous';
+    const identifier = userId || ip;
+    const rateLimitInfo = checkRateLimit(identifier, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+
     return NextResponse.json(
       { 
         message: 'Feedback submitted successfully', 
         id: newFeedback.id 
       },
-      { status: 201 }
+      { status: 201, headers }
     );
   } catch (error) {
     console.error('Error submitting feedback:', error);
@@ -97,6 +117,12 @@ export async function GET() {
       );
     }
 
+    // Apply rate limiting
+    const rateLimitError = applyRateLimit(request, user.id);
+    if (rateLimitError) {
+      return rateLimitError;
+    }
+
     // Fetch feedback (users can only see their own feedback due to RLS)
     const { data: feedback, error } = await supabase
       .from('feedback')
@@ -119,7 +145,15 @@ export async function GET() {
       createdAt: item.created_at,
     }));
 
-    return NextResponse.json(formattedFeedback);
+    // Get rate limit info for headers
+    const rateLimitInfo = checkRateLimit(user.id, request.nextUrl.pathname);
+    const headers = getRateLimitHeaders(
+      request.nextUrl.pathname,
+      rateLimitInfo.remaining,
+      rateLimitInfo.resetTime
+    );
+
+    return NextResponse.json(formattedFeedback, { headers });
   } catch (error) {
     console.error('Error reading feedback:', error);
     return NextResponse.json(
