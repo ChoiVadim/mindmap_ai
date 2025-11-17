@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET /api/feedback - Get all feedback (for admin purposes)
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
     
