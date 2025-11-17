@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, FileText, Lightbulb, Loader2 } from 'lucide-react';
 import { useBoardStore } from '@/store/board-store';
 import { useCanvasStore } from '@/store/canvas-store';
-import { boardTemplates } from '@/lib/board-templates';
+import { loadTemplatesFromDB, BoardTemplate } from '@/lib/board-templates';
 
 interface EmptyStateProps {
   onDismiss?: () => void;
@@ -15,6 +15,15 @@ export default function EmptyState({ onDismiss }: EmptyStateProps) {
   const { loadTemplate } = useBoardStore();
   const { loadCanvas } = useCanvasStore();
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<BoardTemplate[]>([]);
+
+  // Load templates from DB on mount
+  useEffect(() => {
+    loadTemplatesFromDB().then(setTemplates).catch(() => {
+      // Fallback to static templates on error
+      setTemplates([]);
+    });
+  }, []);
 
   const handleLoadTemplate = async (templateId: string) => {
     setIsLoading(templateId);
@@ -72,7 +81,7 @@ export default function EmptyState({ onDismiss }: EmptyStateProps) {
               Templates
             </h3>
             <div className="space-y-2">
-              {boardTemplates.map((template) => {
+              {templates.map((template) => {
                 const Icon = templateIcons[template.id] || Sparkles;
                 const isTemplateLoading = isLoading === template.id;
                 return (

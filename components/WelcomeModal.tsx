@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Link2, Play, FileText, ArrowRight } from 'lucide-react';
-import { boardTemplates } from '@/lib/board-templates';
+import { loadTemplatesFromDB, BoardTemplate } from '@/lib/board-templates';
 import { useBoardStore } from '@/store/board-store';
 import { useCanvasStore } from '@/store/canvas-store';
 
@@ -16,6 +16,17 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
   const { loadTemplate } = useBoardStore();
   const { loadCanvas } = useCanvasStore();
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<BoardTemplate[]>([]);
+
+  // Load templates from DB when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      loadTemplatesFromDB().then(setTemplates).catch(() => {
+        // Fallback to static templates on error
+        setTemplates([]);
+      });
+    }
+  }, [isOpen]);
 
   const handleLoadTemplate = async (templateId: string) => {
     setIsLoading(templateId);
@@ -88,7 +99,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <h1 className="text-lg font-semibold text-foreground">
-                  Welcome to MindCanvas AI
+                  Welcome to Strucly
                 </h1>
                 <button
                   onClick={onClose}
@@ -144,7 +155,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                     Try an example
                   </h2>
                   <div className="space-y-2">
-                    {boardTemplates.map((template) => {
+                    {templates.map((template) => {
                       const isTemplateLoading = isLoading === template.id;
                       return (
                         <motion.button

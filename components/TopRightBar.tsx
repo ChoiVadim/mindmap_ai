@@ -34,7 +34,7 @@ export default function TopRightBar() {
 
   const showWelcomeModal = () => {
     // Remove the flag to allow welcome modal to show
-    localStorage.removeItem('mindcanvas_welcome_shown');
+    localStorage.removeItem('strucly_welcome_shown');
     // Dispatch custom event to notify Canvas component
     window.dispatchEvent(new CustomEvent('showWelcomeModal'));
   };

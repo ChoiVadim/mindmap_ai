@@ -249,13 +249,13 @@ export default function TopLeftBar() {
             <>
               <Image
                 src="/icon.png"
-                alt="MindCanvas Logo"
+                alt="Strucly Logo"
                 width={32}
                 height={32}
                 className="rounded-lg"
               />
               <span className="font-bold text-lg text-foreground">
-                MindCanvas
+                Strucly
               </span>
             </>
           }

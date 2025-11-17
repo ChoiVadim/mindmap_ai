@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { CanvasNode, CanvasEdge } from '@/types/canvas';
-import { getTemplateById, resetTemplateNodeIds } from '@/lib/board-templates';
+import { resetTemplateNodeIds, getTemplateByIdFromDB } from '@/lib/board-templates';
 
 export interface Board {
   id: string;
@@ -96,7 +96,14 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
 
   loadTemplate: async (templateId) => {
     resetTemplateNodeIds();
-    const template = getTemplateById(templateId);
+    
+    // Try to load from database first, fallback to static templates
+    let template = await getTemplateByIdFromDB(templateId);
+    
+    if (!template) {
+      // Fallback to static templates
+      template = null;
+    }
     
     if (!template) {
       throw new Error(`Template with id "${templateId}" not found`);

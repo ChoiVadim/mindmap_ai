@@ -170,7 +170,7 @@ export default function Canvas() {
     if (typeof window === 'undefined') return;
     
     const checkWelcomeModal = () => {
-      const welcomeShown = localStorage.getItem('mindcanvas_welcome_shown');
+      const welcomeShown = localStorage.getItem('strucly_welcome_shown');
       if (!welcomeShown || welcomeShown === 'false') {
         setShowWelcomeModal(true);
       }
@@ -188,7 +188,7 @@ export default function Canvas() {
     
     // Also listen for storage changes (for cross-tab changes)
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'mindcanvas_welcome_shown') {
+      if (e.key === 'strucly_welcome_shown') {
         checkWelcomeModal();
       }
     };
@@ -220,7 +220,7 @@ export default function Canvas() {
   const handleWelcomeModalClose = () => {
     setShowWelcomeModal(false);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('mindcanvas_welcome_shown', 'true');
+      localStorage.setItem('strucly_welcome_shown', 'true');
     }
   };
 

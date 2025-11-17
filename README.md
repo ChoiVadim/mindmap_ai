@@ -1,17 +1,17 @@
-# 🧠 MindCanvas AI
+# 🧠 Strucly
 
 **"Miro for AI Knowledge"** — A visual canvas for structuring, connecting, and reusing AI-generated knowledge.
 
-![MindCanvas AI](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
+![Strucly](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
 ![React Flow](https://img.shields.io/badge/React_Flow-12-blue?style=flat-square)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)
 
 ---
 
-## 🎯 What is MindCanvas AI?
+## 🎯 What is Strucly?
 
-MindCanvas AI solves the **fragmentation problem** of AI chats. Instead of losing context between separate conversations, you can:
+Strucly solves the **fragmentation problem** of AI chats. Instead of losing context between separate conversations, you can:
 
 - 📝 **Create visual notes** and connect them on a canvas
 - 🔗 **Link ideas** with arrows to build context

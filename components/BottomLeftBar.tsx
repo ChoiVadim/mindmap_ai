@@ -55,7 +55,7 @@ export default function BottomLeftBar() {
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-border">
                 <h3 className="text-lg font-semibold text-foreground">
-                  About MindCanvas AI
+                  About Strucly
                 </h3>
                 <button
                   onClick={handleCloseInfo}
@@ -67,10 +67,10 @@ export default function BottomLeftBar() {
 
               {/* Scrollable Content */}
               <div className="overflow-y-auto flex-1 p-6 space-y-6">
-                {/* What is MindCanvas */}
+                {/* What is Strucly */}
                 <div>
                   <h4 className="text-sm font-semibold text-foreground mb-2">
-                    What is MindCanvas AI?
+                    What is Strucly?
                   </h4>
                   <p className="text-sm text-foreground/70 leading-relaxed">
                     A visual canvas for structuring, connecting, and reusing AI-generated knowledge. 
