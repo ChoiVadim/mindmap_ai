@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, HelpCircle } from 'lucide-react';
 import { Dock } from '@/components/ui/dock-two';
 
 export default function TopRightBar() {
@@ -32,7 +32,19 @@ export default function TopRightBar() {
     }
   };
 
+  const showWelcomeModal = () => {
+    // Remove the flag to allow welcome modal to show
+    localStorage.removeItem('mindcanvas_welcome_shown');
+    // Dispatch custom event to notify Canvas component
+    window.dispatchEvent(new CustomEvent('showWelcomeModal'));
+  };
+
   const dockItems = [
+    {
+      icon: HelpCircle,
+      label: 'Show welcome guide',
+      onClick: showWelcomeModal,
+    },
     {
       icon: isDark ? Sun : Moon,
       label: isDark ? 'Switch to light mode' : 'Switch to dark mode',

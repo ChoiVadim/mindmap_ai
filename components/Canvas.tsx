@@ -29,6 +29,8 @@ import BottomLeftBar from './BottomLeftBar';
 import AlignmentGuides, { calculateSnappedPosition } from './AlignmentGuides';
 import HighlightableEdge from './HighlightableEdge';
 import { Component as LumaSpin } from './ui/luma-spin';
+import WelcomeModal from './WelcomeModal';
+import EmptyState from './EmptyState';
 
 // Define custom node types
 const nodeTypes: any = {
@@ -72,6 +74,11 @@ export default function Canvas() {
   
   // Track dark mode
   const [isDark, setIsDark] = useState(false);
+  
+  // Track welcome modal and empty state
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showEmptyState, setShowEmptyState] = useState(false);
+  const [emptyStateDismissed, setEmptyStateDismissed] = useState(false);
   
   useEffect(() => {
     // Check initial theme
@@ -156,6 +163,71 @@ export default function Canvas() {
     
     prevLoadingRef.current = isLoading;
   }, [isLoading]);
+
+  // Check for first-time user and show welcome modal
+  // Also listen for custom event to allow resetting
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const checkWelcomeModal = () => {
+      const welcomeShown = localStorage.getItem('mindcanvas_welcome_shown');
+      if (!welcomeShown || welcomeShown === 'false') {
+        setShowWelcomeModal(true);
+      }
+    };
+    
+    // Check initially
+    checkWelcomeModal();
+    
+    // Listen for custom event to show welcome modal (from TopRightBar button)
+    const handleShowWelcome = () => {
+      checkWelcomeModal();
+    };
+    
+    window.addEventListener('showWelcomeModal', handleShowWelcome);
+    
+    // Also listen for storage changes (for cross-tab changes)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'mindcanvas_welcome_shown') {
+        checkWelcomeModal();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('showWelcomeModal', handleShowWelcome);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  // Show empty state when canvas is empty (and welcome modal is closed)
+  useEffect(() => {
+    if (!showWelcomeModal && nodes.length === 0 && !emptyStateDismissed) {
+      setShowEmptyState(true);
+    } else {
+      setShowEmptyState(false);
+    }
+  }, [nodes.length, showWelcomeModal, emptyStateDismissed]);
+
+  // Reset empty state dismissed when nodes are added
+  useEffect(() => {
+    if (nodes.length > 0) {
+      setEmptyStateDismissed(false);
+    }
+  }, [nodes.length]);
+
+  const handleWelcomeModalClose = () => {
+    setShowWelcomeModal(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mindcanvas_welcome_shown', 'true');
+    }
+  };
+
+  const handleEmptyStateDismiss = () => {
+    setShowEmptyState(false);
+    setEmptyStateDismissed(true);
+  };
 
   // Track the last drop timestamp to prevent duplicates
   const lastDropTimestamp = useRef(0);
@@ -526,6 +598,8 @@ export default function Canvas() {
           <LumaSpin />
         </div>
       )}
+      <WelcomeModal isOpen={showWelcomeModal} onClose={handleWelcomeModalClose} />
+      {showEmptyState && <EmptyState onDismiss={handleEmptyStateDismiss} />}
       <TopLeftBar />
       <TopRightBar />
       <BottomRightBar />

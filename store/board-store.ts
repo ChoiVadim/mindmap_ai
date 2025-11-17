@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { CanvasNode, CanvasEdge } from '@/types/canvas';
+import { getTemplateById, resetTemplateNodeIds } from '@/lib/board-templates';
 
 export interface Board {
   id: string;
@@ -17,10 +18,11 @@ interface BoardStore {
   // Board operations
   setBoards: (boards: Board[]) => void;
   setCurrentBoard: (boardId: string) => void;
-  createBoard: (name: string) => Promise<Board>;
+  createBoard: (name: string, nodes?: CanvasNode[], edges?: CanvasEdge[]) => Promise<Board>;
   deleteBoard: (boardId: string) => Promise<void>;
   updateBoardName: (boardId: string, newName: string) => Promise<void>;
   updateBoardData: (boardId: string, nodes: CanvasNode[], edges: CanvasEdge[]) => Promise<void>;
+  loadTemplate: (templateId: string) => Promise<Board>;
   
   // Getters
   getCurrentBoard: () => Board | null;
@@ -57,12 +59,12 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
     return boards.find((b) => b.id === boardId) || null;
   },
 
-  createBoard: async (name) => {
+  createBoard: async (name, nodes = [], edges = []) => {
     const newBoard: Board = {
       id: `board_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       name: name || 'New Board',
-      nodes: [],
-      edges: [],
+      nodes: nodes,
+      edges: edges,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -90,6 +92,20 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       console.error('Error creating board:', error);
       throw error;
     }
+  },
+
+  loadTemplate: async (templateId) => {
+    resetTemplateNodeIds();
+    const template = getTemplateById(templateId);
+    
+    if (!template) {
+      throw new Error(`Template with id "${templateId}" not found`);
+    }
+
+    // Create board with template data
+    const newBoard = await get().createBoard(template.name, template.nodes, template.edges);
+    
+    return newBoard;
   },
 
   deleteBoard: async (boardId) => {
