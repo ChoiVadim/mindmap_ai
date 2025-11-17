@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Link2, Play, FileText, ArrowRight } from 'lucide-react';
+import { X, Sparkles, Link2, Play, FileText, ArrowRight, Brain, Zap, Plug, Bot } from 'lucide-react';
 import { loadTemplatesFromDB, BoardTemplate } from '@/lib/board-templates';
 import { useBoardStore } from '@/store/board-store';
 import { useCanvasStore } from '@/store/canvas-store';
@@ -54,23 +54,23 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
   const tutorialSteps = [
     {
       icon: FileText,
-      title: 'Create Notes',
-      description: 'Add notes to capture ideas and information',
+      title: 'Create Knowledge Blocks',
+      description: 'Add notes with instructions, examples, and rules as reusable blocks',
     },
     {
       icon: Link2,
-      title: 'Connect Ideas',
-      description: 'Link notes together to build context',
-    },
-    {
-      icon: Sparkles,
-      title: 'Use AI Prompts',
-      description: 'Connect notes to prompts for AI-powered insights',
+      title: 'Connect to Prompt Block',
+      description: 'Link knowledge blocks to a Prompt Block — simple drag and connect',
     },
     {
       icon: Play,
-      title: 'Generate Results',
-      description: 'Run prompts to create AI-generated content',
+      title: 'Run and Get Answers',
+      description: 'Click Run on the Prompt Block → AI uses only connected context',
+    },
+    {
+      icon: Brain,
+      title: 'Advanced: Use AI Agents',
+      description: 'Configure AI Agent Blocks with system prompts and models, then connect to Prompts',
     },
   ];
 
@@ -113,16 +113,60 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
               <div className="overflow-y-auto flex-1 p-4 space-y-6">
                 {/* Intro */}
                 <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Brain className="w-5 h-5 text-primary" />
+                    <h3 className="text-sm font-semibold text-foreground">
+                      Your Second Brain That Thinks With You
+                    </h3>
+                  </div>
                   <p className="text-sm text-foreground/70 leading-relaxed">
-                    A visual canvas for structuring, connecting, and reusing AI-generated knowledge.
-                    Get started by exploring an example or creating your own mind map.
+                    Strucly uses <strong className="text-foreground">Plug-and-Think Architecture</strong> — 
+                    connect your knowledge blocks to AI and get perfect context-aware answers. 
+                    No more copying context between chats. Zero friction.
                   </p>
+                </div>
+
+                {/* Main Feature Highlight */}
+                <div className="space-y-3">
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                        <Sparkles className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-foreground mb-1">
+                          Prompt Block — For Everyone
+                        </h4>
+                        <p className="text-xs text-foreground/70 leading-relaxed">
+                          Connect notes to a <strong>Prompt Block</strong> → Click <strong>Run</strong> → 
+                          Get perfect answers. Simple and intuitive for everyday use.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 rounded-lg bg-secondary/50 border border-border">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-secondary flex-shrink-0">
+                        <Brain className="w-5 h-5 text-foreground/70" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold text-foreground mb-1">
+                          AI Agent Block — For Advanced Users
+                        </h4>
+                        <p className="text-xs text-foreground/70 leading-relaxed">
+                          Configure system prompts, choose models, and connect to Prompt Blocks. 
+                          Build sophisticated multi-agent workflows with full control.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Tutorial Steps */}
                 <div>
                   <h2 className="text-sm font-semibold text-foreground mb-3">
-                    How it works
+                    Plug-and-Think Workflow
                   </h2>
                   <div className="space-y-3">
                     {tutorialSteps.map((step, index) => {
