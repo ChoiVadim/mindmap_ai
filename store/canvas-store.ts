@@ -105,7 +105,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
   let historyIndex = -1;
   let copiedNodes: { nodes: CanvasNode[]; edges: CanvasEdge[] } | null = null;
 
-  const saveHistory = () => {
+  const saveHistoryState = () => {
     const currentState: HistoryState = {
       nodes: JSON.parse(JSON.stringify(get().nodes)),
       edges: JSON.parse(JSON.stringify(get().edges)),
@@ -154,7 +154,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     
     console.log('✅ Creating node:', newNode.id);
     set({ nodes: [...get().nodes, newNode] });
-    saveHistory();
+    saveHistoryState();
   },
 
   updateNodeData: (nodeId, data) => {
@@ -187,7 +187,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     
     // Save history only when nodes are removed (not on every position change)
     if (hasRemovals) {
-      saveHistory();
+      saveHistoryState();
     }
   },
 
@@ -201,7 +201,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     
     // Save history when edges are removed
     if (hasRemovals) {
-      saveHistory();
+      saveHistoryState();
     }
   },
 
@@ -209,7 +209,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
     set({
       edges: addEdge(connection, get().edges),
     });
-    saveHistory();
+    saveHistoryState();
   },
 
   addNoteToGroup: (noteId, groupId) => {
@@ -512,7 +512,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
       nodes: [...nodes, ...newNodes],
       edges: [...edges, ...newEdges],
     });
-    saveHistory();
+    saveHistoryState();
   },
 
   undo: () => {
@@ -554,7 +554,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
   },
 
   saveHistory: () => {
-    saveHistory();
+    saveHistoryState();
   },
   };
 });

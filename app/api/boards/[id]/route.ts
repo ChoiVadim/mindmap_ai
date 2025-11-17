@@ -105,6 +105,55 @@ export async function PATCH(
 
     const updates = await request.json();
 
+    // Validate board name if provided
+    if (updates.name !== undefined) {
+      if (typeof updates.name !== 'string') {
+        return NextResponse.json(
+          { error: 'Board name must be a string' },
+          { status: 400 }
+        );
+      }
+      if (updates.name.trim().length === 0 || updates.name.length > 200) {
+        return NextResponse.json(
+          { error: 'Board name must be between 1 and 200 characters' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate nodes and edges if provided
+    if (updates.nodes !== undefined) {
+      if (!Array.isArray(updates.nodes)) {
+        return NextResponse.json(
+          { error: 'Nodes must be an array' },
+          { status: 400 }
+        );
+      }
+      const MAX_NODES = 10000;
+      if (updates.nodes.length > MAX_NODES) {
+        return NextResponse.json(
+          { error: `Too many nodes. Maximum allowed: ${MAX_NODES}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (updates.edges !== undefined) {
+      if (!Array.isArray(updates.edges)) {
+        return NextResponse.json(
+          { error: 'Edges must be an array' },
+          { status: 400 }
+        );
+      }
+      const MAX_EDGES = 20000;
+      if (updates.edges.length > MAX_EDGES) {
+        return NextResponse.json(
+          { error: `Too many edges. Maximum allowed: ${MAX_EDGES}` },
+          { status: 400 }
+        );
+      }
+    }
+
     // Update board name if provided
     if (updates.name !== undefined) {
       const { error: updateError } = await supabase
@@ -198,13 +247,20 @@ export async function PATCH(
 
     const updatedBoard = updatedBoardResult.data;
 
+    if (!updatedBoard) {
+      return NextResponse.json(
+        { error: 'Board not found after update' },
+        { status: 404 }
+      );
+    }
+
     const result: Board = {
-      id: updatedBoard!.id,
-      name: updatedBoard!.name,
+      id: updatedBoard.id,
+      name: updatedBoard.name,
       nodes: nodesResult.data?.map((n) => n.node_data) || [],
       edges: edgesResult.data?.map((e) => e.edge_data) || [],
-      createdAt: updatedBoard!.created_at,
-      updatedAt: updatedBoard!.updated_at,
+      createdAt: updatedBoard.created_at,
+      updatedAt: updatedBoard.updated_at,
     };
 
     return NextResponse.json(result);

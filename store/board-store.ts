@@ -59,7 +59,7 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
 
   createBoard: async (name) => {
     const newBoard: Board = {
-      id: `board_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `board_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       name: name || 'New Board',
       nodes: [],
       edges: [],

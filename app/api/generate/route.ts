@@ -26,27 +26,40 @@ async function callOpenAI(
     content: prompt,
   });
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: 0.7,
-      max_tokens: 2000,
-    }),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || 'OpenAI API error');
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'OpenAI API error');
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || '';
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout: OpenAI API did not respond within 60 seconds');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const data = await response.json();
-  return data.choices[0]?.message?.content || '';
 }
 
 async function callGemini(
@@ -64,34 +77,47 @@ async function callGemini(
     ? `${systemPrompt}\n\n${prompt}`
     : prompt;
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: fullPrompt,
-              },
-            ],
-          },
-        ],
-      }),
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: fullPrompt,
+                },
+              ],
+            },
+          ],
+        }),
+        signal: controller.signal,
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'Gemini API error');
     }
-  );
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || 'Gemini API error');
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout: Gemini API did not respond within 60 seconds');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
 async function callClaude(
@@ -111,39 +137,97 @@ async function callClaude(
     },
   ];
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 2000,
-      system: systemPrompt || undefined,
-      messages,
-    }),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || 'Claude API error');
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 2000,
+        system: systemPrompt || undefined,
+        messages,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'Claude API error');
+    }
+
+    const data = await response.json();
+    return data.content?.[0]?.text || '';
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout: Claude API did not respond within 60 seconds');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const data = await response.json();
-  return data.content?.[0]?.text || '';
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { prompt, context, agent } = await request.json();
 
-    if (!prompt) {
+    if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
-        { error: 'Prompt is required' },
+        { error: 'Prompt is required and must be a string' },
         { status: 400 }
       );
+    }
+
+    // Validate prompt length
+    if (prompt.length > 50000) {
+      return NextResponse.json(
+        { error: 'Prompt is too long. Maximum 50000 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Validate context if provided
+    if (context !== undefined) {
+      if (!Array.isArray(context)) {
+        return NextResponse.json(
+          { error: 'Context must be an array' },
+          { status: 400 }
+        );
+      }
+      if (context.length > 100) {
+        return NextResponse.json(
+          { error: 'Too many context items. Maximum 100' },
+          { status: 400 }
+        );
+      }
+      // Validate each context item
+      for (const ctx of context) {
+        if (typeof ctx !== 'object' || ctx === null) {
+          return NextResponse.json(
+            { error: 'Each context item must be an object' },
+            { status: 400 }
+          );
+        }
+        if (ctx.content && typeof ctx.content !== 'string') {
+          return NextResponse.json(
+            { error: 'Context content must be a string' },
+            { status: 400 }
+          );
+        }
+        if (ctx.content && ctx.content.length > 100000) {
+          return NextResponse.json(
+            { error: 'Context item content is too long. Maximum 100000 characters per item' },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     // Determine provider and configuration

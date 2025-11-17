@@ -71,9 +71,41 @@ export async function POST(request: NextRequest) {
     const { name, nodes = [], edges = [] } = body;
 
     // Validate required fields
-    if (!name) {
+    if (!name || typeof name !== 'string') {
       return NextResponse.json(
-        { error: 'Board name is required' },
+        { error: 'Board name is required and must be a string' },
+        { status: 400 }
+      );
+    }
+
+    // Validate name length
+    if (name.trim().length === 0 || name.length > 200) {
+      return NextResponse.json(
+        { error: 'Board name must be between 1 and 200 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Validate nodes and edges are arrays
+    if (!Array.isArray(nodes) || !Array.isArray(edges)) {
+      return NextResponse.json(
+        { error: 'Nodes and edges must be arrays' },
+        { status: 400 }
+      );
+    }
+
+    // Prevent DoS: limit array sizes
+    const MAX_NODES = 10000;
+    const MAX_EDGES = 20000;
+    if (nodes.length > MAX_NODES) {
+      return NextResponse.json(
+        { error: `Too many nodes. Maximum allowed: ${MAX_NODES}` },
+        { status: 400 }
+      );
+    }
+    if (edges.length > MAX_EDGES) {
+      return NextResponse.json(
+        { error: `Too many edges. Maximum allowed: ${MAX_EDGES}` },
         { status: 400 }
       );
     }

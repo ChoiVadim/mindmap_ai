@@ -17,6 +17,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate feedback length
+    if (feedbackText.length > 10000) {
+      return NextResponse.json(
+        { error: 'Feedback text is too long. Maximum 10000 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Validate email format if provided
+    if (email !== undefined && email !== null) {
+      if (typeof email !== 'string') {
+        return NextResponse.json(
+          { error: 'Email must be a string' },
+          { status: 400 }
+        );
+      }
+      if (email.trim().length > 0) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) {
+          return NextResponse.json(
+            { error: 'Invalid email format' },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Get authenticated user (optional - feedback can be submitted anonymously)
     const { data: { user } } = await supabase.auth.getUser();
 
