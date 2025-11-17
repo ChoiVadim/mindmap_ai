@@ -78,11 +78,12 @@ export default function SignupPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/`,
         },
       });
 
       if (error) throw error;
+      // OAuth will redirect automatically via redirectTo option
     } catch (error: any) {
       setError(error.message || 'An error occurred during Google sign in');
       setLoading(false);
