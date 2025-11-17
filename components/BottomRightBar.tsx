@@ -142,7 +142,7 @@ export default function BottomRightBar() {
                         id="feedback"
                         value={feedback}
                         onChange={(e) => setFeedback(e.target.value)}
-                        placeholder="Tell us what you think about the app..."
+                        placeholder="Share your thoughts, suggest new features, or report any issues..."
                         className="w-full px-3 py-2 text-sm bg-background border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-foreground placeholder:text-foreground/50"
                         rows={5}
                         required

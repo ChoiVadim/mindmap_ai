@@ -1,18 +1,32 @@
 'use client';
 
-import { StickyNote, Sparkles, Hash, Type, Save, Trash2, Bot } from 'lucide-react';
+import { useState } from 'react';
+import { StickyNote, Sparkles, Hash, Type, Save, Trash2, Bot, Loader2 } from 'lucide-react';
 import { NodeType } from '@/types/canvas';
 import { Dock } from '@/components/ui/dock-two';
 
 interface ToolbarProps {
-  onSave?: () => void;
+  onSave?: () => void | Promise<void>;
   onClear?: () => void;
 }
 
 export default function Toolbar({ onSave, onClear }: ToolbarProps) {
+  const [isSaving, setIsSaving] = useState(false);
+
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleSave = async () => {
+    if (!onSave || isSaving) return;
+    
+    setIsSaving(true);
+    try {
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const tools = [
@@ -52,10 +66,11 @@ export default function Toolbar({ onSave, onClear }: ToolbarProps) {
       draggable: true,
     })),
     {
-      icon: Save,
+      icon: isSaving ? Loader2 : Save,
       label: 'Save',
-      onClick: onSave,
+      onClick: handleSave,
       draggable: false,
+      isLoading: isSaving,
     },
     {
       icon: Trash2,

@@ -24,6 +24,8 @@ interface DockProps {
 
     draggable?: boolean
 
+    isLoading?: boolean
+
   }[]
 
   compact?: boolean
@@ -53,6 +55,8 @@ interface DockIconButtonProps {
   draggable?: boolean
 
   tooltipPosition?: 'top' | 'bottom' | 'left' | 'right'
+
+  isLoading?: boolean
 
 }
 
@@ -84,15 +88,15 @@ const floatingAnimation = {
 
 const DockIconButton = React.forwardRef<HTMLButtonElement, DockIconButtonProps>(
 
-  ({ icon: Icon, label, onClick, className, onDragStart, draggable, tooltipPosition = 'top' }, ref) => {
+  ({ icon: Icon, label, onClick, className, onDragStart, draggable, tooltipPosition = 'top', isLoading = false }, ref) => {
 
     return (
 
       <motion.div
 
-        whileHover={{ scale: 1.1, y: -2 }}
+        whileHover={isLoading ? {} : { scale: 1.1, y: -2 }}
 
-        whileTap={{ scale: 0.95 }}
+        whileTap={isLoading ? {} : { scale: 0.95 }}
 
         className="inline-block"
 
@@ -108,6 +112,8 @@ const DockIconButton = React.forwardRef<HTMLButtonElement, DockIconButtonProps>(
 
           onDragStart={onDragStart}
 
+          disabled={isLoading}
+
           className={cn(
 
             "relative group p-3 rounded-lg",
@@ -116,13 +122,15 @@ const DockIconButton = React.forwardRef<HTMLButtonElement, DockIconButtonProps>(
 
             draggable && "cursor-grab active:cursor-grabbing",
 
+            isLoading && "cursor-not-allowed opacity-70",
+
             className
 
           )}
 
         >
 
-          <Icon className="w-5 h-5 text-foreground" />
+          <Icon className={cn("w-5 h-5 text-foreground", isLoading && "animate-spin")} />
 
           <span className={cn(
 
@@ -211,6 +219,7 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
               onDragStart={item.onDragStart}
               draggable={item.draggable}
               tooltipPosition={tooltipPosition}
+              isLoading={item.isLoading}
             />
 
           ))}
