@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
+  const userRef = useRef<User | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -33,21 +34,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
       setSession(session);
-      setUser(session?.user ?? null);
+      const initialUser = session?.user ?? null;
+      setUser(initialUser);
+      userRef.current = initialUser;
       setLoading(false);
     });
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return;
+      
+      const previousUser = userRef.current;
+      const newUser = session?.user ?? null;
+      
       setSession(session);
-      setUser(session?.user ?? null);
+      setUser(newUser);
+      userRef.current = newUser;
       setLoading(false);
       
-      // Refresh router on auth state change
-      router.refresh();
+      // Only refresh router on significant auth events (login, logout)
+      // Not on every state change (like tab switches or token refreshes)
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        // Only refresh if user actually changed (login/logout)
+        if ((previousUser === null && newUser !== null) || (previousUser !== null && newUser === null)) {
+          router.refresh();
+        }
+      }
     });
 
     return () => {

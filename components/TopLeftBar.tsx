@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LayoutDashboard, Plus, Trash2, Edit2, X, Check, LogOut, User } from 'lucide-react';
 import Image from 'next/image';
 import { Dock } from '@/components/ui/dock-two';
@@ -34,6 +34,9 @@ export default function TopLeftBar() {
   const { user, signOut, loading: authLoading } = useAuth();
 
   const currentBoard = getCurrentBoard();
+  
+  // Track if boards have been loaded to prevent reloading on tab switch
+  const boardsLoadedRef = useRef(false);
 
   // Load boards on mount - but only after authentication is complete
   useEffect(() => {
@@ -44,6 +47,12 @@ export default function TopLeftBar() {
 
     // If user is not authenticated, don't try to load boards
     if (!user) {
+      boardsLoadedRef.current = false;
+      return;
+    }
+
+    // If boards are already loaded, don't reload them
+    if (boardsLoadedRef.current && boards.length > 0) {
       return;
     }
 
@@ -83,6 +92,9 @@ export default function TopLeftBar() {
             loadCanvas(defaultBoard.nodes || [], defaultBoard.edges || []);
             setBoards([defaultBoard]);
           }
+          
+          // Mark boards as loaded
+          boardsLoadedRef.current = true;
         } else {
           setBoards([]);
         }
