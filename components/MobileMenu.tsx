@@ -197,7 +197,7 @@ export default function MobileMenu() {
   return (
     <>
       {/* Mobile Header with Logo, Board and Menu Button */}
-      <div className="fixed top-4 left-10 right-10 z-50 md:hidden flex items-center justify-between gap-4">
+      <div className="fixed top-4 left-6 right-6 z-50 md:hidden flex items-center justify-between gap-4">
         {/* Logo and Board */}
         <button
           onClick={handleOpenBoards}
