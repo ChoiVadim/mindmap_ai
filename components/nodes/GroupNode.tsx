@@ -55,7 +55,7 @@ function GroupNode({ id, data, selected }: NodeProps) {
 
   const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleNodeCollapse(id);
+    toggleNodeCollapse?.(id);
   }, [id, toggleNodeCollapse]);
 
   return (

@@ -264,7 +264,7 @@ function AgentNode({ id, data, selected, width, height }: NodeProps) {
 
   const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleNodeCollapse(id);
+    toggleNodeCollapse?.(id);
   }, [id, toggleNodeCollapse]);
 
   // Track if user manually resized by detecting width changes

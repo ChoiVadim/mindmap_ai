@@ -186,7 +186,7 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
 
   const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleNodeCollapse(id);
+    toggleNodeCollapse?.(id);
   }, [id, toggleNodeCollapse]);
 
   // Track if user manually resized by detecting width changes
@@ -375,7 +375,7 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
     }
 
     try {
-      setNodeRunning(id, true);
+      setNodeRunning?.(id, true);
       
       // Dynamic import to avoid SSR issues
       const { gatherAIContext, generateAIResponse } = await import('@/lib/ai-service');
@@ -407,14 +407,14 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
       } else {
         // Create new note node with AI result
         console.log('Creating new note node with content length:', result.content.length);
-        createNoteNode(id, result.content);
+        createNoteNode?.(id, result.content);
       }
       
     } catch (error: any) {
       console.error('AI generation error:', error);
       alert(`Error: ${error.message}`);
     } finally {
-      setNodeRunning(id, false);
+      setNodeRunning?.(id, false);
     }
   }, [id, nodes, edges, updateNodeData, setNodeRunning, createNoteNode, editor]);
 
