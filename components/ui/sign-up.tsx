@@ -40,7 +40,7 @@ const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 const TestimonialCard = ({ testimonial, delay }: { testimonial: Testimonial, delay: string }) => (
-  <div className={`animate-testimonial ${delay} flex items-start gap-3 rounded-3xl bg-card/40 dark:bg-zinc-800/40 backdrop-blur-xl border border-white/10 p-5 w-64`}>
+  <div className={`animate-testimonial ${delay} flex items-start gap-3 rounded-3xl bg-transparent backdrop-blur-xl border border-white/10 p-5 w-64 shadow-md`}>
     <img src={testimonial.avatarSrc} className="h-10 w-10 object-cover rounded-2xl" alt="avatar" />
     <div className="text-sm leading-snug">
       <p className="flex items-center gap-1 font-medium">{testimonial.name}</p>
@@ -130,10 +130,16 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
 
       {/* Right column: hero image + testimonials */}
       {heroImageSrc && (
-        <section className="hidden md:block flex-1 relative p-4">
-          <div className="animate-slide-right animate-delay-300 absolute inset-4 rounded-3xl bg-cover bg-center" style={{ backgroundImage: `url(${heroImageSrc})` }}></div>
+        <section className="hidden md:flex flex-1 items-center justify-center p-8 relative overflow-hidden">
+          <div className="animate-slide-right animate-delay-300 max-w-full max-h-full flex items-center justify-center">
+            <img 
+              src={heroImageSrc} 
+              alt="Preview" 
+              className="w-auto h-auto max-w-full max-h-[calc(100vh-4rem)] object-contain rounded-2xl shadow-2xl border border-border/50"
+            />
+          </div>
           {testimonials.length > 0 && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 px-8 w-full justify-center">
+            <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 flex gap-4 px-8 w-full justify-center">
               <TestimonialCard testimonial={testimonials[0]} delay="animate-delay-1000" />
               {testimonials[1] && <div className="hidden xl:flex"><TestimonialCard testimonial={testimonials[1]} delay="animate-delay-1200" /></div>}
               {testimonials[2] && <div className="hidden 2xl:flex"><TestimonialCard testimonial={testimonials[2]} delay="animate-delay-1400" /></div>}
