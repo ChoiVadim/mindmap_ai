@@ -27,6 +27,13 @@ interface AdminCanvasStore {
   addNoteToGroup: (noteId: string, groupId: string) => void;
   removeNoteFromGroup: (noteId: string, groupId: string) => void;
   
+  // Collapse operations
+  toggleNodeCollapse: (nodeId: string) => void;
+  
+  // AI operations (stub implementations for admin canvas)
+  setNodeRunning: (nodeId: string, isRunning: boolean) => void;
+  createNoteNode: (promptNodeId: string, content: string) => string;
+  
   // Canvas operations
   loadTemplate: (nodes: CanvasNode[], edges: CanvasEdge[]) => void;
   clearCanvas: () => void;
@@ -191,6 +198,22 @@ export const useAdminCanvasStore = create<AdminCanvasStore>((set, get) => {
     },
 
     onConnect: (connection) => {
+      const currentEdges = get().edges;
+      
+      // Check if edge already exists (prevent duplicates)
+      const isDuplicate = currentEdges.some(
+        (edge) =>
+          edge.source === connection.source &&
+          edge.target === connection.target &&
+          edge.sourceHandle === connection.sourceHandle &&
+          edge.targetHandle === connection.targetHandle
+      );
+      
+      if (isDuplicate) {
+        console.log('Prevented duplicate edge creation');
+        return;
+      }
+      
       // Ensure sourceHandle and targetHandle are preserved
       const edgeWithHandles = {
         ...connection,
@@ -198,7 +221,7 @@ export const useAdminCanvasStore = create<AdminCanvasStore>((set, get) => {
         sourceHandle: connection.sourceHandle || null,
         targetHandle: connection.targetHandle || null,
       };
-      const newEdge = addEdge(edgeWithHandles, get().edges);
+      const newEdge = addEdge(edgeWithHandles, currentEdges);
       set({ edges: newEdge });
       saveHistoryState();
     },
@@ -265,6 +288,73 @@ export const useAdminCanvasStore = create<AdminCanvasStore>((set, get) => {
         }),
       });
       saveHistoryState();
+    },
+
+    toggleNodeCollapse: (nodeId) => {
+      set({
+        nodes: get().nodes.map((node) =>
+          node.id === nodeId
+            ? { ...node, data: { ...node.data, collapsed: !node.data.collapsed } as NodeData }
+            : node
+        ),
+      });
+    },
+
+    setNodeRunning: (nodeId, isRunning) => {
+      set({
+        nodes: get().nodes.map((node) =>
+          node.id === nodeId && node.data.type === 'prompt'
+            ? { ...node, data: { ...node.data, isRunning } as NodeData }
+            : node
+        ),
+      });
+    },
+
+    createNoteNode: (promptNodeId, content) => {
+      const promptNode = get().nodes.find((n) => n.id === promptNodeId);
+      if (!promptNode) return '';
+
+      // Create note node positioned to the right of the prompt
+      const noteNodeId = getNodeId();
+      const newNoteNode: CanvasNode = {
+        id: noteNodeId,
+        type: 'note',
+        position: {
+          x: promptNode.position.x + 500,
+          y: promptNode.position.y,
+        },
+        data: {
+          type: 'note',
+          label: 'AI Generated',
+          content,
+        },
+        width: 400,
+        height: 400,
+      };
+
+      // Create edge from prompt to note with default options
+      const newEdge: CanvasEdge = {
+        id: `${promptNodeId}-${noteNodeId}`,
+        source: promptNodeId,
+        target: noteNodeId,
+        type: 'highlightable',
+        animated: false,
+        style: { strokeWidth: 2, stroke: '#94a3b8' },
+        markerEnd: {
+          type: 'arrow' as const,
+          width: 20,
+          height: 20,
+          color: '#94a3b8',
+        },
+      };
+
+      set({
+        nodes: [...get().nodes, newNoteNode],
+        edges: [...get().edges, newEdge],
+      });
+      saveHistoryState();
+
+      return noteNodeId;
     },
 
     loadTemplate: (templateNodes, templateEdges) => {

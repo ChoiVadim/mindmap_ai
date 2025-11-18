@@ -621,6 +621,7 @@ export default function Canvas() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         connectionMode={ConnectionMode.Loose}
+        connectionRadius={100}
         fitView
         minZoom={0.1}
         maxZoom={4}

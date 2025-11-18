@@ -206,6 +206,22 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
   },
 
   onConnect: (connection) => {
+    const currentEdges = get().edges;
+    
+    // Check if edge already exists (prevent duplicates)
+    const isDuplicate = currentEdges.some(
+      (edge) =>
+        edge.source === connection.source &&
+        edge.target === connection.target &&
+        edge.sourceHandle === connection.sourceHandle &&
+        edge.targetHandle === connection.targetHandle
+    );
+    
+    if (isDuplicate) {
+      console.log('Prevented duplicate edge creation');
+      return;
+    }
+    
     // Ensure sourceHandle and targetHandle are preserved
     const edgeWithHandles = {
       ...connection,
@@ -214,7 +230,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
       targetHandle: connection.targetHandle || null,
     };
     set({
-      edges: addEdge(edgeWithHandles, get().edges),
+      edges: addEdge(edgeWithHandles, currentEdges),
     });
     saveHistoryState();
   },
