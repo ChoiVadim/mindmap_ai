@@ -233,7 +233,7 @@ export default function TopLeftBar() {
   const dockItems = [
     {
       icon: LayoutDashboard,
-      label: currentBoard?.name || 'Loading...',
+      label: currentBoard?.name || 'Select Board',
       onClick: () => setIsDropdownOpen(!isDropdownOpen),
     },
   ];

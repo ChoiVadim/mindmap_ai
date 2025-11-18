@@ -4,6 +4,7 @@ import { ReactFlowProvider } from '@xyflow/react';
 import Canvas from '@/components/Canvas';
 import LandingPage from '@/components/LandingPage';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { Component as LumaSpin } from '@/components/ui/luma-spin';
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -11,7 +12,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-background">
-        <div className="text-foreground/50">Loading...</div>
+        <LumaSpin />
       </div>
     );
   }

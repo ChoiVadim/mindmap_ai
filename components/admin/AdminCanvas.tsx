@@ -11,6 +11,7 @@ import {
   OnNodeDrag,
   useReactFlow,
   OnSelectionChangeParams,
+  PanOnScrollMode,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -66,6 +67,86 @@ export default function AdminCanvas({ onSave, onClear }: AdminCanvasProps) {
   // Track dragging node for alignment guides
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
   
+  // Определяем, мобильное ли устройство (iPad, iPhone, Android)
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  
+  useEffect(() => {
+    // Проверяем по user agent и touch support
+    const checkMobile = () => {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isMobileUA = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isTablet = /iPad|Android/i.test(navigator.userAgent) && window.innerWidth <= 1024;
+      
+      setIsMobileDevice(isTouchDevice && (isMobileUA || isTablet));
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Кастомный обработчик wheel для умного различения мышки и тачпада
+  const handleWheel = useCallback((event: WheelEvent) => {
+    // Если зажат Ctrl - это pinch жест на тачпаде, пропускаем (ReactFlow обработает)
+    if (event.ctrlKey) {
+      return;
+    }
+    
+    // Предотвращаем стандартное поведение браузера И всплытие события
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Определяем устройство по характеристикам события:
+    // Мышка: большие дискретные значения deltaY (обычно кратные 100 или 120)
+    // Тачпад: маленькие плавные значения deltaY и часто есть deltaX
+    const absDeltaY = Math.abs(event.deltaY);
+    const absDeltaX = Math.abs(event.deltaX);
+    
+    // Тачпад обычно дает deltaX при диагональном скролле или горизонтальном
+    // И маленькие плавные значения deltaY
+    const isTrackpad = (absDeltaX > 0) || (absDeltaY > 0 && absDeltaY < 50);
+    
+    const viewport = reactFlowInstance.getViewport();
+    
+    if (isTrackpad) {
+      // ТАЧПАД - делаем панорамирование
+      const panSpeed = 1.5;
+      reactFlowInstance.setViewport({
+        x: viewport.x - event.deltaX * panSpeed,
+        y: viewport.y - event.deltaY * panSpeed,
+        zoom: viewport.zoom
+      }, { duration: 0 });
+    } else {
+      // МЫШКА - делаем зум к позиции курсора
+      // Используем мультипликативный зум для плавности
+      const zoomSpeed = 0.002; // Более плавный зум
+      const scaleFactor = 1 - event.deltaY * zoomSpeed;
+      const newZoom = Math.max(0.1, Math.min(4, viewport.zoom * scaleFactor));
+      
+      // Получаем позицию курсора относительно canvas
+      const bounds = reactFlowWrapper.current?.getBoundingClientRect();
+      if (bounds) {
+        const clientX = event.clientX - bounds.left;
+        const clientY = event.clientY - bounds.top;
+        
+        // Вычисляем позицию в системе координат flow
+        const flowX = (clientX - viewport.x) / viewport.zoom;
+        const flowY = (clientY - viewport.y) / viewport.zoom;
+        
+        // Новая позиция viewport для зума к точке курсора
+        const newX = clientX - flowX * newZoom;
+        const newY = clientY - flowY * newZoom;
+        
+        reactFlowInstance.setViewport({
+          x: newX,
+          y: newY,
+          zoom: newZoom
+        }, { duration: 0 });
+      }
+    }
+  }, [reactFlowInstance]);
+  
   // Track dark mode
   const [isDark, setIsDark] = useState(false);
   
@@ -87,6 +168,20 @@ export default function AdminCanvas({ onSave, onClear }: AdminCanvasProps) {
     
     return () => observer.disconnect();
   }, []);
+  
+  // Подключаем кастомный обработчик wheel
+  useEffect(() => {
+    const wrapper = reactFlowWrapper.current;
+    if (!wrapper) return;
+    
+    // passive: false чтобы можно было делать preventDefault
+    // capture: true чтобы перехватить событие раньше ReactFlow
+    wrapper.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+    
+    return () => {
+      wrapper.removeEventListener('wheel', handleWheel, { capture: true });
+    };
+  }, [handleWheel]);
 
   // Track the last drop timestamp to prevent duplicates
   const lastDropTimestamp = useRef(0);
@@ -349,20 +444,35 @@ export default function AdminCanvas({ onSave, onClear }: AdminCanvasProps) {
         maxZoom={4}
         deleteKeyCode={["Delete", "Backspace"]}
         multiSelectionKeyCode="Meta"
-        selectionOnDrag={true}
+        // Мобильные устройства: отключаем lasso selection для панорамирования пальцем
+        // Десктоп: включаем lasso selection (как Miro/Figma)
+        selectionOnDrag={!isMobileDevice}
         selectNodesOnDrag={false}
         nodesDraggable={true}
+        // На мобильных увеличиваем расстояние для различения клика и драга
+        nodeClickDistance={isMobileDevice ? 10 : 0}
+        // Расстояние для различения клика и панорамирования на канве
+        paneClickDistance={isMobileDevice ? 10 : 1}
         snapToGrid={false}
         snapGrid={[1, 1]}
         nodesConnectable={true}
         elementsSelectable={true}
         translateExtent={[[-15000, -15000], [15000, 15000]]}
-        panOnScroll={true}
+        // Кастомный обработчик wheel (см. handleWheel выше):
+        // Мышка: колесико → зум БЕЗ Ctrl к позиции курсора
+        // Тачпад: два пальца → панорамирование, pinch (Ctrl) → зум
+        // iPad/Mobile: touch (левая кнопка) → панорамирование, pinch → зум
+        panOnScroll={false}
         panOnScrollSpeed={1.5}
-        panOnDrag={[1, 2]}
-        zoomOnScroll={true}
+        // Мобильные: touch для панорамирования (левая кнопка)
+        // Десктоп: средняя кнопка мыши для панорамирования
+        panOnDrag={isMobileDevice ? [0, 1, 2] : [1, 2]}
+        // Отключаем встроенный zoomOnScroll - используем кастомный handleWheel
+        zoomOnScroll={false}
+        // Оставляем только pinch для зума (Ctrl+scroll на тачпаде)
         zoomOnPinch={true}
         zoomOnDoubleClick={false}
+        preventScrolling={true}
         proOptions={{ hideAttribution: true }}
         defaultEdgeOptions={{
           type: 'highlightable',

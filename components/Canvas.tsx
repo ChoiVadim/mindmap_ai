@@ -26,6 +26,7 @@ import TopLeftBar from './TopLeftBar';
 import TopRightBar from './TopRightBar';
 import BottomRightBar from './BottomRightBar';
 import BottomLeftBar from './BottomLeftBar';
+import MobileMenu from './MobileMenu';
 import AlignmentGuides, { calculateSnappedPosition } from './AlignmentGuides';
 import HighlightableEdge from './HighlightableEdge';
 import { Component as LumaSpin } from './ui/luma-spin';
@@ -601,10 +602,24 @@ export default function Canvas() {
       )}
       <WelcomeModal isOpen={showWelcomeModal} onClose={handleWelcomeModalClose} />
       {showEmptyState && <EmptyState onDismiss={handleEmptyStateDismiss} />}
-      <TopLeftBar />
-      <TopRightBar />
-      <BottomRightBar />
-      <BottomLeftBar />
+      
+      {/* Mobile Menu - visible only on mobile */}
+      <MobileMenu />
+      
+      {/* Desktop Bars - hidden on mobile */}
+      <div className="hidden md:block">
+        <TopLeftBar />
+      </div>
+      <div className="hidden md:block">
+        <TopRightBar />
+      </div>
+      <div className="hidden md:block">
+        <BottomRightBar />
+      </div>
+      <div className="hidden md:block">
+        <BottomLeftBar />
+      </div>
+      
       <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} />
       <CanvasStoreProvider isAdmin={false}>
         <ReactFlow
@@ -621,7 +636,6 @@ export default function Canvas() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         connectionMode={ConnectionMode.Loose}
-        connectionRadius={100}
         fitView
         minZoom={0.1}
         maxZoom={4}

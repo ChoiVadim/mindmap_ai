@@ -6,6 +6,7 @@ import { X, Sparkles, Link2, Play, FileText, ArrowRight, Brain, Zap, Plug, Bot }
 import { loadTemplatesFromDB, BoardTemplate } from '@/lib/board-templates';
 import { useBoardStore } from '@/store/board-store';
 import { useCanvasStore } from '@/store/canvas-store';
+import { Component as LumaSpin } from '@/components/ui/luma-spin';
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -83,34 +84,35 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm"
             onClick={onClose}
           />
 
-          {/* Modal - positioned top right */}
-          <div className="fixed top-6 right-6 z-50 pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0, x: 20, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 20, scale: 0.95 }}
-              className="w-96 max-h-[85vh] overflow-hidden bg-popover border border-border rounded-lg shadow-2xl pointer-events-auto flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
+          {/* Modal - full screen with padding on mobile, top right on desktop */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="fixed inset-4 z-[70] md:inset-auto md:top-6 md:right-6 md:w-96 max-h-[90vh] md:max-h-[85vh] overflow-hidden bg-popover border border-border rounded-2xl md:rounded-lg shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+          >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border">
+              <div className="flex items-center justify-between p-6 border-b border-border">
                 <h1 className="text-lg font-semibold text-foreground">
                   Welcome to Strucly
                 </h1>
                 <button
                   onClick={onClose}
-                  className="p-1.5 hover:bg-secondary rounded transition-colors"
+                  className="p-1 hover:bg-secondary rounded transition-colors"
                 >
-                  <X className="w-4 h-4 text-foreground/70" />
+                  <X className="w-5 h-5 text-foreground/70" />
                 </button>
               </div>
 
               {/* Scrollable Content */}
-              <div className="overflow-y-auto flex-1 p-4 space-y-6">
+              <div className="overflow-y-auto flex-1 p-6 space-y-6 overscroll-contain touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {/* Intro */}
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -223,10 +225,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                           </div>
                           {isTemplateLoading && (
                             <div className="absolute inset-0 flex items-center justify-center bg-background/90 rounded-lg">
-                              <div className="flex flex-col items-center gap-1.5">
-                                <div className="w-4 h-4 border-2 border-foreground/30 border-t-foreground/70 rounded-full animate-spin" />
-                                <span className="text-xs text-foreground/70">Loading...</span>
-                              </div>
+                              <LumaSpin />
                             </div>
                           )}
                         </motion.button>
@@ -250,7 +249,6 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
                 </motion.button>
               </div>
             </motion.div>
-          </div>
         </>
       )}
     </AnimatePresence>

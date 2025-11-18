@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, FileText, Lightbulb, Loader2 } from 'lucide-react';
+import { Sparkles, FileText, Lightbulb } from 'lucide-react';
 import { useBoardStore } from '@/store/board-store';
 import { useCanvasStore } from '@/store/canvas-store';
 import { loadTemplatesFromDB, BoardTemplate } from '@/lib/board-templates';
+import { Component as LumaSpin } from '@/components/ui/luma-spin';
 
 interface EmptyStateProps {
   onDismiss?: () => void;
@@ -106,10 +107,7 @@ export default function EmptyState({ onDismiss }: EmptyStateProps) {
                     </div>
                     {isTemplateLoading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-background/90 rounded-lg">
-                        <div className="flex flex-col items-center gap-1.5">
-                          <Loader2 className="w-4 h-4 text-foreground animate-spin" />
-                          <span className="text-xs text-foreground/70">Loading...</span>
-                        </div>
+                        <LumaSpin />
                       </div>
                     )}
                   </motion.button>
