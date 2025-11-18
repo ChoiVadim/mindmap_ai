@@ -31,6 +31,7 @@ import HighlightableEdge from './HighlightableEdge';
 import { Component as LumaSpin } from './ui/luma-spin';
 import WelcomeModal from './WelcomeModal';
 import EmptyState from './EmptyState';
+import { CanvasStoreProvider } from '@/lib/canvas-store-context';
 
 // Define custom node types
 const nodeTypes: any = {
@@ -605,9 +606,10 @@ export default function Canvas() {
       <BottomRightBar />
       <BottomLeftBar />
       <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} />
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
+      <CanvasStoreProvider isAdmin={false}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -675,6 +677,7 @@ export default function Canvas() {
         
         <Toolbar onSave={handleSave} onClear={handleClear} />
       </ReactFlow>
+      </CanvasStoreProvider>
     </div>
   );
 }

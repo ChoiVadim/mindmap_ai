@@ -191,7 +191,14 @@ export const useAdminCanvasStore = create<AdminCanvasStore>((set, get) => {
     },
 
     onConnect: (connection) => {
-      const newEdge = addEdge(connection, get().edges);
+      // Ensure sourceHandle and targetHandle are preserved
+      const edgeWithHandles = {
+        ...connection,
+        type: 'highlightable',
+        sourceHandle: connection.sourceHandle || null,
+        targetHandle: connection.targetHandle || null,
+      };
+      const newEdge = addEdge(edgeWithHandles, get().edges);
       set({ edges: newEdge });
       saveHistoryState();
     },

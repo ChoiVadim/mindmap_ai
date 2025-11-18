@@ -23,6 +23,7 @@ import AgentNode from '../nodes/AgentNode';
 import Toolbar from '../Toolbar';
 import AlignmentGuides from '../AlignmentGuides';
 import HighlightableEdge from '../HighlightableEdge';
+import { CanvasStoreProvider } from '@/lib/canvas-store-context';
 
 // Define custom node types
 const nodeTypes: any = {
@@ -327,9 +328,10 @@ export default function AdminCanvas({ onSave, onClear }: AdminCanvasProps) {
       onDragOver={onDragOver}
     >
       <AlignmentGuides nodes={nodes} draggingNodeId={draggingNodeId} />
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
+      <CanvasStoreProvider isAdmin={true}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -384,6 +386,7 @@ export default function AdminCanvas({ onSave, onClear }: AdminCanvasProps) {
         <MiniMap />
         <Toolbar onSave={handleSave} onClear={handleClear} />
       </ReactFlow>
+      </CanvasStoreProvider>
     </div>
   );
 }

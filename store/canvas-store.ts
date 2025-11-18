@@ -206,8 +206,15 @@ export const useCanvasStore = create<CanvasStore>((set, get) => {
   },
 
   onConnect: (connection) => {
+    // Ensure sourceHandle and targetHandle are preserved
+    const edgeWithHandles = {
+      ...connection,
+      type: 'highlightable',
+      sourceHandle: connection.sourceHandle || null,
+      targetHandle: connection.targetHandle || null,
+    };
     set({
-      edges: addEdge(connection, get().edges),
+      edges: addEdge(edgeWithHandles, get().edges),
     });
     saveHistoryState();
   },

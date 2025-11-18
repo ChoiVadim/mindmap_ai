@@ -7,13 +7,12 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { TextLabelData } from '@/types/canvas';
-import { useCanvasStore } from '@/store/canvas-store';
+import { useCanvasStoreContext } from '@/lib/canvas-store-context';
 import { createPasteHandler } from '@/lib/blocknote-helpers';
 
 function TextLabelNode({ id, data, selected, width, height }: NodeProps) {
   const typedData = data as TextLabelData;
-  const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const deleteNode = useCanvasStore((state) => state.deleteNode);
+  const { updateNodeData, deleteNode } = useCanvasStoreContext();
   const { updateNode } = useReactFlow();
   const contentRef = useRef<HTMLDivElement>(null);
   const isManuallyResized = typedData.manuallyResized ?? false;

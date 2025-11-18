@@ -7,7 +7,7 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { AgentNodeData, AIProvider } from '@/types/canvas';
-import { useCanvasStore } from '@/store/canvas-store';
+import { useCanvasStoreContext } from '@/lib/canvas-store-context';
 import { createPasteHandler } from '@/lib/blocknote-helpers';
 
 // Model options for each provider
@@ -19,9 +19,7 @@ const MODEL_OPTIONS: Record<AIProvider, string[]> = {
 
 function AgentNode({ id, data, selected, width, height }: NodeProps) {
   const typedData = data as AgentNodeData;
-  const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const deleteNode = useCanvasStore((state) => state.deleteNode);
-  const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
+  const { updateNodeData, deleteNode, toggleNodeCollapse } = useCanvasStoreContext();
   const { updateNode } = useReactFlow();
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [label, setLabel] = useState(typedData.label || 'AI Agent');

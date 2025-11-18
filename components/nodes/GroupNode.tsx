@@ -4,7 +4,7 @@ import { memo, useState, useCallback, useEffect } from 'react';
 import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
 import { Hash, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import { GroupNodeData } from '@/types/canvas';
-import { useCanvasStore } from '@/store/canvas-store';
+import { useCanvasStoreContext } from '@/lib/canvas-store-context';
 
 const COLORS = ['#FF9F40', '#E91E63', '#3F51B5', '#4CAF50', '#9C27B0'];
 
@@ -34,11 +34,7 @@ function GroupNode({ id, data, selected }: NodeProps) {
     return () => observer.disconnect();
   }, []);
   
-  const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const deleteNode = useCanvasStore((state) => state.deleteNode);
-  const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
-  const removeNoteFromGroup = useCanvasStore((state) => state.removeNoteFromGroup);
-  const nodes = useCanvasStore((state) => state.nodes);
+  const { updateNodeData, deleteNode, toggleNodeCollapse, removeNoteFromGroup, nodes } = useCanvasStoreContext();
 
   const childNodes = nodes.filter((node) => typedData.childNodes.includes(node.id));
   const isCollapsed = typedData.collapsed ?? false;

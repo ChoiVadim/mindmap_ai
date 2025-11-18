@@ -7,14 +7,12 @@ import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import { PromptNodeData } from '@/types/canvas';
-import { useCanvasStore } from '@/store/canvas-store';
+import { useCanvasStoreContext } from '@/lib/canvas-store-context';
 import { createPasteHandler } from '@/lib/blocknote-helpers';
 
 function PromptNode({ id, data, selected, width, height }: NodeProps) {
   const typedData = data as PromptNodeData;
-  const updateNodeData = useCanvasStore((state) => state.updateNodeData);
-  const deleteNode = useCanvasStore((state) => state.deleteNode);
-  const toggleNodeCollapse = useCanvasStore((state) => state.toggleNodeCollapse);
+  const { updateNodeData, deleteNode, toggleNodeCollapse } = useCanvasStoreContext();
   const { updateNode } = useReactFlow();
   const [isEditingLabel, setIsEditingLabel] = useState(false);
   const [label, setLabel] = useState(typedData.label || 'Prompt');
@@ -362,10 +360,7 @@ function PromptNode({ id, data, selected, width, height }: NodeProps) {
     }
   }, [isCollapsed, id, updateNode, updateHeightFromContent]);
 
-  const nodes = useCanvasStore((state) => state.nodes);
-  const edges = useCanvasStore((state) => state.edges);
-  const setNodeRunning = useCanvasStore((state) => state.setNodeRunning);
-  const createNoteNode = useCanvasStore((state) => state.createNoteNode);
+  const { nodes, edges, setNodeRunning, createNoteNode } = useCanvasStoreContext();
   
   const handleRun = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
