@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Brain, Zap, Link2, Layers, ArrowRight, X, Check } from 'lucide-react';
+import { Boxes } from '@/components/ui/background-boxes';
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -82,7 +83,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image
               src="/icon.png"
@@ -111,84 +112,97 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-5xl mx-auto text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-5xl md:text-7xl font-bold mb-6 text-foreground leading-tight"
-          >
-            ChatGPT is a calculator.{' '}
-            <span className="text-primary">Strucly is your desk.</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-xl md:text-2xl text-foreground/70 mb-10 max-w-3xl mx-auto"
-          >
-            A visual canvas where you structure knowledge, connect ideas, and build AI workflows that get <span className="text-foreground font-semibold">stronger with every use.</span>
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10"
-          >
-            <Link
-              href="/signup"
-              className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-lg font-medium flex items-center gap-2 group shadow-lg"
+      <section className="pt-32 pb-24 px-6 lg:px-8 relative overflow-hidden min-h-[90vh] flex items-center">
+        {/* Animated Background Boxes */}
+        <div className="absolute inset-0 w-full h-full bg-background z-0 opacity-20">
+          <Boxes />
+        </div>
+        <div className="absolute inset-0 w-full h-full bg-background/95 z-10 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto w-full relative z-20">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left Column - Text Content */}
+            <div>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground leading-[1.1]"
+              >
+                ChatGPT is a calculator.{' '}
+                <span className="text-primary">Strucly is your desk.</span>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-xl md:text-2xl text-foreground/70 mb-10 max-w-2xl"
+              >
+                A visual canvas where you structure knowledge, connect ideas, and build AI workflows that get <span className="text-foreground font-semibold">stronger with every use.</span>
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex flex-col sm:flex-row items-start gap-4"
+              >
+                <Link
+                  href="/signup"
+                  className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-lg font-medium flex items-center gap-2 group shadow-lg"
+                >
+                  Start for free
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  href="#comparison"
+                  className="px-8 py-4 border-2 border-border rounded-lg hover:border-primary/50 transition-colors text-lg font-medium"
+                >
+                  See how it works
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Right Column - Screenshot */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative"
             >
-              Start for free
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href="#comparison"
-              className="px-8 py-4 border-2 border-border rounded-lg hover:border-primary/50 transition-colors text-lg font-medium"
-            >
-              See how it works
-            </Link>
-          </motion.div>
-          
-          {/* Hero Screenshot */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative rounded-xl overflow-hidden border-2 border-border shadow-2xl"
-          >
-            <Image
-              src="/images/basic_example.png"
-              alt="Strucly Canvas - Visual AI Workflow"
-              width={1920}
-              height={1080}
-              className="w-full h-auto"
-              priority
-            />
-          </motion.div>
+              <div className="relative rounded-xl overflow-hidden border-2 border-border shadow-2xl">
+                <Image
+                  src="/images/basic_example.png"
+                  alt="Strucly Canvas - Visual AI Workflow"
+                  width={1920}
+                  height={1080}
+                  className="w-full h-auto"
+                  priority
+                />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Problem Section */}
-      <section id="comparison" className="py-20 px-6 bg-secondary/30">
-        <div className="max-w-6xl mx-auto">
+      <section id="comparison" className="py-24 px-6 lg:px-8 bg-secondary/30">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mb-16 max-w-3xl"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
               Why Strucly, not just ChatGPT?
             </h2>
-            <p className="text-xl text-foreground/70 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-foreground/70">
               ChatGPT is a powerful tool. But it has a fundamental problem: <span className="text-foreground font-semibold">it doesn't remember context between conversations.</span>
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Problems with ChatGPT */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -210,7 +224,7 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="p-4 bg-card border border-border rounded-lg"
+                    className="p-5 bg-card border border-border rounded-xl"
                   >
                     <h4 className="font-semibold text-foreground mb-2">{problem.title}</h4>
                     <p className="text-sm text-foreground/70">{problem.description}</p>
@@ -240,7 +254,7 @@ export default function LandingPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="p-4 bg-primary/5 border border-primary/20 rounded-lg hover:border-primary/40 transition-colors"
+                    className="p-5 bg-primary/5 border border-primary/20 rounded-xl hover:border-primary/40 transition-colors"
                   >
                     <div className="flex items-start gap-3">
                       <feature.icon className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
@@ -260,9 +274,9 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center mt-12 p-6 bg-primary/10 border border-primary/20 rounded-xl"
+            className="mt-12 p-8 bg-primary/10 border border-primary/20 rounded-xl max-w-2xl"
           >
-            <p className="text-xl font-semibold text-foreground">
+            <p className="text-2xl font-semibold text-foreground">
               Strucly = ChatGPT + visual memory + context control
             </p>
           </motion.div>
@@ -270,24 +284,24 @@ export default function LandingPage() {
       </section>
 
       {/* Real-life Example Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-24 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="mb-16 max-w-3xl"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
               Real-life example: Cover Letter Generator
             </h2>
-            <p className="text-xl text-foreground/70 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-foreground/70">
               See how Strucly turns a repetitive task into a reusable workflow
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
             {/* With ChatGPT */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -397,19 +411,19 @@ export default function LandingPage() {
       </section>
 
       {/* Advanced Example Section */}
-      <section className="py-20 px-6 bg-secondary/30">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-24 px-6 lg:px-8 bg-secondary/30">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="mb-16 max-w-3xl"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
               Build complex AI systems visually
             </h2>
-            <p className="text-xl text-foreground/70 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-foreground/70">
               Chain multiple AI agents, create decision trees, and build workflows that would take hours to code
             </p>
           </motion.div>
@@ -419,7 +433,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-xl overflow-hidden border-2 border-border shadow-2xl"
+            className="relative rounded-xl overflow-hidden border-2 border-border shadow-2xl mb-12"
           >
             <Image
               src="/images/advanced_example.png"
@@ -435,7 +449,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
             {[
               {
@@ -460,9 +474,9 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="p-6 bg-card border border-border rounded-xl text-center"
+                className="p-6 bg-card border border-border rounded-xl"
               >
-                <feature.icon className="w-10 h-10 text-primary mx-auto mb-4" />
+                <feature.icon className="w-10 h-10 text-primary mb-4" />
                 <h3 className="text-xl font-semibold mb-3 text-foreground">{feature.title}</h3>
                 <p className="text-foreground/70">{feature.description}</p>
               </motion.div>
@@ -472,21 +486,21 @@ export default function LandingPage() {
       </section>
 
       {/* Who It's For Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
+      <section className="py-24 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="mb-16 max-w-3xl"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
               Who needs this?
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {[
               { icon: '🚀', text: 'AI power users — who work with prompts every day' },
               { icon: '🔬', text: 'Researchers — who gather knowledge from different sources' },
@@ -497,13 +511,13 @@ export default function LandingPage() {
             ].map((item, index) => (
               <motion.div
                 key={item.text}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="flex items-center gap-4 p-4 bg-card border border-border rounded-lg hover:border-primary/50 transition-colors"
+                className="flex items-start gap-4 p-5 bg-card border border-border rounded-xl hover:border-primary/50 transition-colors"
               >
-                <span className="text-3xl">{item.icon}</span>
+                <span className="text-3xl flex-shrink-0">{item.icon}</span>
                 <p className="text-foreground">{item.text}</p>
               </motion.div>
             ))}
@@ -514,7 +528,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mt-16 p-8 bg-primary/10 border-2 border-primary/20 rounded-xl"
+            className="p-8 bg-primary/10 border-2 border-primary/20 rounded-xl max-w-2xl"
           >
             <p className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               Strucly is not a ChatGPT replacement.
@@ -527,14 +541,14 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto">
+      <section className="py-24 px-6 lg:px-8 bg-secondary/30">
+        <div className="max-w-4xl mx-auto">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-3xl md:text-4xl font-bold text-center mb-12 text-foreground"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-12 text-foreground"
           >
             Frequently Asked Questions
           </motion.h2>
@@ -546,15 +560,15 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="border border-border rounded-lg overflow-hidden"
+                className="border border-border rounded-xl overflow-hidden bg-card"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-secondary/50 transition-colors"
+                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-secondary/50 transition-colors"
                 >
-                  <h3 className="font-semibold text-foreground">{faq.question}</h3>
+                  <h3 className="font-semibold text-lg text-foreground pr-4">{faq.question}</h3>
                   <ChevronDown
-                    className={`w-5 h-5 text-foreground/50 transition-transform ${
+                    className={`w-5 h-5 text-foreground/50 transition-transform flex-shrink-0 ${
                       openFaq === index ? 'rotate-180' : ''
                     }`}
                   />
@@ -566,9 +580,11 @@ export default function LandingPage() {
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="px-6 py-4 text-foreground/70 overflow-hidden"
+                      className="overflow-hidden"
                     >
-                      {faq.answer}
+                      <div className="px-6 pb-5 text-foreground/70">
+                        {faq.answer}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -579,50 +595,55 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-gradient-to-b from-secondary/30 to-background">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold mb-6 text-foreground"
-          >
-            Start building your knowledge system
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-xl md:text-2xl text-foreground/70 mb-10 max-w-2xl mx-auto"
-          >
-            You're not just chatting with AI — <span className="text-foreground font-semibold">you're building a system that gets stronger with every use.</span>
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href="/signup"
-              className="px-10 py-5 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-lg font-semibold flex items-center gap-2 group shadow-xl"
+      <section className="py-32 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-3xl">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground"
             >
-              Start for free
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <p className="text-sm text-foreground/60">No credit card required</p>
-          </motion.div>
+              Start building your knowledge system
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-xl md:text-2xl text-foreground/70 mb-10"
+            >
+              You're not just chatting with AI — <span className="text-foreground font-semibold">you're building a system that gets stronger with every use.</span>
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex flex-col sm:flex-row items-start gap-4"
+            >
+              <Link
+                href="/signup"
+                className="px-10 py-5 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-lg font-semibold flex items-center gap-2 group shadow-xl"
+              >
+                Start for free
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <div className="flex items-center gap-2 text-sm text-foreground/60 pt-3">
+                <Check className="w-4 h-4" />
+                <span>No credit card required</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 px-6">
+      <footer className="border-t border-border py-12 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            <div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-3 mb-4">
                 <Image
                   src="/icon.png"
@@ -633,6 +654,9 @@ export default function LandingPage() {
                 />
                 <span className="font-bold text-foreground">Strucly</span>
               </div>
+              <p className="text-sm text-foreground/60">
+                Visual AI workspace for building reusable knowledge systems
+              </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4 text-foreground">Product</h4>
@@ -685,7 +709,7 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          <div className="text-center text-sm text-foreground/50 pt-8 border-t border-border">
+          <div className="text-sm text-foreground/50 pt-8 border-t border-border">
             © 2025 Strucly. All rights reserved.
           </div>
         </div>
@@ -693,4 +717,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
